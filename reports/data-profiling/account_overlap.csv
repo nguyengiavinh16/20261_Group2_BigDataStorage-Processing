@@ -1,0 +1,7 @@
+,account_role,earlier_split,later_split,earlier_distinct_accounts,later_distinct_accounts,shared_distinct_accounts,later_accounts_seen_in_earlier_percent
+0,nameOrig,train,validation,4458949,980205,2029,0.20699751582577117
+1,nameOrig,train,test,4458949,918421,1831,0.19936390827300335
+2,nameOrig,validation,test,980205,918421,411,0.044750718896889335
+3,nameDest,train,validation,1905776,685105,269859,39.389436655695114
+4,nameDest,train,test,1905776,690570,242861,35.16819439014148
+5,nameDest,validation,test,685105,690570,224464,32.50416322747875

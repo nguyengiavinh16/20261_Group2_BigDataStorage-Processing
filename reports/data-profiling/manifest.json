@@ -17,7 +17,7 @@
     "isFlaggedFraud"
   ],
   "scope": "full dataset",
-  "run_utc": "2026-10-13T07:17:20.180523+00:00",
+  "run_utc": "2026-10-13T07:42:05.030250+00:00",
   "python": "3.11.17",
   "pandas": "3.0.6",
   "numpy": "2.4.6",
@@ -25,7 +25,23 @@
   "download_url": null,
   "publisher_version": null,
   "currency_unit": null,
+  "step_unit": null,
+  "config_sha256": "efbc248a9a99e373fe69884ba9cf609c8e0f299b55e07f865a646c6f3c2f5d38",
+  "schema_sha256": "9da7453c0612d3581d86969549aae82f6c88ae741eea80c2936566e08501f7d4",
+  "reference_snapshot_matches": true,
   "provenance_status": "Pending confirmation; see docs/data-source.md",
+  "temporal_split_feasibility": {
+    "status": "exploratory_not_final_training_split",
+    "target_row_fractions": [
+      0.7,
+      0.15,
+      0.15
+    ],
+    "train_end_step": 323,
+    "validation_end_step": 378,
+    "whole_step_boundaries": true,
+    "account_overlap_scope": "same role, pairwise windows"
+  },
   "duplicate_rows": 0,
   "invalid_rows_proposed_rules": 0,
   "fraud_count": 8213,

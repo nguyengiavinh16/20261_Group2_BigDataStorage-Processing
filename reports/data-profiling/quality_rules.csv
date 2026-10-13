@@ -1,8 +1,8 @@
 ,rule,count,percent,proposed_policy
 0,required_null,0,0.0,Quarantine; preserve source row and reasons
-1,nameOrig_blank,0,0.0,Quarantine; do not invent identifiers/categories
-2,nameDest_blank,0,0.0,Quarantine; do not invent identifiers/categories
-3,type_blank,0,0.0,Quarantine; do not invent identifiers/categories
+1,type_blank,0,0.0,Quarantine; do not invent identifiers/categories
+2,nameOrig_blank,0,0.0,Quarantine; do not invent identifiers/categories
+3,nameDest_blank,0,0.0,Quarantine; do not invent identifiers/categories
 4,step_nonfinite,0,0.0,Quarantine; do not silently cast
 5,amount_nonfinite,0,0.0,Quarantine; do not silently cast
 6,oldbalanceOrg_nonfinite,0,0.0,Quarantine; do not silently cast

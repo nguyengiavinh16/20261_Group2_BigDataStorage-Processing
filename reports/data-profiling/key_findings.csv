@@ -1,0 +1,15 @@
+finding,observed_result
+Dataset size,"6,362,620 transactions; 11 columns"
+Fraud prevalence,"8,213 transactions (0.1291%)"
+Types containing fraud,"CASH_OUT, TRANSFER"
+Largest transaction category,CASH_OUT
+Highest observed type-level fraud rate,TRANSFER: 0.7688%
+Missing cells / duplicate rows,0 / 0
+Rows failing proposed domain checks,0
+Zero-amount transactions,16
+Amount IQR outliers,"338,078 (5.3135%)"
+IQR outlier fraction among fraud,46.9256%
+Existing flag precision / recall,1.000000 / 0.001948
+Fraud not captured by existing flag,"8,197 of 8,213"
+Exploratory step boundaries,train <= 323; validation <= 378; test > 378
+Both classes in every exploratory window,True
