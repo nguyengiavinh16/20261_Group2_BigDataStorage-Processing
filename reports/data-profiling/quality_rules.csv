@@ -1,0 +1,18 @@
+,rule,count,percent,proposed_policy
+0,required_null,0,0.0,Quarantine; preserve source row and reasons
+1,nameOrig_blank,0,0.0,Quarantine; do not invent identifiers/categories
+2,nameDest_blank,0,0.0,Quarantine; do not invent identifiers/categories
+3,type_blank,0,0.0,Quarantine; do not invent identifiers/categories
+4,step_nonfinite,0,0.0,Quarantine; do not silently cast
+5,amount_nonfinite,0,0.0,Quarantine; do not silently cast
+6,oldbalanceOrg_nonfinite,0,0.0,Quarantine; do not silently cast
+7,newbalanceOrig_nonfinite,0,0.0,Quarantine; do not silently cast
+8,oldbalanceDest_nonfinite,0,0.0,Quarantine; do not silently cast
+9,newbalanceDest_nonfinite,0,0.0,Quarantine; do not silently cast
+10,isFraud_nonfinite,0,0.0,Quarantine; do not silently cast
+11,isFlaggedFraud_nonfinite,0,0.0,Quarantine; do not silently cast
+12,step_nonpositive_or_fractional,0,0.0,Quarantine; step must be a positive integer
+13,amount_negative,0,0.0,Quarantine pending domain review
+14,isFraud_outside_binary,0,0.0,Quarantine; expected 0/1
+15,isFlaggedFraud_outside_binary,0,0.0,Quarantine; expected 0/1
+16,unknown_type,0,0.0,Quarantine/review contract; do not drop silently

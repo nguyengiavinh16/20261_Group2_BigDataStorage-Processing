@@ -1,0 +1,12 @@
+,dtype,missing_count,missing_percent,unique_count,blank_count,zero_count,negative_count,nonfinite_count
+step,int64,0,0.0,743,0,0.0,0.0,0.0
+type,category,0,0.0,5,0,,,
+amount,float64,0,0.0,5316900,0,16.0,0.0,0.0
+nameOrig,string,0,0.0,6353307,0,,,
+oldbalanceOrg,float64,0,0.0,1845844,0,2102449.0,0.0,0.0
+newbalanceOrig,float64,0,0.0,2682586,0,3609566.0,0.0,0.0
+nameDest,string,0,0.0,2722362,0,,,
+oldbalanceDest,float64,0,0.0,3614697,0,2704388.0,0.0,0.0
+newbalanceDest,float64,0,0.0,3555499,0,2439433.0,0.0,0.0
+isFraud,int64,0,0.0,2,0,6354407.0,0.0,0.0
+isFlaggedFraud,int64,0,0.0,2,0,6362604.0,0.0,0.0
