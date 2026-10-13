@@ -2,7 +2,7 @@
 
 The Fraud Detection project uses a local PaySim CSV for data profiling, Spark batch processing, model training and transaction replay. This document identifies the file used by the team and records the information needed to obtain and verify the same dataset.
 
-**Owner:** Dat, Batch and ML Lead  
+**Owner:** Đạt, Batch and ML Lead  
 **Local verification date:** 2026-10-13  
 **Status:** Local file metadata and checksum verified. Download provenance remains to be confirmed.
 
@@ -12,13 +12,12 @@ The Fraud Detection project uses a local PaySim CSV for data profiling, Spark ba
 |---|---|
 | Dataset name | PaySim |
 | Data description | Synthetic financial transaction data, as described in the existing project EDA notebook |
-| Download page URL | Pending confirmation from the original download record |
-| Dataset author or publisher | Pending verification against the confirmed source page |
-| Publisher dataset version | Pending verification |
-| Date downloaded by the team | Not recorded; pending confirmation |
-| License and license reference | Pending verification against the confirmed source page |
-| Download method | Pending confirmation |
-
+| Download page URL | https://www.kaggle.com/datasets/mtalaltariq/paysim-data |
+| Dataset author or publisher |Muhammad Talal Tariq |
+| Publisher dataset version | Version 1 |
+| Date downloaded by the team | Not recorded|
+| License and license reference |Unknown |
+| Download method | |
 The repository contains Kaggle search results with multiple dataset candidates. The available file metadata does not associate the local CSV with a specific candidate. The download URL, publisher, version and license therefore need to be confirmed from the actual download record.
 
 ## Local File Identification
@@ -66,7 +65,7 @@ Run these PowerShell commands from the repository root:
 (Get-FileHash -LiteralPath "data/paysim dataset.csv" -Algorithm SHA256).Hash
 ```
 
-The raw CSV is excluded from Git by the repository's `.gitignore`. Share the confirmed download instructions and checksum so team members can prepare their own local copy.
+
 
 ## Intended Use and Data Context
 
@@ -77,12 +76,12 @@ The dataset supports:
 - Training and evaluating fraud detection models.
 - Replaying transactions to test the Kafka and streaming pipeline.
 
-The existing [EDA notebook](../notebooks/paysim_basic_eda.ipynb) describes `isFraud` as the fraud label and `isFlaggedFraud` as an existing system flag. Ground-truth labels are kept separate from scoring input. Detailed column definitions, feature availability and validation rules belong in the data dictionary and feature documentation.
+The existing [EDA notebook](../paysim_basic_eda.ipynb) describes `isFraud` as the fraud label and `isFlaggedFraud` as an existing system flag. Ground-truth labels are kept separate from scoring input. Detailed column definitions, feature availability and validation rules belong in the data dictionary and feature documentation.
 
 The data is synthetic. Findings from this dataset do not establish performance on real banking transactions. Any timestamps generated for replay must be documented as simulated event times.
 
 ## Profiling Reference
 
-Run [the data profiling notebook](../notebooks/01_data_profiling.ipynb) for row counts, label distribution, transaction types, missing values, duplicates, per-column profiles and balance checks. It computes the input checksum on each run and exports full-dataset tables and a runtime manifest to `reports/data-profiling/`, plus [the quality report](../reports/data-quality-report.md).
+See [the current PaySim EDA notebook](../paysim_basic_eda.ipynb) for row counts, label distribution, transaction types, missing values and duplicate checks.
 
-The [original EDA notebook](../notebooks/paysim_basic_eda.ipynb) is retained as a reference. Profiling outputs identify the local snapshot by checksum; they do not resolve the outstanding download provenance, license or publisher-version questions.
+Its saved outputs are previous profiling results. This source note verifies the local file size, header and checksum; it does not rerun the full profiling analysis.
