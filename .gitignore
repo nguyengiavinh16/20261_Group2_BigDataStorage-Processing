@@ -1,6 +1,17 @@
 /data/paysim dataset.csv
 /data/paysim-data.zip
+/data/processed/
+**/__pycache__/
+*.pyc
 docs/Ke_hoach_chi_tiet_thanh_vien_2_Dat.md
 docs/Ke_hoach_chi_tiet_thanh_vien_2_Dat.html
 .gitignore
 .gitignore
+Dockerfile.jupyter
+.gitignore
+.dockerignore
+docker-compose.yml
+README.md
+.vscode/settings.json
+
+docs/week-2-checklist.md
