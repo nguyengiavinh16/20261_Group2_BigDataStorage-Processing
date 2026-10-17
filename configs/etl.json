@@ -1,0 +1,14 @@
+{
+  "config_version": "1.0",
+  "input_path": "data/paysim dataset.csv",
+  "schema_path": "configs/paysim_schema.json",
+  "output_root": "data/processed",
+  "dataset_version": "paysim-v1",
+  "parquet_compression": "snappy",
+  "spark": {
+    "app_name": "FraudDetectionPaySimETL",
+    "master": "local[2]",
+    "shuffle_partitions": 4,
+    "log_level": "WARN"
+  }
+}
