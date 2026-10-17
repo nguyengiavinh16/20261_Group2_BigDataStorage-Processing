@@ -1,0 +1,22 @@
+FROM spark:4.2.0-java21-python3
+
+# Match the existing Spark lab runtime so its cached build layers can be reused.
+USER root
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3-venv \
+    && rm -rf /var/lib/apt/lists/* \
+    && python3 -m venv --system-site-packages /opt/jupyter \
+    && /opt/jupyter/bin/pip install --no-cache-dir \
+       jupyterlab==4.4.10 pyspark==4.2.0 kafka-python==2.0.2 \
+       findspark==2.0.1 pandas==2.2.3 numpy==1.26.4 pyarrow==18.1.0 \
+       psycopg2-binary==2.9.9 sqlalchemy==2.0.23 \
+    && mkdir -p /home/jovyan/work /home/spark \
+    && chown -R 185:0 /home/jovyan /home/spark /opt/jupyter
+
+ENV HOME=/home/spark
+ENV PATH=/opt/jupyter/bin:${PATH}
+ENV PYSPARK_PYTHON=python3
+USER 185
+WORKDIR /workspace
+EXPOSE 8888 4040
+CMD ["/opt/jupyter/bin/jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--ServerApp.root_dir=/workspace"]
