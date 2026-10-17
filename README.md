@@ -66,6 +66,13 @@ Test kiểm tra lỗi parse/kiểu/domain, chuẩn hóa, đọc lại Parquet, I
 chạy lại, duplicate, replay tách nhãn, giới hạn dòng và header sai. Output kiểm
 thử nằm trong thư mục tạm bên trong container và được dọn sau test.
 
+Kết quả đã xác nhận ngày 17/10/2026: **7/7 test pass trong 22,752 giây**,
+kết thúc bằng `OK`. Môi trường: Python `3.10.12`, Spark `4.2.0`, Scala
+`2.13.18`, OpenJDK `21.0.12.1`. Xem [log test](reports/week2-unit-tests.log)
+và [báo cáo kiểm thử tổng hợp](reports/etl-test-report.md).
+Test rerun đã xác nhận ID và số dòng ổn định; chưa so sánh toàn bộ giá trị
+trước/sau rerun.
+
 ## Chạy ETL trên sample
 
 ```powershell
@@ -92,17 +99,34 @@ docker compose -p fraud-detection exec spark python ./src/processing/etl.py --in
 Output được lưu tại `data/processed/paysim-v1/<run-id>/`:
 
 Thư mục này nằm trên máy Windows vì project được mount vào `/workspace`.
-Lần chạy sample thành công ngày 2026-10-13 lúc 22:44 (Asia/Saigon) có run ID
+Lần chạy sample mới nhất hoàn tất ngày 17/10/2026 lúc 20:11:25 (Asia/Saigon), có run ID
 `57d04fcb134a`, nên đường dẫn tương ứng là:
 
 ```text
 C:\Users\lenovo\project\bigdata\data\processed\paysim-v1\57d04fcb134a\
 ```
 
-Log của lần chạy này xác nhận `status: verified`, raw/valid/processed/replay/labels
-đều có 10.000 dòng, quarantine và duplicate đều bằng 0, runtime 26,823 giây.
-Đây là kết quả sample; chưa xác nhận lần chạy toàn bộ dataset hoặc bộ test lỗi.
+Manifest của lần chạy này xác nhận `status: verified`, raw/valid/processed/replay/labels
+đều có 10.000 dòng, quarantine và duplicate đều bằng 0, runtime 24,894 giây.
 Run ID của lần chạy khác được in trong log và phần `outputs` cuối terminal.
+
+Full run mới nhất `5b18e10106f3` hoàn tất ngày 17/10/2026 lúc 20:24:04
+(Asia/Saigon), có `status: verified`, runtime **310,308 giây**:
+
+| Chỉ số | Kết quả full run |
+|---|---:|
+| raw / valid | 6.362.620 / 6.362.620 |
+| quarantine / duplicate | 0 / 0 |
+| processed / replay / labels | Mỗi output 6.362.620 dòng |
+| Nhãn fraud (`label = 1`) | 8.213 |
+
+Đã đọc lại cả bốn output để xác minh schema và số dòng, kiểm tra ID processed
+duy nhất và phân bố label/type không đổi sau khi ghi Parquet. Bằng chứng:
+[full manifest](data/processed/paysim-v1/5b18e10106f3/manifest.json),
+[ETL log](data/processed/paysim-v1/5b18e10106f3/etl.log) và
+[báo cáo tổng hợp](reports/etl-test-report.md).
+Dataset/Parquet nằm ngoài Git; liên kết đến `data/processed/` chỉ hoạt động
+trên máy có output tương ứng.
 
 | Đầu ra | Nội dung |
 |---|---|
@@ -150,5 +174,6 @@ docker compose -p fraud-detection down
 `down` dừng container; dữ liệu nằm trong thư mục project vẫn giữ nguyên. Nếu
 8890 hoặc 4041 đã bị dùng, sửa phần `ports` trong `docker-compose.yml` rồi chạy
 lại `up`. Nếu dataset thiếu, đặt CSV vào `data/` hoặc dùng `--input` đúng đường
-dẫn. Kết quả sample đã được xác nhận theo log; full dataset và bộ test lỗi
-cần được chạy riêng để xác nhận.
+dẫn. Kết quả sample, full dataset và bộ test đã được xác nhận theo các bằng
+chứng nêu trên; kết quả này áp dụng cho input/config/schema/code của các lần
+chạy đã ghi nhận.
