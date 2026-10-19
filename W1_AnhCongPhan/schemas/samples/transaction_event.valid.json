@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "transaction_id": "ps_00000003",
+  "event_time": "2026-01-01T00:00:02Z",
+  "step": 1,
+  "transaction_type": "TRANSFER",
+  "amount": 181.0,
+  "source_account": "C1305486145",
+  "destination_account": "C553264065",
+  "old_balance_orig": 181.0,
+  "old_balance_dest": 0.0,
+  "source": "paysim_replay",
+  "produced_at": "2026-10-20T08:15:30.125Z",
+  "replay_id": "replay_20261020_01"
+}

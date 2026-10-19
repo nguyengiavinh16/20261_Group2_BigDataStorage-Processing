@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fraud-detection.local/schemas/transaction_event.v1.schema.json",
+  "title": "TransactionEvent v1",
+  "description": "Input transaction event on topic fraud.transactions.v1, replayed by the producer from processed PaySim data. Does NOT contain the ground-truth label (isFraud) or the rule flag (isFlaggedFraud). Owner: Streaming & Serving Lead. Status: W1 DRAFT, pending Lead sign-off.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "transaction_id",
+    "event_time",
+    "step",
+    "transaction_type",
+    "amount",
+    "source_account",
+    "destination_account",
+    "source"
+  ],
+  "properties": {
+    "schema_version": {
+      "description": "Message schema version. Adding an optional field -> 1.x; a breaking change -> new .v2 topic.",
+      "type": "string",
+      "pattern": "^1\\.[0-9]+$",
+      "examples": ["1.0"]
+    },
+    "transaction_id": {
+      "description": "Unique key generated deterministically in ETL: 'ps_' + row number (1-based, 8 digits) in the original PaySim file. Used as the idempotency key at the sink.",
+      "type": "string",
+      "pattern": "^ps_[0-9]{8}$",
+      "examples": ["ps_00000001"]
+    },
+    "event_time": {
+      "description": "Time the transaction occurred (event time, UTC, ISO-8601). Simulated from step: SIM_START + (step-1) hours + offset within the hour. This is the column used for watermarks/windows.",
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,6})?Z$"
+    },
+    "step": {
+      "description": "Original PaySim step value (1 step = 1 simulated hour). Kept for traceability and to reproduce event_time.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 744
+    },
+    "transaction_type": {
+      "description": "Transaction type, mapped from PaySim column 'type'.",
+      "type": "string",
+      "enum": ["CASH_IN", "CASH_OUT", "DEBIT", "PAYMENT", "TRANSFER"]
+    },
+    "amount": {
+      "description": "Transaction amount (PaySim local currency units). Mapped from 'amount'.",
+      "type": "number",
+      "minimum": 0
+    },
+    "source_account": {
+      "description": "Originating account, mapped from 'nameOrig'. Used as the Kafka message key.",
+      "type": "string",
+      "pattern": "^[CM][0-9]+$"
+    },
+    "destination_account": {
+      "description": "Receiving account, mapped from 'nameDest'. Prefix 'M' = merchant (no balance information).",
+      "type": "string",
+      "pattern": "^[CM][0-9]+$"
+    },
+    "old_balance_orig": {
+      "description": "Source account balance BEFORE the transaction, mapped from 'oldbalanceOrg'. OPTIONAL: the Kaggle description warns that balance columns carry leakage risk, so whether it is used as a feature is decided by Data & ML Evaluation / Batch & ML Lead (W1-W2).",
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "old_balance_dest": {
+      "description": "Destination account balance BEFORE the transaction, mapped from 'oldbalanceDest'. OPTIONAL, same conditions as old_balance_orig. Always 0 for merchants (no data).",
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "source": {
+      "description": "Event source.",
+      "type": "string",
+      "enum": ["paysim_replay"]
+    },
+    "produced_at": {
+      "description": "Time the producer sent the message (wall clock, UTC). Used to measure end-to-end latency = scored_at - produced_at. Not used for windows.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "replay_id": {
+      "description": "Replay run identifier (e.g. 'replay_20261020_01'), used to tell replay runs apart in logs/benchmarks. NOT part of the idempotency key.",
+      "type": "string",
+      "maxLength": 64
+    }
+  }
+}

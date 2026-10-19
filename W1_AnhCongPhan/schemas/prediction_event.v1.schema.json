@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fraud-detection.local/schemas/prediction_event.v1.schema.json",
+  "title": "PredictionEvent v1",
+  "description": "Scoring result produced by Structured Streaming for each valid transaction. Written to NoSQL (collection predictions; also to alerts when alert_triggered = true) and optionally to topic fraud.predictions.v1. Owner: Streaming & Serving Lead. Status: W1 DRAFT, to be finalized together with the output schema in W3.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "transaction_id",
+    "event_time",
+    "scored_at",
+    "fraud_score",
+    "risk_level",
+    "alert_triggered",
+    "model_version"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^1\\.[0-9]+$",
+      "examples": ["1.0"]
+    },
+    "transaction_id": {
+      "description": "Same as the TransactionEvent transaction_id. Idempotency key of the sink (MongoDB _id).",
+      "type": "string",
+      "pattern": "^ps_[0-9]{8}$"
+    },
+    "event_time": {
+      "description": "Copied from the input event, for queries by transaction time.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "scored_at": {
+      "description": "Time the streaming app finished scoring (wall clock, UTC).",
+      "type": "string",
+      "format": "date-time"
+    },
+    "fraud_score": {
+      "description": "Risk score returned by the model, in [0,1]. NOT assumed to be a calibrated probability.",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "risk_level": {
+      "description": "Level derived from fraud_score using configured thresholds: HIGH >= t_high, MEDIUM >= t_medium, otherwise LOW. Thresholds to be finalized by Data & ML Evaluation in W3.",
+      "type": "string",
+      "enum": ["LOW", "MEDIUM", "HIGH"]
+    },
+    "alert_triggered": {
+      "description": "true if fraud_score >= alert_threshold (default = t_medium, i.e. both MEDIUM and HIGH raise alerts).",
+      "type": "boolean"
+    },
+    "alert_threshold": {
+      "description": "Threshold used at scoring time (stored for reproducibility and explanation).",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "model_version": {
+      "description": "Model artifact version (e.g. 'baseline_v1', 'rf_v2'). Provided by the Batch & ML Lead in W3-W4.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "transaction_type": {
+      "description": "Denormalized from the input so the dashboard can filter/group without joins.",
+      "type": "string",
+      "enum": ["CASH_IN", "CASH_OUT", "DEBIT", "PAYMENT", "TRANSFER"]
+    },
+    "amount": {
+      "description": "Denormalized from the input.",
+      "type": "number",
+      "minimum": 0
+    },
+    "source_account": {
+      "description": "Denormalized from the input (supports alert lookup by account).",
+      "type": "string"
+    },
+    "destination_account": {
+      "description": "Denormalized from the input.",
+      "type": "string"
+    },
+    "latency_ms": {
+      "description": "scored_at - produced_at (ms) if the input has produced_at; null if it cannot be measured.",
+      "type": ["integer", "null"],
+      "minimum": 0
+    }
+  }
+}

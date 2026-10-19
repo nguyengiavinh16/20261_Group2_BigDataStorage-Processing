@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "transaction_id": "ps_00000003",
+  "event_time": "2026-01-01T00:00:02Z",
+  "scored_at": "2026-10-20T08:15:30.912Z",
+  "fraud_score": 0.94,
+  "risk_level": "HIGH",
+  "alert_triggered": true,
+  "alert_threshold": 0.5,
+  "model_version": "baseline_v1",
+  "transaction_type": "TRANSFER",
+  "amount": 181.0,
+  "source_account": "C1305486145",
+  "destination_account": "C553264065",
+  "latency_ms": 787
+}

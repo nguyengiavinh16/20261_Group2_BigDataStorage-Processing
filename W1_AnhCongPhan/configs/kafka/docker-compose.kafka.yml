@@ -1,0 +1,53 @@
+# DRAFT W1 - single-node Kafka (KRaft, no ZooKeeper) for the dev environment.
+# Purpose: pin down the listener setup so clients on the HOST and inside CONTAINERS both connect correctly.
+# Not yet run (W1 is design only); to be verified in W2.
+#
+#   Clients running on the host (Windows/WSL, Spark local, producer.py)  -> localhost:9092
+#   Clients running in a container on the "fraud-net" network            -> kafka:29092
+#
+# No credentials in this file (PLAINTEXT, local dev only).
+
+services:
+  kafka:
+    image: apache/kafka:3.8.0
+    container_name: kafka
+    hostname: kafka
+    ports:
+      - "9092:9092"          # expose only the EXTERNAL listener to the host
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      # Bind: listen on all interfaces inside the container
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      # Advertise: the broker address RETURNED to clients after the first connection.
+      # Getting this wrong is the most common mistake: the client reaches the bootstrap server, then "hangs"
+      # because the broker hands back an address the client cannot resolve.
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      # Single broker -> replication factor 1 for internal topics
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      # Disable auto-create so a typo in a topic name does not silently create a new topic
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_NUM_PARTITIONS: 3
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    networks:
+      - fraud-net
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server kafka:29092 > /dev/null 2>&1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+volumes:
+  kafka-data:
+
+networks:
+  fraud-net:
+    name: fraud-net

@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fraud Alert Monitor</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7;
+  --surface: #fcfcfb;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #898781;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11,11,11,0.10);
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --good: #0ca30c;
+  --warning: #fab219;
+  --critical: #d03b3b;
+  --mock-bg: #fff4e0;
+  --mock-ink: #7a4a00;
+  --hover: rgba(11,11,11,0.04);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --series-2: #d95926;
+    --mock-bg: #3a2a0c; --mock-ink: #f5cf8a; --hover: rgba(255,255,255,0.05);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+  --series-1: #3987e5; --series-2: #d95926;
+  --mock-bg: #3a2a0c; --mock-ink: #f5cf8a; --hover: rgba(255,255,255,0.05);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--page); color: var(--ink);
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.wrap { max-width: 1240px; margin: 0 auto; padding: 20px 16px 40px; }
+header { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; justify-content: space-between; }
+h1 { font-size: 20px; margin: 0; font-weight: 650; }
+.sub { color: var(--ink-2); font-size: 13px; }
+.mock {
+  margin: 12px 0 16px; padding: 8px 12px; border-radius: 8px;
+  background: var(--mock-bg); color: var(--mock-ink); font-size: 13px;
+}
+.filters { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; align-items: end; }
+.filters label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--ink-2); }
+select, button {
+  font: inherit; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; min-width: 130px;
+}
+button { cursor: pointer; min-width: 0; }
+.grid { display: grid; gap: 12px; }
+.kpis { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin-bottom: 12px; }
+.charts { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 12px; }
+@media (max-width: 760px) { .charts { grid-template-columns: 1fr; } }
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px;
+  min-width: 0;
+}
+.kpi .label { font-size: 12px; color: var(--ink-2); }
+.kpi .value { font-size: 26px; font-weight: 650; margin-top: 2px; }
+.kpi .src { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.card h2 { font-size: 14px; margin: 0 0 2px; font-weight: 600; }
+.card .note { font-size: 12px; color: var(--muted); margin: 0 0 8px; }
+.chart { position: relative; width: 100%; height: 200px; }
+.chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.chart text { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--ink-2); margin-top: 6px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.tip {
+  position: fixed; pointer-events: none; z-index: 10; display: none;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--border);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12); border-radius: 6px; padding: 6px 9px; font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th { color: var(--ink-2); font-weight: 600; font-size: 12px; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tbody tr:hover { background: var(--hover); }
+.badge { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; font-size: 12px; }
+.badge .dot { width: 9px; height: 9px; border-radius: 50%; }
+.status { font-size: 12px; color: var(--ink-2); border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px; }
+.defs { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); margin-top: 12px; }
+.defs ul { margin: 6px 0 0; padding-left: 18px; color: var(--ink-2); font-size: 13px; }
+.defs li { margin-bottom: 4px; }
+code { font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Fraud Alert Monitor</h1>
+      <div class="sub">Mock dashboard
+      </div>
+    </div>
+    <button id="theme" type="button" aria-label="Toggle light/dark theme">Light / Dark</button>
+  </header>
+
+  <div class="mock" role="note">
+    <strong>MOCK DATA.</strong> 
+  </div>
+
+  <div class="filters">
+    <label>Time range (scored_at)
+      <select id="f-range">
+        <option value="15">Last 15 minutes</option>
+        <option value="60" selected>Last 1 hour</option>
+        <option value="360">Last 6 hours</option>
+      </select>
+    </label>
+    <label>Transaction type
+      <select id="f-type">
+        <option value="ALL">All</option>
+        <option>CASH_IN</option><option>CASH_OUT</option><option>DEBIT</option><option>PAYMENT</option><option>TRANSFER</option>
+      </select>
+    </label>
+    <label>Risk level (alert)
+      <select id="f-risk">
+        <option value="ALL">MEDIUM + HIGH</option>
+        <option>HIGH</option><option>MEDIUM</option>
+      </select>
+    </label>
+    <label>Alert status
+      <select id="f-status">
+        <option value="ALL">All</option>
+        <option>NEW</option><option>ACKNOWLEDGED</option><option>CONFIRMED_FRAUD</option><option>FALSE_POSITIVE</option><option>CLOSED</option>
+      </select>
+    </label>
+  </div>
+
+  <section class="grid kpis" aria-label="Overview metrics">
+    <div class="card kpi"><div class="label">Transactions scored</div><div class="value" id="k-total">–</div><div class="src">count(predictions)</div></div>
+    <div class="card kpi"><div class="label">Alerts</div><div class="value" id="k-alerts">–</div><div class="src">count(alerts) matching filters</div></div>
+    <div class="card kpi"><div class="label">Alert rate</div><div class="value" id="k-rate">–</div><div class="src">alerts ÷ transactions</div></div>
+    <div class="card kpi"><div class="label">Latency p95</div><div class="value" id="k-p95">–</div><div class="src">scored_at − produced_at</div></div>
+    <div class="card kpi"><div class="label">Invalid records (DLQ)</div><div class="value" id="k-dlq">–</div><div class="src">fraud.transactions.dlq.v1</div></div>
+  </section>
+
+  <section class="grid charts">
+    <div class="card">
+      <h2>Transactions per minute</h2>
+      <p class="note">Predictions per minute (<code>$dateTrunc scored_at</code>)</p>
+      <div class="chart" id="c-txn"></div>
+    </div>
+    <div class="card">
+      <h2>Alerts per minute</h2>
+      <p class="note">Kept separate from the transaction chart because the scales differ (no dual axis)</p>
+      <div class="chart" id="c-alert"></div>
+    </div>
+    <div class="card">
+      <h2>Alert fraud_score distribution</h2>
+      <p class="note">Score ≥ 0.5, bin width 0.05; dashed line = HIGH threshold 0.8. The score is not a calibrated probability.</p>
+      <div class="chart" id="c-score"></div>
+      <div class="legend" id="l-score"></div>
+    </div>
+    <div class="card">
+      <h2>Alerts by transaction type</h2>
+      <p class="note">Hover to also see the total number of transactions of that type</p>
+      <div class="chart" id="c-type"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Alert list">
+    <h2>Latest alerts</h2>
+    <p class="note">AP2–AP4: <code>alerts.find({risk_level, status, scored_at}).sort({scored_at:-1}).limit(15)</code></p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr>
+          <th>transaction_id</th><th>scored_at</th><th>event_time (simulated)</th><th>Type</th>
+          <th class="num">amount</th><th class="num">fraud_score</th><th>risk_level</th><th>Status</th><th>model_version</th>
+        </tr></thead>
+        <tbody id="t-alerts"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="grid defs">
+    <div class="card">
+      <h2>Metric definitions</h2>
+      <ul>
+        <li><b>Transactions scored</b>: number of documents in <code>predictions</code> whose <code>scored_at</code> falls in the selected range.</li>
+        <li><b>Alert</b>: <code>fraud_score ≥ alert_threshold</code> (provisionally 0.5). HIGH when ≥ 0.8.</li>
+        <li><b>Latency</b>: <code>scored_at − produced_at</code>. End-to-end latency through Kafka and Spark, excluding the DB write.</li>
+        <li><b>DLQ</b>: messages that fail to parse or violate the schema (including messages that contain <code>isFraud</code>).</li>
+        <li><b>event_time</b>: simulated time derived from PaySim's <code>step</code>, not real wall-clock time.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Intentionally not shown</h2>
+      <ul>
+        <li><b>Real-time precision / recall</b>: ground-truth labels are kept out of the scoring path. Thái evaluates offline by joining on <code>transaction_id</code>.</li>
+        <li><b>"Fraud probability %"</b>: <code>fraud_score</code> has not been checked for calibration.</li>
+        <li><b>Throughput / consumer lag</b>: to be added in W7 once measurement tooling is in place. Unmeasured numbers are not displayed.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+(function () {
+  // ---------- theme toggle ----------
+  var root = document.documentElement;
+  document.getElementById('theme').addEventListener('click', function () {
+    var dark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+    try { localStorage.setItem('fam-theme', root.getAttribute('data-theme')); } catch (e) {}
+    renderAll();
+  });
+  try { var saved = localStorage.getItem('fam-theme'); if (saved) root.setAttribute('data-theme', saved); } catch (e) {}
+
+  // ---------- seeded mock data ----------
+  var seed = 20261020;
+  function rnd() { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
+  var TYPES = ['CASH_IN', 'CASH_OUT', 'DEBIT', 'PAYMENT', 'TRANSFER'];
+  var TYPE_SHARE = [0.22, 0.35, 0.01, 0.34, 0.08];          // approximate PaySim transaction type mix
+  var ALERT_SHARE = { CASH_IN: 0.02, CASH_OUT: 0.40, DEBIT: 0.01, PAYMENT: 0.05, TRANSFER: 0.52 };
+  var STATUSES = ['NEW', 'NEW', 'NEW', 'ACKNOWLEDGED', 'CONFIRMED_FRAUD', 'FALSE_POSITIVE', 'CLOSED'];
+  var NOW = Date.UTC(2026, 9, 20, 9, 0, 0);
+  var MINUTES = 360;
+
+  var perMinute = [];   // {t, byType:{TYPE:count}, dlq}
+  for (var m = MINUTES - 1; m >= 0; m--) {
+    var base = 9000 + 2500 * Math.sin(m / 40) + rnd() * 1500;
+    var byType = {};
+    TYPES.forEach(function (t, i) { byType[t] = Math.round(base * TYPE_SHARE[i] * (0.9 + rnd() * 0.2)); });
+    perMinute.push({ t: NOW - m * 60000, byType: byType, dlq: rnd() < 0.85 ? 0 : Math.ceil(rnd() * 4) });
+  }
+
+  var alerts = [];
+  var idc = 4200000;
+  perMinute.forEach(function (pm) {
+    var n = Math.round(6 + rnd() * 10 + (rnd() < 0.05 ? 25 : 0));
+    for (var i = 0; i < n; i++) {
+      var r = rnd(), acc = 0, type = 'TRANSFER';
+      for (var k in ALERT_SHARE) { acc += ALERT_SHARE[k]; if (r <= acc) { type = k; break; } }
+      var score = 0.5 + Math.pow(rnd(), 0.7) * 0.5;
+      var ts = pm.t + Math.floor(rnd() * 60000);
+      idc += 1 + Math.floor(rnd() * 40);
+      var step = 300 + Math.floor((idc - 4200000) / 9000);
+      alerts.push({
+        id: 'ps_' + String(idc).padStart(8, '0'),
+        scored: ts,
+        event: Date.UTC(2026, 0, 1) + (step - 1) * 3600000 + Math.floor(rnd() * 3600000),
+        type: type,
+        amount: Math.round((type === 'TRANSFER' || type === 'CASH_OUT' ? 50000 + rnd() * 2500000 : 500 + rnd() * 20000) * 100) / 100,
+        score: Math.round(score * 1000) / 1000,
+        risk: score >= 0.8 ? 'HIGH' : 'MEDIUM',
+        status: (NOW - ts) < 10 * 60000 ? 'NEW' : STATUSES[Math.floor(rnd() * STATUSES.length)],
+        model: 'baseline_v1'
+      });
+    }
+  });
+  alerts.sort(function (a, b) { return b.scored - a.scored; });
+
+  var latencies = [];
+  for (var l = 0; l < 2000; l++) latencies.push(Math.round(350 + Math.pow(rnd(), 3) * 2600 + rnd() * 200));
+
+  // ---------- helpers ----------
+  function css(v) { return getComputedStyle(root).getPropertyValue(v).trim(); }
+  var nf = new Intl.NumberFormat('en-US');
+  function fmtTime(ms) { var d = new Date(ms); return d.toISOString().slice(11, 19) + 'Z'; }
+  function fmtDT(ms) { return new Date(ms).toISOString().slice(0, 16).replace('T', ' ') + 'Z'; }
+  var tip = document.getElementById('tip');
+  function showTip(e, html) {
+    tip.innerHTML = html; tip.style.display = 'block';
+    var x = e.clientX + 14, y = e.clientY + 14, w = tip.offsetWidth, h = tip.offsetHeight;
+    if (x + w > innerWidth - 8) x = e.clientX - w - 14;
+    if (y + h > innerHeight - 8) y = e.clientY - h - 14;
+    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+  }
+  function hideTip() { tip.style.display = 'none'; }
+  function niceMax(v) {
+    if (v <= 0) return 1;
+    var p = Math.pow(10, Math.floor(Math.log10(v))), n = v / p;
+    return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10) * p;
+  }
+  function el(tag, attrs) {
+    var e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  // top-rounded bar path anchored to baseline
+  function barPath(x, y, w, h, r) {
+    r = Math.min(r, w / 2, h);
+    if (h <= 0) return '';
+    return 'M' + x + ',' + (y + h) + 'V' + (y + r) + 'Q' + x + ',' + y + ' ' + (x + r) + ',' + y +
+      'H' + (x + w - r) + 'Q' + (x + w) + ',' + y + ' ' + (x + w) + ',' + (y + r) + 'V' + (y + h) + 'Z';
+  }
+
+  // vertical column chart: data [{label, value, color, tip}], opts {xLabels:[idx], vlines:[{x, label}]}
+  function columnChart(host, data, opts) {
+    opts = opts || {};
+    host.innerHTML = '';
+    var W = host.clientWidth || 340, H = host.clientHeight || 200;
+    var M = { t: 8, r: 8, b: 22, l: 44 };
+    var iw = W - M.l - M.r, ih = H - M.t - M.b;
+    var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': opts.aria || '' });
+    var max = niceMax(Math.max.apply(null, data.map(function (d) { return d.value; })));
+    for (var g = 0; g <= 4; g++) {
+      var gy = M.t + ih - ih * g / 4;
+      svg.appendChild(el('line', { x1: M.l, x2: W - M.r, y1: gy, y2: gy, stroke: g === 0 ? css('--axis') : css('--grid'), 'stroke-width': 1 }));
+      var tl = el('text', { x: M.l - 6, y: gy + 4, 'text-anchor': 'end' });
+      tl.textContent = nf.format(max * g / 4); svg.appendChild(tl);
+    }
+    var n = data.length, slot = iw / n, gap = n > 60 ? 0.5 : 2, bw = Math.max(1, slot - gap);
+    data.forEach(function (d, i) {
+      var h = ih * d.value / max, x = M.l + i * slot + gap / 2, y = M.t + ih - h;
+      if (h > 0) svg.appendChild(el('path', { d: barPath(x, y, bw, h, Math.min(4, bw / 2)), fill: d.color }));
+      var hit = el('rect', { x: M.l + i * slot, y: M.t, width: slot, height: ih, fill: 'transparent' });
+      hit.addEventListener('mousemove', function (e) { showTip(e, d.tip); });
+      hit.addEventListener('mouseleave', hideTip);
+      svg.appendChild(hit);
+    });
+    (opts.xLabels || []).forEach(function (i) {
+      var t = el('text', { x: M.l + i * slot + slot / 2, y: H - 6, 'text-anchor': 'middle' });
+      t.textContent = data[i].label; svg.appendChild(t);
+    });
+    (opts.vlines || []).forEach(function (v) {
+      var x = M.l + v.x * iw;
+      svg.appendChild(el('line', { x1: x, x2: x, y1: M.t, y2: M.t + ih, stroke: css('--ink-2'), 'stroke-width': 1, 'stroke-dasharray': '3 3' }));
+      var t = el('text', { x: x + 4, y: M.t + 10 }); t.textContent = v.label; svg.appendChild(t);
+    });
+    host.appendChild(svg);
+  }
+
+  // horizontal bar chart
+  function hbarChart(host, data) {
+    host.innerHTML = '';
+    var W = host.clientWidth || 340, H = host.clientHeight || 200;
+    var M = { t: 4, r: 48, b: 4, l: 84 };
+    var iw = W - M.l - M.r, ih = H - M.t - M.b;
+    var svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': 'Alerts by transaction type' });
+    var max = Math.max(1, Math.max.apply(null, data.map(function (d) { return d.value; })));
+    var slot = ih / data.length, bh = Math.min(22, slot - 8);
+    svg.appendChild(el('line', { x1: M.l, x2: M.l, y1: M.t, y2: M.t + ih, stroke: css('--axis') }));
+    data.forEach(function (d, i) {
+      var y = M.t + i * slot + (slot - bh) / 2, w = iw * d.value / max;
+      var lab = el('text', { x: M.l - 8, y: y + bh / 2 + 4, 'text-anchor': 'end' });
+      lab.textContent = d.label; lab.setAttribute('style', 'fill:' + css('--ink-2')); svg.appendChild(lab);
+      if (w > 0) {
+        var r = Math.min(4, bh / 2, w);
+        svg.appendChild(el('path', {
+          d: 'M' + M.l + ',' + y + 'H' + (M.l + w - r) + 'Q' + (M.l + w) + ',' + y + ' ' + (M.l + w) + ',' + (y + r) +
+             'V' + (y + bh - r) + 'Q' + (M.l + w) + ',' + (y + bh) + ' ' + (M.l + w - r) + ',' + (y + bh) + 'H' + M.l + 'Z',
+          fill: css('--series-2')
+        }));
+      }
+      var v = el('text', { x: M.l + w + 6, y: y + bh / 2 + 4 }); v.textContent = nf.format(d.value); svg.appendChild(v);
+      var hit = el('rect', { x: 0, y: M.t + i * slot, width: W, height: slot, fill: 'transparent' });
+      hit.addEventListener('mousemove', function (e) { showTip(e, d.tip); });
+      hit.addEventListener('mouseleave', hideTip);
+      svg.appendChild(hit);
+    });
+    host.appendChild(svg);
+  }
+
+  // ---------- render ----------
+  function filters() {
+    return {
+      range: +document.getElementById('f-range').value,
+      type: document.getElementById('f-type').value,
+      risk: document.getElementById('f-risk').value,
+      status: document.getElementById('f-status').value
+    };
+  }
+
+  function renderAll() {
+    hideTip();
+    var f = filters();
+    var from = NOW - f.range * 60000;
+    var mins = perMinute.filter(function (p) { return p.t > from; });
+    var typeOk = function (t) { return f.type === 'ALL' || f.type === t; };
+    var alertsIn = alerts.filter(function (a) {
+      return a.scored > from && typeOk(a.type) &&
+        (f.risk === 'ALL' || a.risk === f.risk) && (f.status === 'ALL' || a.status === f.status);
+    });
+
+    var txnSeries = mins.map(function (p) {
+      var c = 0; TYPES.forEach(function (t) { if (typeOk(t)) c += p.byType[t]; }); return { t: p.t, v: c };
+    });
+    var total = txnSeries.reduce(function (s, p) { return s + p.v; }, 0);
+    var dlq = mins.reduce(function (s, p) { return s + p.dlq; }, 0);
+    var sorted = latencies.slice().sort(function (a, b) { return a - b; });
+
+    document.getElementById('k-total').textContent = nf.format(total);
+    document.getElementById('k-alerts').textContent = nf.format(alertsIn.length);
+    document.getElementById('k-rate').textContent = total ? (alertsIn.length / total * 100).toFixed(3) + '%' : '–';
+    document.getElementById('k-p95').textContent = nf.format(sorted[Math.floor(sorted.length * 0.95)]) + ' ms';
+    document.getElementById('k-dlq').textContent = nf.format(dlq);
+
+    // bucket size so bars stay readable
+    var bucket = f.range <= 60 ? 1 : 5;
+    function bucketize(series) {
+      var out = [];
+      for (var i = 0; i < series.length; i += bucket) {
+        var chunk = series.slice(i, i + bucket);
+        out.push({ t: chunk[0].t, v: chunk.reduce(function (s, p) { return s + p.v; }, 0) });
+      }
+      return out;
+    }
+    var unit = bucket === 1 ? 'min' : bucket + ' min';
+    var tx = bucketize(txnSeries);
+    var labelIdx = function (n) { var step = Math.ceil(n / 5); var r = []; for (var i = 0; i < n; i += step) r.push(i); return r; };
+    columnChart(document.getElementById('c-txn'), tx.map(function (p) {
+      return { label: fmtTime(p.t).slice(0, 5), value: p.v, color: css('--series-1'),
+        tip: '<b>' + fmtTime(p.t) + '</b><br>' + nf.format(p.v) + ' transactions / ' + unit };
+    }), { xLabels: labelIdx(tx.length), aria: 'Transactions per minute' });
+
+    var aSeries = mins.map(function (p) {
+      return { t: p.t, v: alertsIn.filter(function (a) { return a.scored >= p.t && a.scored < p.t + 60000; }).length };
+    });
+    var ax = bucketize(aSeries);
+    columnChart(document.getElementById('c-alert'), ax.map(function (p) {
+      return { label: fmtTime(p.t).slice(0, 5), value: p.v, color: css('--series-2'),
+        tip: '<b>' + fmtTime(p.t) + '</b><br>' + nf.format(p.v) + ' alerts / ' + unit };
+    }), { xLabels: labelIdx(ax.length), aria: 'Alerts per minute' });
+
+    // score histogram of alerts: 10 bins of 0.05 from 0.5 to 1.0
+    // (LOW < 0.5 is ~99.9% of predictions and would flatten the tail, so it is reported as a number instead)
+    var bins = [];
+    for (var i = 0; i < 10; i++) {
+      var lo = 0.5 + i * 0.05;
+      var v = alertsIn.filter(function (a) { return a.score >= lo - 1e-9 && (a.score < lo + 0.05 - 1e-9 || i === 9); }).length;
+      bins.push({ lo: lo, value: v, risk: lo >= 0.8 - 1e-9 ? 'HIGH' : 'MEDIUM' });
+    }
+    var colorOf = { MEDIUM: css('--warning'), HIGH: css('--critical') };
+    columnChart(document.getElementById('c-score'), bins.map(function (b2) {
+      return { label: b2.lo.toFixed(2), value: b2.value, color: colorOf[b2.risk],
+        tip: '<b>score ' + b2.lo.toFixed(2) + '–' + (b2.lo + 0.05).toFixed(2) + '</b><br>' + b2.risk + ': ' + nf.format(b2.value) + ' alerts' };
+    }), { xLabels: [0, 2, 4, 6, 8], vlines: [{ x: 0.6, label: 'HIGH ≥ 0.8' }], aria: 'Alert fraud_score distribution' });
+    var lowCount = Math.max(0, total - alerts.filter(function (a) { return a.scored > from && typeOk(a.type); }).length);
+    document.getElementById('l-score').innerHTML =
+      '<span><i style="background:' + colorOf.MEDIUM + '"></i>● MEDIUM</span>' +
+      '<span><i style="background:' + colorOf.HIGH + '"></i>▲ HIGH</span>' +
+      '<span style="color:var(--muted)">LOW (&lt; 0.5, no alert): ' + nf.format(lowCount) + ' transactions, not plotted</span>';
+
+    // alerts by type
+    hbarChart(document.getElementById('c-type'), TYPES.filter(typeOk).map(function (t) {
+      var c = alertsIn.filter(function (a) { return a.type === t; }).length;
+      var tt = mins.reduce(function (s, p) { return s + p.byType[t]; }, 0);
+      return { label: t, value: c, tip: '<b>' + t + '</b><br>' + nf.format(c) + ' alerts<br>' + nf.format(tt) + ' transactions' };
+    }));
+
+    // table
+    var badge = {
+      HIGH: '<span class="badge"><span class="dot" style="background:var(--critical)"></span>▲ HIGH</span>',
+      MEDIUM: '<span class="badge"><span class="dot" style="background:var(--warning)"></span>● MEDIUM</span>'
+    };
+    document.getElementById('t-alerts').innerHTML = alertsIn.slice(0, 15).map(function (a) {
+      return '<tr><td><code>' + a.id + '</code></td><td>' + fmtTime(a.scored) + '</td><td>' + fmtDT(a.event) + '</td><td>' + a.type +
+        '</td><td class="num">' + nf.format(a.amount) + '</td><td class="num">' + a.score.toFixed(3) + '</td><td>' + badge[a.risk] +
+        '</td><td><span class="status">' + a.status + '</span></td><td>' + a.model + '</td></tr>';
+    }).join('') || '<tr><td colspan="9" style="color:var(--muted)">No alerts match the current filters.</td></tr>';
+  }
+
+  ['f-range', 'f-type', 'f-risk', 'f-status'].forEach(function (id) {
+    document.getElementById(id).addEventListener('change', renderAll);
+  });
+  var rt; addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(renderAll, 120); });
+  renderAll();
+})();
+</script>
+</body>
+</html>

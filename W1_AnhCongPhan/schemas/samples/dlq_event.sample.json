@@ -1,0 +1,12 @@
+{
+  "dlq_schema_version": "1.0",
+  "error_type": "SCHEMA_VIOLATION",
+  "error_message": "required field 'transaction_id' is missing",
+  "source_topic": "fraud.transactions.v1",
+  "source_partition": 1,
+  "source_offset": 10452,
+  "source_key": "C1231006815",
+  "raw_value": "{\"schema_version\":\"1.0\",\"event_time\":\"2026-01-01T00:00:00Z\",\"step\":1,\"transaction_type\":\"PAYMENT\",\"amount\":9839.64,\"source_account\":\"C1231006815\",\"destination_account\":\"M1979787155\",\"source\":\"paysim_replay\"}",
+  "detected_at": "2026-10-20T08:15:31.004Z",
+  "detected_by": "fraud-streaming.scoring"
+}
