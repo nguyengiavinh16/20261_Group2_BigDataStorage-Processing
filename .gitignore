@@ -193,3 +193,15 @@ pyrightconfig.json
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/python,visualstudiocode
+
+### Project: Data & ML Evaluation (Thai) ###
+# Du lieu lon - khong commit (xem README de tai lai)
+.venv/
+data/raw/*
+!data/raw/.gitkeep
+data/processed/
+data/*.csv
+*.zip
+*.parquet
+*.pyc
+.ipynb_checkpoints/

@@ -1,0 +1,11 @@
+# Moi truong cho notebook EDA W1-W2 va tests/ (Thai - Data & ML Evaluation).
+# Duc Anh se gop vao file requirements chung cua project (W1, buoc 115).
+pandas>=2.2
+numpy>=1.26
+matplotlib>=3.8
+scikit-learn>=1.4
+pyarrow>=15
+jupyter
+nbconvert>=7
+ipykernel
+pytest>=8

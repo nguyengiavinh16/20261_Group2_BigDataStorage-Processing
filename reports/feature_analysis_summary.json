@@ -1,0 +1,1043 @@
+{
+  "notebook": "w2_feature_draft_test_plan",
+  "spec_version": "w2-v1",
+  "source": {
+    "file": "paysim dataset.csv",
+    "bytes": 493534783,
+    "sha256": "16910f90577b0d981bf8ff289714510bb89bc71bff7d3f220f024e287e4eea6b",
+    "rows": 6362620,
+    "distinct_accounts": 9073900
+  },
+  "w1_reproduction": {
+    "tổng số dòng": true,
+    "tổng số gian lận": true,
+    "số dòng/gian lận theo loại giao dịch": true,
+    "số dòng/gian lận theo split 323/378": true
+  },
+  "transaction": {
+    "amount_zero_rows": 16,
+    "amount_zero_types": {
+      "CASH_OUT": 16
+    },
+    "amount_min_positive": 0.01,
+    "amount_max": 92445516.64,
+    "negative_values": 0,
+    "non_finite_values": 0,
+    "round_1000": {
+      "fraud_share": 0.035012809564474806,
+      "legit_share": 0.0010802998773439684,
+      "rows": 3271,
+      "fraud_rate_among_rows": 0.08774075206358911
+    },
+    "eq_10M": {
+      "fraud_share": 0.035012809564474806,
+      "legit_share": 0.001057129906784312,
+      "rows": 3207,
+      "fraud_rate_among_rows": 0.0894917368256938
+    },
+    "round_1000_rows_exactly_10M": 3207,
+    "gt_10M_legit_rows": 2443,
+    "gt_10M_fraud_rows": 0,
+    "fraud_by_type": {
+      "CASH_IN": 0,
+      "CASH_OUT": 4116,
+      "DEBIT": 0,
+      "PAYMENT": 0,
+      "TRANSFER": 4097
+    },
+    "fraud_rate_by_type": {
+      "CASH_IN": 0.0,
+      "CASH_OUT": 0.0018395530726256983,
+      "DEBIT": 0.0,
+      "PAYMENT": 0.0,
+      "TRANSFER": 0.007687991758442811
+    },
+    "tc_rows": 2770409,
+    "tc_share_rows": 0.4354195284332555
+  },
+  "ranges": {
+    "step": {
+      "min": 1.0,
+      "max": 743.0,
+      "số dòng = 0": 0.0,
+      "số dòng < 0": 0.0
+    },
+    "amount": {
+      "min": 0.0,
+      "max": 92445516.64,
+      "số dòng = 0": 16.0,
+      "số dòng < 0": 0.0
+    },
+    "oldbalanceOrg": {
+      "min": 0.0,
+      "max": 59585040.37,
+      "số dòng = 0": 2102449.0,
+      "số dòng < 0": 0.0
+    },
+    "oldbalanceDest": {
+      "min": 0.0,
+      "max": 356015889.35,
+      "số dòng = 0": 2704388.0,
+      "số dòng < 0": 0.0
+    }
+  },
+  "account": {
+    "merchant_rows": 2151495,
+    "merchant_types": {
+      "PAYMENT": 2151495
+    },
+    "merchant_rows_in_TC": 0,
+    "orig_distinct": 6353307,
+    "orig_repeated_accounts": 9298,
+    "orig_repeated_row_share": 0.002925052887018241,
+    "orig_repeated_share_TC": {
+      "fraud": 0.0034092292706684527,
+      "legit": 0.002928829091056536
+    },
+    "dest_has_sent_before_TC": {
+      "fraud": 0.0012175818823815902,
+      "legit": 0.0015556463046069143
+    },
+    "orig_has_received_before_TC": {
+      "fraud": 0.0,
+      "legit": 0.00013395139229801216
+    }
+  },
+  "historical": {
+    "no_txn_24h": {
+      "fraud": 0.8744673079264581,
+      "legit": 0.4413180672189808
+    },
+    "never_seen": {
+      "fraud": 0.6326555460854743,
+      "legit": 0.15112975328325723
+    },
+    "count_quantiles_fraud": {
+      "0.5": 0.0,
+      "0.9": 1.0,
+      "0.99": 6.0
+    },
+    "count_quantiles_legit": {
+      "0.5": 1.0,
+      "0.9": 4.0,
+      "0.99": 15.0
+    }
+  },
+  "state": {
+    "active_accounts_max": 362226,
+    "active_accounts_max_step": 417,
+    "active_accounts_median": 55730.0,
+    "active_accounts_p95": 338067.6,
+    "accounts_lifetime": 2722362,
+    "warmup": {
+      "test_first_step": 379,
+      "tc_rows_first_24_steps": 184520,
+      "count_differs_first_24_steps": 38589,
+      "count_differs_share_first_24_steps": 0.20913180143073923,
+      "count_differs_all_test_tc_rows": 38589,
+      "tc_rows_test": 390523,
+      "fraud_first_24_steps": 298,
+      "fraud_count_differs_first_24_steps": 23,
+      "seen_differs_share_test_tc": 0.48701612965177465,
+      "seen_differs_fraud_share_test_tc": 0.16974538192710933
+    }
+  },
+  "time_of_day": {
+    "fraud_share_per_hour_min": 0.03336174357725557,
+    "fraud_share_per_hour_max": 0.04565932058930963,
+    "legit_per_hour_min": 238,
+    "legit_per_hour_min_hour": 3,
+    "legit_per_hour_max": 299591,
+    "legit_per_hour_max_hour": 18,
+    "fraud_rate_min": 0.0011402546568733685,
+    "fraud_rate_min_hour": 18,
+    "fraud_rate_max": 0.5791139240506329,
+    "fraud_rate_max_hour": 4,
+    "fraud_rate_by_hour": {
+      "0": 0.05961698584512906,
+      "1": 0.1935483870967742,
+      "2": 0.41794871794871796,
+      "3": 0.53515625,
+      "4": 0.5791139240506329,
+      "5": 0.39601769911504425,
+      "6": 0.12903225806451613,
+      "7": 0.0357212191807416,
+      "8": 0.002841003765787983,
+      "9": 0.0020050902557960477,
+      "10": 0.0016343825665859565,
+      "11": 0.0015510543967130457,
+      "12": 0.0016175329350275355,
+      "13": 0.0017706483682948606,
+      "14": 0.0018125186035633798,
+      "15": 0.0017172209889201916,
+      "16": 0.0017405796672682267,
+      "17": 0.0012671742752538968,
+      "18": 0.0011402546568733685,
+      "19": 0.0014232551519743478,
+      "20": 0.0038162901700283746,
+      "21": 0.005738669805768099,
+      "22": 0.008492401535468265,
+      "23": 0.016470846601515318
+    }
+  },
+  "balance": {
+    "contrasts": {
+      "oldbalanceOrg = 0": {
+        "fraud_share": 0.00304989630352568,
+        "legit_share": 0.4737321319703598,
+        "rows": 1308566,
+        "fraud_rate_among_rows": 1.9104882749513588e-05
+      },
+      "amount > oldbalanceOrg (rút quá số dư)": {
+        "fraud_share": 0.003537879712089789,
+        "legit_share": 0.9009516341345799,
+        "rows": 2488634,
+        "fraud_rate_among_rows": 1.1652979104199331e-05
+      },
+      "amount = oldbalanceOrg (so khớp chính xác)": {
+        "fraud_share": 0.9781627424667562,
+        "legit_share": 0.0,
+        "rows": 8018,
+        "fraud_rate_among_rows": 1.0
+      },
+      "|amount − oldbalanceOrg| < 0,005 (drains_origin)": {
+        "fraud_share": 0.9781627424667562,
+        "legit_share": 0.0,
+        "rows": 8018,
+        "fraud_rate_among_rows": 1.0
+      },
+      "|amount − oldbalanceOrg| ≤ 0,01": {
+        "fraud_share": 0.9781627424667562,
+        "legit_share": 3.6203078999462746e-07,
+        "rows": 8019,
+        "fraud_rate_among_rows": 0.9998752961715924
+      },
+      "oldbalanceDest = 0 (dest_balance_zero)": {
+        "fraud_share": 0.6520678296937904,
+        "legit_share": 0.13900860040344712,
+        "rows": 389314,
+        "fraud_rate_among_rows": 0.013729277652486167
+      }
+    },
+    "ratio_median_fraud": 0.9999975758299776,
+    "ratio_median_legit": 605.5382763848752,
+    "fraud_not_drained_rows": 179,
+    "fraud_not_drained_amount_ge_10M": 145
+  },
+  "univariate_ap": {
+    "prevalence_TC": 0.002964544224336551,
+    "rows": [
+      {
+        "feature": "drains_origin",
+        "chiều": "+",
+        "AP": 0.9763275400126319,
+        "AP / prevalence": 329.3347867769214,
+        "trạng thái": "Dùng + ablation"
+      },
+      {
+        "feature": "oldbalanceOrg",
+        "chiều": "+",
+        "AP": 0.29024560221232554,
+        "AP / prevalence": 97.90564088389706,
+        "trạng thái": "Dùng + ablation"
+      },
+      {
+        "feature": "hour_of_day (tra bảng tỷ lệ theo giờ)",
+        "chiều": "+",
+        "AP": 0.13406431954631187,
+        "AP / prevalence": 45.22257365761334,
+        "trạng thái": "Dùng + ablation"
+      },
+      {
+        "feature": "log_amount",
+        "chiều": "+",
+        "AP": 0.019395270775270094,
+        "AP / prevalence": 6.542412360068823,
+        "trạng thái": "Dùng"
+      },
+      {
+        "feature": "amount_to_balance_ratio",
+        "chiều": "−",
+        "AP": 0.016589256460586004,
+        "AP / prevalence": 5.595887666104421,
+        "trạng thái": "Dùng + ablation"
+      },
+      {
+        "feature": "oldbalanceDest",
+        "chiều": "−",
+        "AP": 0.011236086595519156,
+        "AP / prevalence": 3.7901565115068343,
+        "trạng thái": "Dùng + ablation"
+      },
+      {
+        "feature": "dest_balance_zero",
+        "chiều": "+",
+        "AP": 0.009987973328055209,
+        "AP / prevalence": 3.369142968440777,
+        "trạng thái": "Dùng + ablation"
+      },
+      {
+        "feature": "dest_seen_before",
+        "chiều": "−",
+        "AP": 0.008866861307609934,
+        "AP / prevalence": 2.9909694835449083,
+        "trạng thái": "Cần xác minh"
+      },
+      {
+        "feature": "amount_is_round (amount % 1000 = 0)",
+        "chiều": "+",
+        "AP": 0.006255994749961335,
+        "AP / prevalence": 2.110272027181984,
+        "trạng thái": "Loại"
+      },
+      {
+        "feature": "dest_amount_sum_past_24h",
+        "chiều": "−",
+        "AP": 0.005647995275582169,
+        "AP / prevalence": 1.9051816563290298,
+        "trạng thái": "Cần xác minh"
+      },
+      {
+        "feature": "dest_txn_count_past_24h",
+        "chiều": "−",
+        "AP": 0.005581877697589638,
+        "AP / prevalence": 1.8828788762086461,
+        "trạng thái": "Cần xác minh"
+      },
+      {
+        "feature": "type_TRANSFER",
+        "chiều": "+",
+        "AP": 0.005320804366456769,
+        "AP / prevalence": 1.7948136252369573,
+        "trạng thái": "Dùng"
+      }
+    ]
+  },
+  "feature_table": [
+    {
+      "id": "TX1",
+      "group": "Transaction",
+      "name": "type_*",
+      "definition": "5 cột one-hot của transaction_type (type_CASH_IN … type_TRANSFER); thứ tự cố định CASH_IN, CASH_OUT, DEBIT, PAYMENT, TRANSFER (Spark: StringIndexer stringOrderType=\"alphabetAsc\")",
+      "fields": "transaction_type",
+      "known_at": "Khi event đến",
+      "null_policy": "Thiếu/null → từ chối (MISSING_FIELD); giá trị lạ, khác hoa/thường hoặc có khoảng trắng → từ chối (UNKNOWN_CATEGORY); sai kiểu → BAD_TYPE",
+      "leakage": "Thấp",
+      "status": "Dùng",
+      "sets": "A, A+T, A+H, B",
+      "evidence": "Gian lận chỉ ở TRANSFER (4.097; 0,77%) và CASH_OUT (4.116; 0,18%); 3 loại còn lại 0"
+    },
+    {
+      "id": "TX2",
+      "group": "Transaction",
+      "name": "log_amount",
+      "definition": "ln(1 + amount)",
+      "fields": "amount",
+      "known_at": "Khi event đến",
+      "null_policy": "Thiếu → từ chối; âm → NEGATIVE_VALUE; NaN/∞ → NON_FINITE; sai kiểu (chuỗi, boolean) → BAD_TYPE; = 0 hợp lệ và gắn cờ AMOUNT_ZERO",
+      "leakage": "Thấp (có artifact trần 10M)",
+      "status": "Dùng",
+      "sets": "A, A+T, A+H, B",
+      "evidence": "2.443 giao dịch hợp lệ > 10M, 0 gian lận (trần simulator); amount = 0 ở 16 dòng, đều gian lận"
+    },
+    {
+      "id": "TX3",
+      "group": "Transaction",
+      "name": "is_tc",
+      "definition": "transaction_type ∈ {TRANSFER, CASH_OUT}; dùng làm quy tắc phạm vi (loại khác: score = 0, không alert), không đưa vào model nếu huấn luyện riêng trên TC",
+      "fields": "transaction_type",
+      "known_at": "Khi event đến",
+      "null_policy": "Theo TX1",
+      "leakage": "Thấp (dataset mô phỏng: ngoài TC không có gian lận)",
+      "status": "Dùng",
+      "sets": "phạm vi",
+      "evidence": "100% gian lận nằm trong TC; TC có 2.770.409 dòng (43,5%)"
+    },
+    {
+      "id": "TX4",
+      "group": "Transaction",
+      "name": "amount_is_round",
+      "definition": "amount chia hết cho 1.000",
+      "fields": "amount",
+      "known_at": "Khi event đến",
+      "null_policy": "—",
+      "leakage": "Cao (artifact trần 10M)",
+      "status": "Loại",
+      "sets": "—",
+      "evidence": "3.271 dòng TC thỏa, trong đó 3.207 dòng đúng bằng 10.000.000"
+    },
+    {
+      "id": "AC1",
+      "group": "Account",
+      "name": "oldbalanceOrg",
+      "definition": "số dư tài khoản gửi TRƯỚC giao dịch",
+      "fields": "source_balance_before (trường mới, tùy chọn)",
+      "known_at": "Khi event đến, nếu event mang trường này",
+      "null_policy": "Thiếu → từ chối ở set B; tuyệt đối không điền 0 (0 mang nghĩa mạnh: gần như chắc chắn hợp lệ trong dữ liệu này); âm → NEGATIVE_VALUE",
+      "leakage": "Cao (artifact)",
+      "status": "Dùng + ablation",
+      "sets": "B",
+      "evidence": "oldbalanceOrg = 0: 47,4% giao dịch hợp lệ vs 0,30% gian lận; AP đơn biến 98× prevalence"
+    },
+    {
+      "id": "AC2",
+      "group": "Account",
+      "name": "oldbalanceDest",
+      "definition": "số dư tài khoản nhận TRƯỚC giao dịch",
+      "fields": "destination_balance_before (trường mới, tùy chọn)",
+      "known_at": "Khi event đến, nếu event mang trường này (cần hệ thống cùng biết số dư tài khoản nhận)",
+      "null_policy": "Như AC1",
+      "leakage": "Cao (artifact)",
+      "status": "Dùng + ablation",
+      "sets": "B",
+      "evidence": "oldbalanceDest = 0: 65,2% gian lận vs 13,9% hợp lệ"
+    },
+    {
+      "id": "AC3",
+      "group": "Account",
+      "name": "amount_to_balance_ratio",
+      "definition": "amount / (oldbalanceOrg + 1)",
+      "fields": "amount, source_balance_before",
+      "known_at": "Khi event đến",
+      "null_policy": "Như AC1; mẫu số cộng 1 nên không chia cho 0",
+      "leakage": "Cao (artifact)",
+      "status": "Dùng + ablation",
+      "sets": "B",
+      "evidence": "trung vị = 1,00 (gian lận) vs 605,54 (hợp lệ)"
+    },
+    {
+      "id": "AC4",
+      "group": "Account",
+      "name": "drains_origin",
+      "definition": "amount > 0 và |amount − oldbalanceOrg| < 0,005 (rút sạch số dư)",
+      "fields": "amount, source_balance_before",
+      "known_at": "Khi event đến",
+      "null_policy": "Như AC1; amount = 0 → 0",
+      "leakage": "Cao (artifact)",
+      "status": "Dùng + ablation",
+      "sets": "B",
+      "evidence": "8.018 dòng, 100% gian lận (97,8% số ca); AP 0,976"
+    },
+    {
+      "id": "AC5",
+      "group": "Account",
+      "name": "dest_balance_zero",
+      "definition": "oldbalanceDest = 0",
+      "fields": "destination_balance_before",
+      "known_at": "Khi event đến",
+      "null_policy": "Như AC2",
+      "leakage": "Cao (artifact)",
+      "status": "Dùng + ablation",
+      "sets": "B",
+      "evidence": "65,2% gian lận vs 13,9% hợp lệ"
+    },
+    {
+      "id": "AC6",
+      "group": "Account",
+      "name": "dest_is_merchant",
+      "definition": "destination_account bắt đầu bằng M",
+      "fields": "destination_account",
+      "known_at": "Khi event đến",
+      "null_policy": "—",
+      "leakage": "Thấp",
+      "status": "Loại",
+      "sets": "—",
+      "evidence": "2.151.495 dòng merchant đều là PAYMENT; 0 dòng trong TC → đồng nhất với type = PAYMENT"
+    },
+    {
+      "id": "HI1",
+      "group": "Historical",
+      "name": "dest_txn_count_past_24h",
+      "definition": "số giao dịch (mọi loại) tới cùng destination_account có step trong [s−24, s−1]; cùng step không tính",
+      "fields": "destination_account, event_time",
+      "known_at": "Khi event đến; cần state theo tài khoản nhận",
+      "null_policy": "Chưa có lịch sử → 0 (giá trị hợp lệ, không phải null); state mất sau restart là lỗi vận hành, không được âm thầm dùng 0; transaction_id trùng chỉ tính một lần",
+      "leakage": "Trung bình (chỉ dùng dữ liệu trước thời điểm dự đoán)",
+      "status": "Cần xác minh",
+      "sets": "A+H, A+H+T",
+      "evidence": "87,4% gian lận vs 44,1% hợp lệ có 0 giao dịch; state tối đa 362.226 tài khoản; khởi động nguội lệch 20,9% dòng TC của 24 step đầu"
+    },
+    {
+      "id": "HI2",
+      "group": "Historical",
+      "name": "dest_amount_sum_past_24h",
+      "definition": "tổng amount của các giao dịch trong HI1",
+      "fields": "destination_account, amount, event_time",
+      "known_at": "Như HI1",
+      "null_policy": "Như HI1 (chưa có lịch sử → 0,0)",
+      "leakage": "Trung bình",
+      "status": "Cần xác minh",
+      "sets": "A+H, A+H+T",
+      "evidence": "Cùng nhóm tín hiệu với HI1; tính bằng cent (số nguyên) để batch và streaming khớp chính xác"
+    },
+    {
+      "id": "HI3",
+      "group": "Historical",
+      "name": "dest_seen_before",
+      "definition": "1 nếu từng có giao dịch tới destination_account ở step < s (toàn lịch sử), ngược lại 0",
+      "fields": "destination_account, event_time",
+      "known_at": "Như HI1; state vĩnh viễn",
+      "null_policy": "Như HI1",
+      "leakage": "Trung bình (phụ thuộc điểm bắt đầu của lịch sử)",
+      "status": "Cần xác minh",
+      "sets": "A+H, A+H+T",
+      "evidence": "chưa từng thấy: 63,3% gian lận vs 15,1% hợp lệ; state 2.722.362 tài khoản; khởi động nguội sai 48,7% dòng TC của giai đoạn test"
+    },
+    {
+      "id": "HI4",
+      "group": "Historical",
+      "name": "orig_txn_count_past",
+      "definition": "lịch sử theo tài khoản gửi",
+      "fields": "source_account",
+      "known_at": "Cần state",
+      "null_policy": "—",
+      "leakage": "Thấp",
+      "status": "Loại",
+      "sets": "—",
+      "evidence": "chỉ 9.298 tài khoản gửi xuất hiện > 1 lần (0,29% số dòng)"
+    },
+    {
+      "id": "HI5",
+      "group": "Historical",
+      "name": "dest_has_sent_before",
+      "definition": "tài khoản nhận từng là tài khoản gửi ở step trước",
+      "fields": "source_account, destination_account",
+      "known_at": "Cần state",
+      "null_policy": "—",
+      "leakage": "Thấp",
+      "status": "Loại",
+      "sets": "—",
+      "evidence": "0,12% gian lận vs 0,16% hợp lệ: không có tín hiệu"
+    },
+    {
+      "id": "HI6",
+      "group": "Historical",
+      "name": "matching_transfer_same_step",
+      "definition": "CASH_OUT có TRANSFER cùng amount trong cùng step",
+      "fields": "amount, event_time",
+      "known_at": "Cần state, phụ thuộc thứ tự trong step",
+      "null_policy": "—",
+      "leakage": "Cao (artifact)",
+      "status": "Loại",
+      "sets": "—",
+      "evidence": "W1: 4.078/4.097 TRANSFER gian lận có cặp như vậy; kết quả phụ thuộc thứ tự trong cùng step nên batch và streaming không nhất quán"
+    },
+    {
+      "id": "TM1",
+      "group": "Time",
+      "name": "hour_of_day",
+      "definition": "(step − 1) mod 24; step = floor((event_time − T0) / 1 giờ) + 1 tính bằng số học UTC",
+      "fields": "event_time (hoặc step ở batch)",
+      "known_at": "Khi event đến",
+      "null_policy": "Thiếu cả step lẫn event_time → từ chối; event_time phải có múi giờ, trước T0 hoặc không phải ISO-8601 → BAD_TIMESTAMP; step và event_time mâu thuẫn → INCONSISTENT_TIME",
+      "leakage": "Trung bình (artifact)",
+      "status": "Dùng + ablation",
+      "sets": "A+T, A+H+T",
+      "evidence": "gian lận phẳng 3,3%–4,6% mỗi giờ; tỷ lệ 0,11%–57,9% do giao dịch hợp lệ ban đêm co lại"
+    },
+    {
+      "id": "TM2",
+      "group": "Time",
+      "name": "day_index, step",
+      "definition": "ngày thứ mấy; chỉ số giờ tuyệt đối (step thô)",
+      "fields": "event_time",
+      "known_at": "Khi event đến",
+      "null_policy": "—",
+      "leakage": "Cao (không tổng quát cho tương lai)",
+      "status": "Loại",
+      "sets": "—",
+      "evidence": "Phân phối giao dịch hợp lệ đổi mạnh theo ngày (xem Bước 3); chỉ dùng step để tạo event_time và split"
+    },
+    {
+      "id": "EX1",
+      "group": "Loại tuyệt đối",
+      "name": "newbalanceOrig, newbalanceDest, error_balance_*",
+      "definition": "số dư SAU giao dịch và các feature suy ra",
+      "fields": "(không được có trong event)",
+      "known_at": "Chỉ biết sau khi giao dịch xử lý xong",
+      "null_policy": "Event có trường này → từ chối (FORBIDDEN_FIELD)",
+      "leakage": "Cao",
+      "status": "Loại",
+      "sets": "—",
+      "evidence": "W1: 99,5% gian lận khớp old − amount = new so với 9,5% hợp lệ"
+    },
+    {
+      "id": "EX2",
+      "group": "Loại tuyệt đối",
+      "name": "isFlaggedFraud",
+      "definition": "cờ của rule trong simulator",
+      "fields": "(không được có trong event)",
+      "known_at": "Là đầu ra của một rule",
+      "null_policy": "Event có trường này → từ chối",
+      "leakage": "Cao",
+      "status": "Loại",
+      "sets": "—",
+      "evidence": "W1: 16 dòng, 100% là gian lận, recall 0,19%"
+    },
+    {
+      "id": "EX3",
+      "group": "Loại tuyệt đối",
+      "name": "isFraud, is_fraud, label",
+      "definition": "nhãn ground truth và các biến thể tên",
+      "fields": "(không được có trong event)",
+      "known_at": "Chỉ có ở đường đánh giá",
+      "null_policy": "Event có trường này → từ chối",
+      "leakage": "—",
+      "status": "Loại",
+      "sets": "—",
+      "evidence": "Tách khỏi scoring input theo label-definition.md mục 4"
+    }
+  ],
+  "feature_sets": {
+    "A": [
+      "core"
+    ],
+    "A+T": [
+      "core",
+      "time"
+    ],
+    "A+H": [
+      "core",
+      "history"
+    ],
+    "A+H+T": [
+      "core",
+      "history",
+      "time"
+    ],
+    "B": [
+      "core",
+      "balance"
+    ]
+  },
+  "reference_crosscheck": {
+    "stateless_rows": 3016,
+    "stateless_mismatches": 0,
+    "history_rows": 300,
+    "history_mismatches": 0
+  },
+  "config_sensitivity": [
+    {
+      "cấu hình": "mặc định (early stopping tự động)",
+      "set": "A",
+      "số vòng thực tế": 11,
+      "AP val": 0.008185451977319978,
+      "AP test": 0.0566379571288649,
+      "% dòng val cùng score tối đa": 4.2056959141664196e-05
+    },
+    {
+      "cấu hình": "mặc định (early stopping tự động)",
+      "set": "B",
+      "số vòng thực tế": 15,
+      "AP val": 0.9912126537785588,
+      "AP test": 0.9992428333761844,
+      "% dòng val cùng score tối đa": 0.001329467208422607
+    },
+    {
+      "cấu hình": "không regularization, 100 vòng",
+      "set": "A",
+      "số vòng thực tế": 100,
+      "AP val": 0.11205297700207917,
+      "AP test": 0.2407339288218928,
+      "% dòng val cùng score tối đa": 0.00033178267767312863
+    },
+    {
+      "cấu hình": "không regularization, 100 vòng",
+      "set": "B",
+      "số vòng thực tế": 100,
+      "AP val": 0.006167175991691915,
+      "AP test": 0.03605028622786274,
+      "% dòng val cùng score tối đa": 0.014825078097436628
+    },
+    {
+      "cấu hình": "chính",
+      "set": "A",
+      "số vòng thực tế": 100,
+      "AP val": 0.16275873665839868,
+      "AP test": 0.2699216842893741,
+      "% dòng val cùng score tối đa": 7.24314296328661e-05
+    },
+    {
+      "cấu hình": "chính",
+      "set": "B",
+      "số vòng thực tế": 100,
+      "AP val": 1.0,
+      "AP test": 0.9997849312660607,
+      "% dòng val cùng score tối đa": 0.00022664027981896817
+    }
+  ],
+  "feature_set_sanity_check": {
+    "prevalence_TC": {
+      "val": 0.0013177847197721447,
+      "test": 0.010258038579033757
+    },
+    "rows": [
+      {
+        "set": "A",
+        "features": 2,
+        "AP val (chính)": 0.16275873665839868,
+        "AP test (chính)": 0.2699216842893741,
+        "AP val (phụ)": 0.16150062440185542,
+        "AP test (phụ)": 0.2707006394671182,
+        "val / prevalence": 123.50935188149772,
+        "test / prevalence": 26.313186698387227,
+        "lệch giữa 2 cấu hình": 0.0012581122565432645
+      },
+      {
+        "set": "A+T",
+        "features": 3,
+        "AP val (chính)": 0.32557372911695415,
+        "AP test (chính)": 0.4168918912350726,
+        "AP val (phụ)": 0.3341781681266884,
+        "AP test (phụ)": 0.42358449432126843,
+        "val / prevalence": 247.0613934370467,
+        "test / prevalence": 40.64050724932458,
+        "lệch giữa 2 cấu hình": 0.008604439009734233
+      },
+      {
+        "set": "A+H",
+        "features": 5,
+        "AP val (chính)": 0.18198839681752463,
+        "AP test (chính)": 0.4340475885633683,
+        "AP val (phụ)": 0.1795085196288987,
+        "AP test (phụ)": 0.4318731419018991,
+        "val / prevalence": 138.1017658551936,
+        "test / prevalence": 42.31292222379737,
+        "lệch giữa 2 cấu hình": 0.0024798771886259396
+      },
+      {
+        "set": "A+H+T",
+        "features": 6,
+        "AP val (chính)": 0.3572484477942433,
+        "AP test (chính)": 0.49228441788232036,
+        "AP val (phụ)": 0.3684592404148106,
+        "AP test (phụ)": 0.5231241466774833,
+        "val / prevalence": 271.0977312409681,
+        "test / prevalence": 47.99011176351907,
+        "lệch giữa 2 cấu hình": 0.030839728795162946
+      },
+      {
+        "set": "B",
+        "features": 7,
+        "AP val (chính)": 1.0,
+        "AP test (chính)": 0.9997849312660607,
+        "AP val (phụ)": 0.9999999999999999,
+        "AP test (phụ)": 0.9999725615411772,
+        "val / prevalence": 758.8492907801419,
+        "test / prevalence": 97.46355734219067,
+        "lệch giữa 2 cấu hình": 0.00018763027511647934
+      }
+    ],
+    "diagnostics_set_A": {
+      "A": {
+        "val": 0.16275873665839868,
+        "test": 0.2699216842893741
+      },
+      "A_without_amount_ge_9.9M": {
+        "val": 0.07787942296729373,
+        "test": 0.11677909185477499
+      },
+      "only_log_amount": {
+        "val": 0.004550962349235893,
+        "test": 0.07596144032227703
+      },
+      "only_type_TRANSFER": {
+        "val": 0.0023487293685150274,
+        "test": 0.017613281515118654
+      },
+      "rows_amount_ge_9.9M": 5707,
+      "fraud_rows_amount_ge_9.9M": 293,
+      "val_fraud_rows": 564,
+      "val_fraud_rows_amount_ge_9.9M": 10
+    },
+    "model_main": "HistGradientBoostingClassifier(max_iter=100, learning_rate=0.1, max_leaf_nodes=31, min_samples_leaf=200, l2_regularization=1.0, early_stopping=False, random_state=42)",
+    "model_alt": "HistGradientBoostingClassifier(max_iter=50, learning_rate=0.05, max_depth=6, min_samples_leaf=200, l2_regularization=1.0, early_stopping=False, random_state=42)"
+  },
+  "time_structure": {
+    "legit_per_day_heavy_days_min_max": [
+      349478,
+      573984
+    ],
+    "legit_per_day_days_3_5": [
+      760,
+      27978,
+      9537
+    ],
+    "legit_per_day_days_18_30_min_max": [
+      8298,
+      57613
+    ],
+    "legit_day_31": 0,
+    "fraud_per_day_min_max": [
+      216,
+      320
+    ],
+    "test_windows_24_steps": 16,
+    "test_windows_without_legit": 1,
+    "test_windows_min_fraud": 60,
+    "test_last_window_steps": 5,
+    "steps_only_fraud": 320,
+    "only_fraud_steps_first": 28,
+    "only_fraud_steps_last": 743
+  },
+  "split": {
+    "cuts": {
+      "train_to": 323,
+      "val_to": 378
+    },
+    "all_types": [
+      {
+        "split": "train",
+        "step_from": 1,
+        "step_to": 323,
+        "rows": 4463587,
+        "fraud": 3643,
+        "prevalence": 0.0008161597387930379,
+        "share_rows": 0.7015328591052113,
+        "share_fraud": 0.4435650797516133
+      },
+      {
+        "split": "val",
+        "step_from": 324,
+        "step_to": 378,
+        "rows": 980416,
+        "fraud": 564,
+        "prevalence": 0.0005752660095306482,
+        "share_rows": 0.15408998179995034,
+        "share_fraud": 0.06867161816632168
+      },
+      {
+        "split": "test",
+        "step_from": 379,
+        "step_to": 743,
+        "rows": 918617,
+        "fraud": 4006,
+        "prevalence": 0.004360903401526425,
+        "share_rows": 0.14437715909483828,
+        "share_fraud": 0.48776330208206503
+      }
+    ],
+    "tc_only": [
+      {
+        "split": "train",
+        "step_from": 1,
+        "step_to": 323,
+        "rows": 1951895,
+        "fraud": 3643,
+        "prevalence": 0.001866391378634609,
+        "share_rows": 0.7045512052552529,
+        "share_fraud": 0.4435650797516133
+      },
+      {
+        "split": "val",
+        "step_from": 324,
+        "step_to": 378,
+        "rows": 427991,
+        "fraud": 564,
+        "prevalence": 0.0013177847197721447,
+        "share_rows": 0.15448657580884267,
+        "share_fraud": 0.06867161816632168
+      },
+      {
+        "split": "test",
+        "step_from": 379,
+        "step_to": 743,
+        "rows": 390523,
+        "fraud": 4006,
+        "prevalence": 0.010258038579033757,
+        "share_rows": 0.1409622189359044,
+        "share_fraud": 0.48776330208206503
+      }
+    ],
+    "stratified_random_seed42": [
+      {
+        "split": "train",
+        "rows": 4453833,
+        "fraud": 5749,
+        "prevalence": 0.0012907982854318966
+      },
+      {
+        "split": "val",
+        "rows": 954393,
+        "fraud": 1232,
+        "prevalence": 0.001290872837499856
+      },
+      {
+        "split": "test",
+        "rows": 954394,
+        "fraud": 1232,
+        "prevalence": 0.0012908714849422776
+      }
+    ]
+  },
+  "test_cases": {
+    "by_category": {
+      "boundary": {
+        "số_ca": 29,
+        "hợp_lệ": 18,
+        "từ_chối": 11,
+        "từ_dòng_thật": 13
+      },
+      "event_time": {
+        "số_ca": 14,
+        "hợp_lệ": 9,
+        "từ_chối": 5,
+        "từ_dòng_thật": 0
+      },
+      "history_window": {
+        "số_ca": 10,
+        "hợp_lệ": 6,
+        "từ_chối": 4,
+        "từ_dòng_thật": 0
+      },
+      "leakage_guard": {
+        "số_ca": 8,
+        "hợp_lệ": 0,
+        "từ_chối": 8,
+        "từ_dòng_thật": 0
+      },
+      "missing_field": {
+        "số_ca": 9,
+        "hợp_lệ": 2,
+        "từ_chối": 7,
+        "từ_dòng_thật": 0
+      },
+      "threshold_alert": {
+        "số_ca": 15,
+        "hợp_lệ": 7,
+        "từ_chối": 8,
+        "từ_dòng_thật": 0
+      },
+      "threshold_select": {
+        "số_ca": 12,
+        "hợp_lệ": 7,
+        "từ_chối": 5,
+        "từ_dòng_thật": 0
+      },
+      "unknown_category": {
+        "số_ca": 11,
+        "hợp_lệ": 6,
+        "từ_chối": 5,
+        "từ_dòng_thật": 0
+      },
+      "TỔNG": {
+        "số_ca": 108,
+        "hợp_lệ": 55,
+        "từ_chối": 53,
+        "từ_dòng_thật": 13
+      }
+    },
+    "pytest": "178 passed in 0.32s",
+    "mutation_check": "12/12 lỗi cố ý bị test bắt được."
+  },
+  "threshold_demo_val": {
+    "min_precision_illustrative": 0.05,
+    "rows": [
+      {
+        "set": "A",
+        "quy tắc": "W1: precision cao nhất, recall ≥ 0,80",
+        "threshold": 0.0009241555986727757,
+        "precision": 0.0031147721334470143,
+        "recall": 0.8031914893617021,
+        "alerts": 145436,
+        "% giao dịch TC bị alert": 0.3398108838737263,
+        "nhánh được dùng": "max_precision_at_min_recall"
+      },
+      {
+        "set": "A",
+        "quy tắc": "đề xuất W2: thêm min_precision = 0,05",
+        "threshold": 0.034466280161841334,
+        "precision": 0.34494773519163763,
+        "recall": 0.17553191489361702,
+        "alerts": 287,
+        "% giao dịch TC bị alert": 0.0006705748485365346,
+        "nhánh được dùng": "max_f2_fallback"
+      },
+      {
+        "set": "A+T",
+        "quy tắc": "W1: precision cao nhất, recall ≥ 0,80",
+        "threshold": 0.0012701562342194504,
+        "precision": 0.004809121406429148,
+        "recall": 0.8031914893617021,
+        "alerts": 94196,
+        "% giao dịch TC bị alert": 0.2200887401837889,
+        "nhánh được dùng": "max_precision_at_min_recall"
+      },
+      {
+        "set": "A+T",
+        "quy tắc": "đề xuất W2: thêm min_precision = 0,05",
+        "threshold": 0.05823769177749772,
+        "precision": 0.4798994974874372,
+        "recall": 0.33865248226950356,
+        "alerts": 398,
+        "% giao dịch TC bị alert": 0.0009299260965767972,
+        "nhánh được dùng": "max_f2_fallback"
+      },
+      {
+        "set": "A+H",
+        "quy tắc": "W1: precision cao nhất, recall ≥ 0,80",
+        "threshold": 0.0010164557441367608,
+        "precision": 0.005679390847636519,
+        "recall": 0.8014184397163121,
+        "alerts": 79586,
+        "% giao dịch TC bị alert": 0.18595250834713814,
+        "nhánh được dùng": "max_precision_at_min_recall"
+      },
+      {
+        "set": "A+H",
+        "quy tắc": "đề xuất W2: thêm min_precision = 0,05",
+        "threshold": 0.09589744753852393,
+        "precision": 0.12254901960784313,
+        "recall": 0.22163120567375885,
+        "alerts": 1020,
+        "% giao dịch TC bị alert": 0.002383227684694304,
+        "nhánh được dùng": "max_f2_fallback"
+      },
+      {
+        "set": "A+H+T",
+        "quy tắc": "W1: precision cao nhất, recall ≥ 0,80",
+        "threshold": 0.002671451607542613,
+        "precision": 0.028179551122194512,
+        "recall": 0.8014184397163121,
+        "alerts": 16040,
+        "% giao dịch TC bị alert": 0.037477423590682984,
+        "nhánh được dùng": "max_precision_at_min_recall"
+      },
+      {
+        "set": "A+H+T",
+        "quy tắc": "đề xuất W2: thêm min_precision = 0,05",
+        "threshold": 0.09876271791894516,
+        "precision": 0.26180257510729615,
+        "recall": 0.4326241134751773,
+        "alerts": 932,
+        "% giao dịch TC bị alert": 0.002177615884446168,
+        "nhánh được dùng": "max_f2_fallback"
+      },
+      {
+        "set": "B",
+        "quy tắc": "W1: precision cao nhất, recall ≥ 0,80",
+        "threshold": 0.9920677482223806,
+        "precision": 1.0,
+        "recall": 1.0,
+        "alerts": 564,
+        "% giao dịch TC bị alert": 0.0013177847197721447,
+        "nhánh được dùng": "max_precision_at_min_recall"
+      },
+      {
+        "set": "B",
+        "quy tắc": "đề xuất W2: thêm min_precision = 0,05",
+        "threshold": 0.9920677482223806,
+        "precision": 1.0,
+        "recall": 1.0,
+        "alerts": 564,
+        "% giao dịch TC bị alert": 0.0013177847197721447,
+        "nhánh được dùng": "max_precision_at_min_recall"
+      }
+    ]
+  },
+  "review_questions": {
+    "Đạt": 4,
+    "Công Anh": 6,
+    "Lead/Đức Anh": 1
+  }
+}

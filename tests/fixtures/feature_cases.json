@@ -1,0 +1,2301 @@
+{
+ "spec_version": "w2-v1",
+ "t0_for_tests": "2026-10-11T00:00:00Z",
+ "note": "T0 ở đây chỉ để chạy test; T0 chính thức do Lead chốt trong decisions.md. Giá trị kỳ vọng tính độc lập với src/evaluation/feature_reference.py. Số thực NaN/Infinity viết là {\"$float\": \"nan\"|\"inf\"}.",
+ "stateless": [
+  {
+   "id": "BV-01",
+   "category": "boundary",
+   "title": "amount = 0 (PaySim có 16 dòng như vậy, đều là CASH_OUT gian lận): hợp lệ, gắn cờ AMOUNT_ZERO",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "txn_2736447",
+    "transaction_type": "CASH_OUT",
+    "amount": 0.0
+   },
+   "expect": {
+    "features": {
+     "type": "CASH_OUT",
+     "log_amount": 0.0
+    },
+    "flags": [
+     "AMOUNT_ZERO"
+    ]
+   },
+   "real_row": 2736447
+  },
+  {
+   "id": "BV-02",
+   "category": "boundary",
+   "title": "amount = 0 và số dư = 0 (set B): ratio = 0, không phải rút sạch",
+   "feature_set": "B",
+   "event": {
+    "transaction_id": "txn_2736447",
+    "transaction_type": "CASH_OUT",
+    "amount": 0.0,
+    "source_balance_before": 0.0,
+    "destination_balance_before": 0.0
+   },
+   "expect": {
+    "features": {
+     "type": "CASH_OUT",
+     "log_amount": 0.0,
+     "oldbalanceOrg": 0.0,
+     "oldbalanceDest": 0.0,
+     "amount_to_balance_ratio": 0.0,
+     "drains_origin": 0.0,
+     "dest_balance_zero": 1.0
+    },
+    "flags": [
+     "AMOUNT_ZERO"
+    ]
+   },
+   "real_row": 2736447
+  },
+  {
+   "id": "BV-03",
+   "category": "boundary",
+   "title": "amount dương nhỏ nhất của dataset (0,01)",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "txn_4736180",
+    "transaction_type": "CASH_OUT",
+    "amount": 0.01
+   },
+   "expect": {
+    "features": {
+     "type": "CASH_OUT",
+     "log_amount": 0.009950330853168083
+    }
+   },
+   "real_row": 4736180
+  },
+  {
+   "id": "BV-04",
+   "category": "boundary",
+   "title": "amount = trần 10.000.000 của gian lận, số dư người gửi lớn hơn → drains_origin = 0",
+   "feature_set": "B",
+   "event": {
+    "transaction_id": "txn_0004440",
+    "transaction_type": "TRANSFER",
+    "amount": 10000000.0,
+    "source_balance_before": 12930418.44,
+    "destination_balance_before": 0.0
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 16.118095750958314,
+     "oldbalanceOrg": 12930418.44,
+     "oldbalanceDest": 0.0,
+     "amount_to_balance_ratio": 0.7733701173733928,
+     "drains_origin": 0.0,
+     "dest_balance_zero": 1.0
+    }
+   },
+   "real_row": 4440
+  },
+  {
+   "id": "BV-05",
+   "category": "boundary",
+   "title": "amount lớn nhất dataset (92.445.516,64): không tràn, không bị cắt",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "txn_3686583",
+    "transaction_type": "TRANSFER",
+    "amount": 92445516.64
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 18.342130030468418
+    }
+   },
+   "real_row": 3686583
+  },
+  {
+   "id": "BV-06",
+   "category": "boundary",
+   "title": "amount là số nguyên JSON (150) cho kết quả như 150.0",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "PAYMENT",
+    "amount": 150
+   },
+   "expect": {
+    "features": {
+     "type": "PAYMENT",
+     "log_amount": 5.017279836814924
+    }
+   }
+  },
+  {
+   "id": "BV-07",
+   "category": "boundary",
+   "title": "amount âm → từ chối",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "PAYMENT",
+    "amount": -0.01
+   },
+   "expect": {
+    "error": {
+     "code": "NEGATIVE_VALUE",
+     "fields": [
+      "amount"
+     ]
+    }
+   }
+  },
+  {
+   "id": "BV-08",
+   "category": "boundary",
+   "title": "amount = NaN → từ chối",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "PAYMENT",
+    "amount": {
+     "$float": "nan"
+    }
+   },
+   "expect": {
+    "error": {
+     "code": "NON_FINITE",
+     "fields": [
+      "amount"
+     ]
+    }
+   }
+  },
+  {
+   "id": "BV-09",
+   "category": "boundary",
+   "title": "amount = +Infinity → từ chối",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "PAYMENT",
+    "amount": {
+     "$float": "inf"
+    }
+   },
+   "expect": {
+    "error": {
+     "code": "NON_FINITE",
+     "fields": [
+      "amount"
+     ]
+    }
+   }
+  },
+  {
+   "id": "BV-10",
+   "category": "boundary",
+   "title": "amount là chuỗi \"100.5\" → từ chối, không tự ép kiểu",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "PAYMENT",
+    "amount": "100.5"
+   },
+   "expect": {
+    "error": {
+     "code": "BAD_TYPE",
+     "fields": [
+      "amount"
+     ]
+    }
+   }
+  },
+  {
+   "id": "BV-11",
+   "category": "boundary",
+   "title": "amount là boolean true → từ chối (bool là con của int trong Python)",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "PAYMENT",
+    "amount": true
+   },
+   "expect": {
+    "error": {
+     "code": "BAD_TYPE",
+     "fields": [
+      "amount"
+     ]
+    }
+   }
+  },
+  {
+   "id": "BV-12",
+   "category": "boundary",
+   "title": "set B: số dư người gửi = 0, amount > 0 (giao dịch hợp lệ thật): ratio = amount",
+   "feature_set": "B",
+   "event": {
+    "transaction_id": "txn_0000079",
+    "transaction_type": "TRANSFER",
+    "amount": 77957.68,
+    "source_balance_before": 0.0,
+    "destination_balance_before": 94900.0
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 11.263934221718277,
+     "oldbalanceOrg": 0.0,
+     "oldbalanceDest": 94900.0,
+     "amount_to_balance_ratio": 77957.68,
+     "drains_origin": 0.0,
+     "dest_balance_zero": 0.0
+    }
+   },
+   "real_row": 79
+  },
+  {
+   "id": "BV-13",
+   "category": "boundary",
+   "title": "set B: rút sạch số dư, tài khoản nhận có số dư 0 (TRANSFER gian lận thật)",
+   "feature_set": "B",
+   "event": {
+    "transaction_id": "txn_0000002",
+    "transaction_type": "TRANSFER",
+    "amount": 181.0,
+    "source_balance_before": 181.0,
+    "destination_balance_before": 0.0
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 5.204006687076795,
+     "oldbalanceOrg": 181.0,
+     "oldbalanceDest": 0.0,
+     "amount_to_balance_ratio": 0.9945054945054945,
+     "drains_origin": 1.0,
+     "dest_balance_zero": 1.0
+    }
+   },
+   "real_row": 2
+  },
+  {
+   "id": "BV-14",
+   "category": "boundary",
+   "title": "set B: rút sạch số dư, tài khoản nhận có số dư > 0 (CASH_OUT gian lận thật)",
+   "feature_set": "B",
+   "event": {
+    "transaction_id": "txn_0000003",
+    "transaction_type": "CASH_OUT",
+    "amount": 181.0,
+    "source_balance_before": 181.0,
+    "destination_balance_before": 21182.0
+   },
+   "expect": {
+    "features": {
+     "type": "CASH_OUT",
+     "log_amount": 5.204006687076795,
+     "oldbalanceOrg": 181.0,
+     "oldbalanceDest": 21182.0,
+     "amount_to_balance_ratio": 0.9945054945054945,
+     "drains_origin": 1.0,
+     "dest_balance_zero": 0.0
+    }
+   },
+   "real_row": 3
+  },
+  {
+   "id": "BV-15",
+   "category": "boundary",
+   "title": "set B: lệch 0,004 so với số dư (< nửa cent) vẫn là rút sạch",
+   "feature_set": "B",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 181.0,
+    "source_balance_before": 181.004,
+    "destination_balance_before": 0.0
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 5.204006687076795,
+     "oldbalanceOrg": 181.004,
+     "oldbalanceDest": 0.0,
+     "amount_to_balance_ratio": 0.9944836377222479,
+     "drains_origin": 1.0,
+     "dest_balance_zero": 1.0
+    }
+   }
+  },
+  {
+   "id": "BV-16",
+   "category": "boundary",
+   "title": "set B: lệch 0,006 (> nửa cent) không phải rút sạch",
+   "feature_set": "B",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 181.0,
+    "source_balance_before": 181.006,
+    "destination_balance_before": 0.0
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 5.204006687076795,
+     "oldbalanceOrg": 181.006,
+     "oldbalanceDest": 0.0,
+     "amount_to_balance_ratio": 0.9944727096908893,
+     "drains_origin": 0.0,
+     "dest_balance_zero": 1.0
+    }
+   }
+  },
+  {
+   "id": "BV-17",
+   "category": "boundary",
+   "title": "set B: amount lớn hơn số dư (CASH_OUT hợp lệ thật): ratio > 1, không rút sạch",
+   "feature_set": "B",
+   "event": {
+    "transaction_id": "txn_0000015",
+    "transaction_type": "CASH_OUT",
+    "amount": 229133.94,
+    "source_balance_before": 15325.0,
+    "destination_balance_before": 5083.0
+   },
+   "expect": {
+    "features": {
+     "type": "CASH_OUT",
+     "log_amount": 12.342066366634185,
+     "oldbalanceOrg": 15325.0,
+     "oldbalanceDest": 5083.0,
+     "amount_to_balance_ratio": 14.95066814563487,
+     "drains_origin": 0.0,
+     "dest_balance_zero": 0.0
+    }
+   },
+   "real_row": 15
+  },
+  {
+   "id": "BV-18",
+   "category": "boundary",
+   "title": "set B: số dư người nhận = 0,01 → dest_balance_zero = 0",
+   "feature_set": "B",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "source_balance_before": 500.0,
+    "destination_balance_before": 0.01
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 4.61512051684126,
+     "oldbalanceOrg": 500.0,
+     "oldbalanceDest": 0.01,
+     "amount_to_balance_ratio": 0.1996007984031936,
+     "drains_origin": 0.0,
+     "dest_balance_zero": 0.0
+    }
+   }
+  },
+  {
+   "id": "BV-19",
+   "category": "boundary",
+   "title": "set B: số dư người gửi âm → từ chối",
+   "feature_set": "B",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "source_balance_before": -5.0,
+    "destination_balance_before": 0.0
+   },
+   "expect": {
+    "error": {
+     "code": "NEGATIVE_VALUE",
+     "fields": [
+      "source_balance_before"
+     ]
+    }
+   }
+  },
+  {
+   "id": "BV-20",
+   "category": "boundary",
+   "title": "step = 1 → hour_of_day = 0 (dòng đầu dataset)",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "txn_0000000",
+    "transaction_type": "PAYMENT",
+    "amount": 9839.64,
+    "step": 1
+   },
+   "expect": {
+    "features": {
+     "type": "PAYMENT",
+     "log_amount": 9.194276028581655,
+     "hour_of_day": 0.0
+    }
+   },
+   "real_row": 0
+  },
+  {
+   "id": "BV-21",
+   "category": "boundary",
+   "title": "step = 24 → hour_of_day = 23",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "txn_0571039",
+    "transaction_type": "PAYMENT",
+    "amount": 27003.49,
+    "step": 24
+   },
+   "expect": {
+    "features": {
+     "type": "PAYMENT",
+     "log_amount": 10.203758427457066,
+     "hour_of_day": 23.0
+    }
+   },
+   "real_row": 571039
+  },
+  {
+   "id": "BV-22",
+   "category": "boundary",
+   "title": "step = 25 → hour_of_day = 0 (sang ngày thứ hai)",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "txn_0574255",
+    "transaction_type": "PAYMENT",
+    "amount": 19161.18,
+    "step": 25
+   },
+   "expect": {
+    "features": {
+     "type": "PAYMENT",
+     "log_amount": 9.860693823758183,
+     "hour_of_day": 0.0
+    }
+   },
+   "real_row": 574255
+  },
+  {
+   "id": "BV-23",
+   "category": "boundary",
+   "title": "step = 743 (dòng cuối dataset) → hour_of_day = 22",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "txn_6362619",
+    "transaction_type": "CASH_OUT",
+    "amount": 850002.52,
+    "step": 743
+   },
+   "expect": {
+    "features": {
+     "type": "CASH_OUT",
+     "log_amount": 13.652995769634396,
+     "hour_of_day": 22.0
+    }
+   },
+   "real_row": 6362619
+  },
+  {
+   "id": "BV-24",
+   "category": "boundary",
+   "title": "step = 744 (ngoài dataset nhưng hợp lệ trong stream) → hour_of_day = 23",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "CASH_OUT",
+    "amount": 100.0,
+    "step": 744
+   },
+   "expect": {
+    "features": {
+     "type": "CASH_OUT",
+     "log_amount": 4.61512051684126,
+     "hour_of_day": 23.0
+    }
+   }
+  },
+  {
+   "id": "BV-25",
+   "category": "boundary",
+   "title": "step = 0 → từ chối (step bắt đầu từ 1)",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "CASH_OUT",
+    "amount": 100.0,
+    "step": 0
+   },
+   "expect": {
+    "error": {
+     "code": "OUT_OF_RANGE",
+     "fields": [
+      "step"
+     ]
+    }
+   }
+  },
+  {
+   "id": "BV-26",
+   "category": "boundary",
+   "title": "step âm → từ chối",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "CASH_OUT",
+    "amount": 100.0,
+    "step": -5
+   },
+   "expect": {
+    "error": {
+     "code": "OUT_OF_RANGE",
+     "fields": [
+      "step"
+     ]
+    }
+   }
+  },
+  {
+   "id": "BV-27",
+   "category": "boundary",
+   "title": "step = 1.5 → từ chối (cần số nguyên)",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "CASH_OUT",
+    "amount": 100.0,
+    "step": 1.5
+   },
+   "expect": {
+    "error": {
+     "code": "BAD_TYPE",
+     "fields": [
+      "step"
+     ]
+    }
+   }
+  },
+  {
+   "id": "BV-28",
+   "category": "boundary",
+   "title": "step là chuỗi \"5\" → từ chối",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "CASH_OUT",
+    "amount": 100.0,
+    "step": "5"
+   },
+   "expect": {
+    "error": {
+     "code": "BAD_TYPE",
+     "fields": [
+      "step"
+     ]
+    }
+   }
+  },
+  {
+   "id": "BV-29",
+   "category": "boundary",
+   "title": "step là boolean true → từ chối",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "CASH_OUT",
+    "amount": 100.0,
+    "step": true
+   },
+   "expect": {
+    "error": {
+     "code": "BAD_TYPE",
+     "fields": [
+      "step"
+     ]
+    }
+   }
+  },
+  {
+   "id": "EV-01",
+   "category": "event_time",
+   "title": "event_time = T0 → step 1, hour 0",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "event_time": "2026-10-11T00:00:00Z"
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 4.61512051684126,
+     "hour_of_day": 0.0
+    }
+   },
+   "needs_t0": true
+  },
+  {
+   "id": "EV-02",
+   "category": "event_time",
+   "title": "T0 + 59 phút 59 giây vẫn thuộc step 1",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "event_time": "2026-10-11T00:59:59Z"
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 4.61512051684126,
+     "hour_of_day": 0.0
+    }
+   },
+   "needs_t0": true
+  },
+  {
+   "id": "EV-03",
+   "category": "event_time",
+   "title": "T0 + 1 giờ → step 2, hour 1",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "event_time": "2026-10-11T01:00:00Z"
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 4.61512051684126,
+     "hour_of_day": 1.0
+    }
+   },
+   "needs_t0": true
+  },
+  {
+   "id": "EV-04",
+   "category": "event_time",
+   "title": "T0 + 23:59:59 → step 24, hour 23",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "event_time": "2026-10-11T23:59:59Z"
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 4.61512051684126,
+     "hour_of_day": 23.0
+    }
+   },
+   "needs_t0": true
+  },
+  {
+   "id": "EV-05",
+   "category": "event_time",
+   "title": "T0 + 24 giờ → step 25, hour 0",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "event_time": "2026-10-12T00:00:00Z"
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 4.61512051684126,
+     "hour_of_day": 0.0
+    }
+   },
+   "needs_t0": true
+  },
+  {
+   "id": "EV-06",
+   "category": "event_time",
+   "title": "cùng thời điểm với T0 nhưng viết theo UTC+7 → vẫn step 1, hour 0",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "event_time": "2026-10-11T07:00:00+07:00"
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 4.61512051684126,
+     "hour_of_day": 0.0
+    }
+   },
+   "needs_t0": true
+  },
+  {
+   "id": "EV-07",
+   "category": "event_time",
+   "title": "ví dụ trong project plan (10:05Z) → step 11, hour 10",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "event_time": "2026-10-11T10:05:00Z"
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 4.61512051684126,
+     "hour_of_day": 10.0
+    }
+   },
+   "needs_t0": true
+  },
+  {
+   "id": "EV-08",
+   "category": "event_time",
+   "title": "10:05 giờ UTC+7 = 03:05Z → hour 3, không phải 10 (không dùng giờ địa phương)",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "event_time": "2026-10-11T10:05:00+07:00"
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 4.61512051684126,
+     "hour_of_day": 3.0
+    }
+   },
+   "needs_t0": true
+  },
+  {
+   "id": "EV-09",
+   "category": "event_time",
+   "title": "event_time trước T0 → từ chối",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "event_time": "2026-10-10T23:59:59Z"
+   },
+   "expect": {
+    "error": {
+     "code": "BAD_TIMESTAMP",
+     "fields": [
+      "event_time"
+     ]
+    }
+   },
+   "needs_t0": true
+  },
+  {
+   "id": "EV-10",
+   "category": "event_time",
+   "title": "event_time không có múi giờ → từ chối",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "event_time": "2026-10-11T10:05:00"
+   },
+   "expect": {
+    "error": {
+     "code": "BAD_TIMESTAMP",
+     "fields": [
+      "event_time"
+     ]
+    }
+   },
+   "needs_t0": true
+  },
+  {
+   "id": "EV-11",
+   "category": "event_time",
+   "title": "event_time không phải ISO-8601 → từ chối",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "event_time": "not-a-date"
+   },
+   "expect": {
+    "error": {
+     "code": "BAD_TIMESTAMP",
+     "fields": [
+      "event_time"
+     ]
+    }
+   },
+   "needs_t0": true
+  },
+  {
+   "id": "EV-12",
+   "category": "event_time",
+   "title": "event_time là số (epoch) → từ chối",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "event_time": 1760177100
+   },
+   "expect": {
+    "error": {
+     "code": "BAD_TYPE",
+     "fields": [
+      "event_time"
+     ]
+    }
+   },
+   "needs_t0": true
+  },
+  {
+   "id": "EV-13",
+   "category": "event_time",
+   "title": "step và event_time cùng có mặt và khớp nhau → hợp lệ",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "event_time": "2026-10-11T10:05:00Z",
+    "step": 11
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 4.61512051684126,
+     "hour_of_day": 10.0
+    }
+   },
+   "needs_t0": true
+  },
+  {
+   "id": "EV-14",
+   "category": "event_time",
+   "title": "step và event_time mâu thuẫn → từ chối",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "event_time": "2026-10-11T10:05:00Z",
+    "step": 12
+   },
+   "expect": {
+    "error": {
+     "code": "INCONSISTENT_TIME",
+     "fields": [
+      "step",
+      "event_time"
+     ]
+    }
+   },
+   "needs_t0": true
+  },
+  {
+   "id": "UC-01",
+   "category": "unknown_category",
+   "title": "transaction_type = CASH_IN → đúng một cột one-hot bằng 1",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "CASH_IN",
+    "amount": 100.0
+   },
+   "expect": {
+    "features": {
+     "type": "CASH_IN",
+     "log_amount": 4.61512051684126
+    }
+   }
+  },
+  {
+   "id": "UC-02",
+   "category": "unknown_category",
+   "title": "transaction_type = CASH_OUT → đúng một cột one-hot bằng 1",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "CASH_OUT",
+    "amount": 100.0
+   },
+   "expect": {
+    "features": {
+     "type": "CASH_OUT",
+     "log_amount": 4.61512051684126
+    }
+   }
+  },
+  {
+   "id": "UC-03",
+   "category": "unknown_category",
+   "title": "transaction_type = DEBIT → đúng một cột one-hot bằng 1",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "DEBIT",
+    "amount": 100.0
+   },
+   "expect": {
+    "features": {
+     "type": "DEBIT",
+     "log_amount": 4.61512051684126
+    }
+   }
+  },
+  {
+   "id": "UC-04",
+   "category": "unknown_category",
+   "title": "transaction_type = PAYMENT → đúng một cột one-hot bằng 1",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "PAYMENT",
+    "amount": 100.0
+   },
+   "expect": {
+    "features": {
+     "type": "PAYMENT",
+     "log_amount": 4.61512051684126
+    }
+   }
+  },
+  {
+   "id": "UC-05",
+   "category": "unknown_category",
+   "title": "transaction_type = TRANSFER → đúng một cột one-hot bằng 1",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 4.61512051684126
+    }
+   }
+  },
+  {
+   "id": "UC-06",
+   "category": "unknown_category",
+   "title": "transaction_type = REFUND (ngoài 5 loại của PaySim) → từ chối",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "REFUND",
+    "amount": 100.0
+   },
+   "expect": {
+    "error": {
+     "code": "UNKNOWN_CATEGORY",
+     "fields": [
+      "transaction_type"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UC-07",
+   "category": "unknown_category",
+   "title": "viết thường \"transfer\" → từ chối (so khớp chính xác, không tự chuẩn hóa)",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "transfer",
+    "amount": 100.0
+   },
+   "expect": {
+    "error": {
+     "code": "UNKNOWN_CATEGORY",
+     "fields": [
+      "transaction_type"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UC-08",
+   "category": "unknown_category",
+   "title": "có khoảng trắng \" TRANSFER\" → từ chối",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": " TRANSFER",
+    "amount": 100.0
+   },
+   "expect": {
+    "error": {
+     "code": "UNKNOWN_CATEGORY",
+     "fields": [
+      "transaction_type"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UC-09",
+   "category": "unknown_category",
+   "title": "chuỗi rỗng → từ chối",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "",
+    "amount": 100.0
+   },
+   "expect": {
+    "error": {
+     "code": "UNKNOWN_CATEGORY",
+     "fields": [
+      "transaction_type"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UC-10",
+   "category": "unknown_category",
+   "title": "transaction_type là số 3 → từ chối (sai kiểu)",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": 3,
+    "amount": 100.0
+   },
+   "expect": {
+    "error": {
+     "code": "BAD_TYPE",
+     "fields": [
+      "transaction_type"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UC-11",
+   "category": "unknown_category",
+   "title": "destination_account có tiền tố lạ (X999) không làm đổi feature không trạng thái",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "destination_account": "X999"
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 4.61512051684126
+    }
+   }
+  },
+  {
+   "id": "MF-01",
+   "category": "missing_field",
+   "title": "event rỗng → báo thiếu cả hai trường bắt buộc",
+   "feature_set": "A",
+   "event": {},
+   "expect": {
+    "error": {
+     "code": "MISSING_FIELD",
+     "fields": [
+      "transaction_type",
+      "amount"
+     ]
+    }
+   }
+  },
+  {
+   "id": "MF-02",
+   "category": "missing_field",
+   "title": "thiếu amount",
+   "feature_set": "A",
+   "event": {
+    "transaction_type": "TRANSFER"
+   },
+   "expect": {
+    "error": {
+     "code": "MISSING_FIELD",
+     "fields": [
+      "amount"
+     ]
+    }
+   }
+  },
+  {
+   "id": "MF-03",
+   "category": "missing_field",
+   "title": "thiếu transaction_type",
+   "feature_set": "A",
+   "event": {
+    "amount": 100.0
+   },
+   "expect": {
+    "error": {
+     "code": "MISSING_FIELD",
+     "fields": [
+      "transaction_type"
+     ]
+    }
+   }
+  },
+  {
+   "id": "MF-04",
+   "category": "missing_field",
+   "title": "amount = null được coi là thiếu",
+   "feature_set": "A",
+   "event": {
+    "transaction_type": "TRANSFER",
+    "amount": null
+   },
+   "expect": {
+    "error": {
+     "code": "MISSING_FIELD",
+     "fields": [
+      "amount"
+     ]
+    }
+   }
+  },
+  {
+   "id": "MF-05",
+   "category": "missing_field",
+   "title": "set B thiếu source_balance_before → từ chối, tuyệt đối không điền 0",
+   "feature_set": "B",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "destination_balance_before": 0.0
+   },
+   "expect": {
+    "error": {
+     "code": "MISSING_FIELD",
+     "fields": [
+      "source_balance_before"
+     ]
+    }
+   }
+  },
+  {
+   "id": "MF-06",
+   "category": "missing_field",
+   "title": "set B thiếu cả hai số dư",
+   "feature_set": "B",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0
+   },
+   "expect": {
+    "error": {
+     "code": "MISSING_FIELD",
+     "fields": [
+      "source_balance_before",
+      "destination_balance_before"
+     ]
+    }
+   }
+  },
+  {
+   "id": "MF-07",
+   "category": "missing_field",
+   "title": "cùng event ở MF-05 nhưng dùng set A → hợp lệ (số dư không được dùng)",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "destination_balance_before": 0.0
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 4.61512051684126
+    }
+   }
+  },
+  {
+   "id": "MF-08",
+   "category": "missing_field",
+   "title": "set A+T thiếu cả step lẫn event_time",
+   "feature_set": "A+T",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0
+   },
+   "expect": {
+    "error": {
+     "code": "MISSING_FIELD",
+     "fields": [
+      "step",
+      "event_time"
+     ]
+    }
+   }
+  },
+  {
+   "id": "MF-09",
+   "category": "missing_field",
+   "title": "trường thừa vô hại (source) bị bỏ qua",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "source": "paysim_replay"
+   },
+   "expect": {
+    "features": {
+     "type": "TRANSFER",
+     "log_amount": 4.61512051684126
+    }
+   }
+  },
+  {
+   "id": "LG-01",
+   "category": "leakage_guard",
+   "title": "event chứa isFraud (kể cả giá trị 0) → từ chối",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "isFraud": 0
+   },
+   "expect": {
+    "error": {
+     "code": "FORBIDDEN_FIELD",
+     "fields": [
+      "isFraud"
+     ]
+    }
+   }
+  },
+  {
+   "id": "LG-02",
+   "category": "leakage_guard",
+   "title": "event chứa isFlaggedFraud → từ chối",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "isFlaggedFraud": 0
+   },
+   "expect": {
+    "error": {
+     "code": "FORBIDDEN_FIELD",
+     "fields": [
+      "isFlaggedFraud"
+     ]
+    }
+   }
+  },
+  {
+   "id": "LG-03",
+   "category": "leakage_guard",
+   "title": "event chứa newbalanceOrig (số dư sau giao dịch) → từ chối",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "newbalanceOrig": 0.0
+   },
+   "expect": {
+    "error": {
+     "code": "FORBIDDEN_FIELD",
+     "fields": [
+      "newbalanceOrig"
+     ]
+    }
+   }
+  },
+  {
+   "id": "LG-04",
+   "category": "leakage_guard",
+   "title": "event chứa newbalanceDest → từ chối",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "newbalanceDest": 100.0
+   },
+   "expect": {
+    "error": {
+     "code": "FORBIDDEN_FIELD",
+     "fields": [
+      "newbalanceDest"
+     ]
+    }
+   }
+  },
+  {
+   "id": "LG-05",
+   "category": "leakage_guard",
+   "title": "biến thể snake_case is_fraud → từ chối",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "is_fraud": 1
+   },
+   "expect": {
+    "error": {
+     "code": "FORBIDDEN_FIELD",
+     "fields": [
+      "is_fraud"
+     ]
+    }
+   }
+  },
+  {
+   "id": "LG-06",
+   "category": "leakage_guard",
+   "title": "trường tên label → từ chối",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "label": 1
+   },
+   "expect": {
+    "error": {
+     "code": "FORBIDDEN_FIELD",
+     "fields": [
+      "label"
+     ]
+    }
+   }
+  },
+  {
+   "id": "LG-07",
+   "category": "leakage_guard",
+   "title": "nhiều trường cấm cùng lúc → liệt kê đủ, sắp xếp theo tên",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "isFraud": 1,
+    "isFlaggedFraud": 0,
+    "newbalanceDest": 100.0
+   },
+   "expect": {
+    "error": {
+     "code": "FORBIDDEN_FIELD",
+     "fields": [
+      "isFlaggedFraud",
+      "isFraud",
+      "newbalanceDest"
+     ]
+    }
+   }
+  },
+  {
+   "id": "LG-08",
+   "category": "leakage_guard",
+   "title": "số dư sau giao dịch đặt tên theo contract (destination_balance_after) → từ chối",
+   "feature_set": "A",
+   "event": {
+    "transaction_id": "t",
+    "transaction_type": "TRANSFER",
+    "amount": 100.0,
+    "destination_balance_after": 100.0
+   },
+   "expect": {
+    "error": {
+     "code": "FORBIDDEN_FIELD",
+     "fields": [
+      "destination_balance_after"
+     ]
+    }
+   }
+  }
+ ],
+ "history": [
+  {
+   "id": "HW-01",
+   "category": "history_window",
+   "title": "biên cửa sổ [s-24, s-1]: step 6 (cận dưới) tính, step 5 không; cùng step và tương lai không tính; thứ tự đến đảo lộn",
+   "events": [
+    {
+     "transaction_id": "p2",
+     "destination_account": "C100",
+     "step": 29,
+     "amount": 100.0
+    },
+    {
+     "transaction_id": "t",
+     "destination_account": "C100",
+     "step": 30,
+     "amount": 1000.0
+    },
+    {
+     "transaction_id": "p4",
+     "destination_account": "C100",
+     "step": 31,
+     "amount": 9.0
+    },
+    {
+     "transaction_id": "p0",
+     "destination_account": "C100",
+     "step": 5,
+     "amount": 1.0
+    },
+    {
+     "transaction_id": "p3",
+     "destination_account": "C100",
+     "step": 30,
+     "amount": 7.0
+    },
+    {
+     "transaction_id": "p1",
+     "destination_account": "C100",
+     "step": 6,
+     "amount": 10.0
+    }
+   ],
+   "expect": {
+    "p0": {
+     "dest_txn_count_past_24h": 0,
+     "dest_amount_sum_past_24h": 0.0,
+     "dest_seen_before": 0
+    },
+    "p1": {
+     "dest_txn_count_past_24h": 1,
+     "dest_amount_sum_past_24h": 1.0,
+     "dest_seen_before": 1
+    },
+    "p2": {
+     "dest_txn_count_past_24h": 2,
+     "dest_amount_sum_past_24h": 11.0,
+     "dest_seen_before": 1
+    },
+    "t": {
+     "dest_txn_count_past_24h": 2,
+     "dest_amount_sum_past_24h": 110.0,
+     "dest_seen_before": 1
+    },
+    "p3": {
+     "dest_txn_count_past_24h": 2,
+     "dest_amount_sum_past_24h": 110.0,
+     "dest_seen_before": 1
+    },
+    "p4": {
+     "dest_txn_count_past_24h": 3,
+     "dest_amount_sum_past_24h": 1107.0,
+     "dest_seen_before": 1
+    }
+   }
+  },
+  {
+   "id": "HW-02",
+   "category": "history_window",
+   "title": "tài khoản nhận khác nhau không ảnh hưởng nhau",
+   "events": [
+    {
+     "transaction_id": "t",
+     "destination_account": "C100",
+     "step": 30,
+     "amount": 1000.0
+    },
+    {
+     "transaction_id": "x",
+     "destination_account": "C200",
+     "step": 29,
+     "amount": 5000.0
+    }
+   ],
+   "expect": {
+    "t": {
+     "dest_txn_count_past_24h": 0,
+     "dest_amount_sum_past_24h": 0.0,
+     "dest_seen_before": 0
+    },
+    "x": {
+     "dest_txn_count_past_24h": 0,
+     "dest_amount_sum_past_24h": 0.0,
+     "dest_seen_before": 0
+    }
+   }
+  },
+  {
+   "id": "HW-03",
+   "category": "history_window",
+   "title": "transaction_id trùng (gửi lại cùng event) chỉ tính một lần",
+   "events": [
+    {
+     "transaction_id": "p2",
+     "destination_account": "C100",
+     "step": 29,
+     "amount": 100.0
+    },
+    {
+     "transaction_id": "p2",
+     "destination_account": "C100",
+     "step": 29,
+     "amount": 100.0
+    },
+    {
+     "transaction_id": "t",
+     "destination_account": "C100",
+     "step": 30,
+     "amount": 1000.0
+    }
+   ],
+   "expect": {
+    "p2": {
+     "dest_txn_count_past_24h": 0,
+     "dest_amount_sum_past_24h": 0.0,
+     "dest_seen_before": 0
+    },
+    "t": {
+     "dest_txn_count_past_24h": 1,
+     "dest_amount_sum_past_24h": 100.0,
+     "dest_seen_before": 1
+    }
+   }
+  },
+  {
+   "id": "HW-04",
+   "category": "history_window",
+   "title": "dest_seen_before = 1 dù giao dịch trước nằm ngoài cửa sổ 24 giờ",
+   "events": [
+    {
+     "transaction_id": "p",
+     "destination_account": "C100",
+     "step": 1,
+     "amount": 50.0
+    },
+    {
+     "transaction_id": "t",
+     "destination_account": "C100",
+     "step": 100,
+     "amount": 10.0
+    }
+   ],
+   "expect": {
+    "p": {
+     "dest_txn_count_past_24h": 0,
+     "dest_amount_sum_past_24h": 0.0,
+     "dest_seen_before": 0
+    },
+    "t": {
+     "dest_txn_count_past_24h": 0,
+     "dest_amount_sum_past_24h": 0.0,
+     "dest_seen_before": 1
+    }
+   }
+  },
+  {
+   "id": "HW-05",
+   "category": "history_window",
+   "title": "đầu dữ liệu: cận dưới cửa sổ s-24 < 1 không gây lỗi",
+   "events": [
+    {
+     "transaction_id": "a",
+     "destination_account": "C100",
+     "step": 1,
+     "amount": 3.0
+    },
+    {
+     "transaction_id": "b",
+     "destination_account": "C100",
+     "step": 2,
+     "amount": 4.0
+    },
+    {
+     "transaction_id": "t",
+     "destination_account": "C100",
+     "step": 3,
+     "amount": 10.0
+    }
+   ],
+   "expect": {
+    "a": {
+     "dest_txn_count_past_24h": 0,
+     "dest_amount_sum_past_24h": 0.0,
+     "dest_seen_before": 0
+    },
+    "b": {
+     "dest_txn_count_past_24h": 1,
+     "dest_amount_sum_past_24h": 3.0,
+     "dest_seen_before": 1
+    },
+    "t": {
+     "dest_txn_count_past_24h": 2,
+     "dest_amount_sum_past_24h": 7.0,
+     "dest_seen_before": 1
+    }
+   }
+  },
+  {
+   "id": "HW-06",
+   "category": "history_window",
+   "title": "tính từ event_time (không có step) cho cùng kết quả: 00:30 → step 1, 23:59:59 → step 24, ngày sau 01:00 → step 26",
+   "events": [
+    {
+     "transaction_id": "p",
+     "destination_account": "C100",
+     "event_time": "2026-10-11T00:30:00Z",
+     "amount": 10.0
+    },
+    {
+     "transaction_id": "t",
+     "destination_account": "C100",
+     "event_time": "2026-10-11T23:59:59Z",
+     "amount": 20.0
+    },
+    {
+     "transaction_id": "t2",
+     "destination_account": "C100",
+     "event_time": "2026-10-12T01:00:00Z",
+     "amount": 30.0
+    }
+   ],
+   "expect": {
+    "p": {
+     "dest_txn_count_past_24h": 0,
+     "dest_amount_sum_past_24h": 0.0,
+     "dest_seen_before": 0
+    },
+    "t": {
+     "dest_txn_count_past_24h": 1,
+     "dest_amount_sum_past_24h": 10.0,
+     "dest_seen_before": 1
+    },
+    "t2": {
+     "dest_txn_count_past_24h": 1,
+     "dest_amount_sum_past_24h": 20.0,
+     "dest_seen_before": 1
+    }
+   },
+   "needs_t0": true
+  },
+  {
+   "id": "HW-07",
+   "category": "history_window",
+   "title": "thiếu destination_account → từ chối",
+   "events": [
+    {
+     "transaction_id": "t",
+     "step": 3,
+     "amount": 1.0
+    }
+   ],
+   "expect": {
+    "error": {
+     "code": "MISSING_FIELD",
+     "fields": [
+      "destination_account"
+     ]
+    }
+   }
+  },
+  {
+   "id": "HW-08",
+   "category": "history_window",
+   "title": "thiếu transaction_id → từ chối",
+   "events": [
+    {
+     "destination_account": "C100",
+     "step": 3,
+     "amount": 1.0
+    }
+   ],
+   "expect": {
+    "error": {
+     "code": "MISSING_FIELD",
+     "fields": [
+      "transaction_id"
+     ]
+    }
+   }
+  },
+  {
+   "id": "HW-09",
+   "category": "history_window",
+   "title": "event lịch sử chứa trường cấm → từ chối",
+   "events": [
+    {
+     "transaction_id": "t",
+     "destination_account": "C100",
+     "step": 3,
+     "amount": 1.0,
+     "isFraud": 1
+    }
+   ],
+   "expect": {
+    "error": {
+     "code": "FORBIDDEN_FIELD",
+     "fields": [
+      "isFraud"
+     ]
+    }
+   }
+  },
+  {
+   "id": "HW-10",
+   "category": "history_window",
+   "title": "amount âm trong lịch sử → từ chối",
+   "events": [
+    {
+     "transaction_id": "t",
+     "destination_account": "C100",
+     "step": 3,
+     "amount": -1.0
+    }
+   ],
+   "expect": {
+    "error": {
+     "code": "NEGATIVE_VALUE",
+     "fields": [
+      "amount"
+     ]
+    }
+   }
+  }
+ ],
+ "threshold_alert": [
+  {
+   "id": "TH-01",
+   "category": "threshold_alert",
+   "title": "score = threshold → alert (>=)",
+   "score": 0.5,
+   "threshold": 0.5,
+   "expect": {
+    "alert": true
+   }
+  },
+  {
+   "id": "TH-02",
+   "category": "threshold_alert",
+   "title": "score ngay dưới threshold → không alert",
+   "score": 0.4999999,
+   "threshold": 0.5,
+   "expect": {
+    "alert": false
+   }
+  },
+  {
+   "id": "TH-03",
+   "category": "threshold_alert",
+   "title": "score ngay trên threshold → alert",
+   "score": 0.5000001,
+   "threshold": 0.5,
+   "expect": {
+    "alert": true
+   }
+  },
+  {
+   "id": "TH-04",
+   "category": "threshold_alert",
+   "title": "score = 1,0 → alert",
+   "score": 1.0,
+   "threshold": 0.5,
+   "expect": {
+    "alert": true
+   }
+  },
+  {
+   "id": "TH-05",
+   "category": "threshold_alert",
+   "title": "score = 0,0, threshold 0,5 → không alert",
+   "score": 0.0,
+   "threshold": 0.5,
+   "expect": {
+    "alert": false
+   }
+  },
+  {
+   "id": "TH-06",
+   "category": "threshold_alert",
+   "title": "threshold = 0 → mọi score đều alert (suy biến)",
+   "score": 0.0,
+   "threshold": 0.0,
+   "expect": {
+    "alert": true
+   }
+  },
+  {
+   "id": "TH-07",
+   "category": "threshold_alert",
+   "title": "threshold = 1 và score = 1 → alert",
+   "score": 1.0,
+   "threshold": 1.0,
+   "expect": {
+    "alert": true
+   }
+  },
+  {
+   "id": "TH-08",
+   "category": "threshold_alert",
+   "title": "score thiếu (null) → từ chối",
+   "score": null,
+   "threshold": 0.5,
+   "expect": {
+    "error": {
+     "code": "MISSING_FIELD",
+     "fields": [
+      "fraud_score"
+     ]
+    }
+   }
+  },
+  {
+   "id": "TH-09",
+   "category": "threshold_alert",
+   "title": "score NaN → từ chối",
+   "score": {
+    "$float": "nan"
+   },
+   "threshold": 0.5,
+   "expect": {
+    "error": {
+     "code": "NON_FINITE",
+     "fields": [
+      "fraud_score"
+     ]
+    }
+   }
+  },
+  {
+   "id": "TH-10",
+   "category": "threshold_alert",
+   "title": "score = +Infinity → từ chối",
+   "score": {
+    "$float": "inf"
+   },
+   "threshold": 0.5,
+   "expect": {
+    "error": {
+     "code": "NON_FINITE",
+     "fields": [
+      "fraud_score"
+     ]
+    }
+   }
+  },
+  {
+   "id": "TH-11",
+   "category": "threshold_alert",
+   "title": "score < 0 → từ chối",
+   "score": -0.1,
+   "threshold": 0.5,
+   "expect": {
+    "error": {
+     "code": "OUT_OF_RANGE",
+     "fields": [
+      "fraud_score"
+     ]
+    }
+   }
+  },
+  {
+   "id": "TH-12",
+   "category": "threshold_alert",
+   "title": "score > 1 → từ chối",
+   "score": 1.0000001,
+   "threshold": 0.5,
+   "expect": {
+    "error": {
+     "code": "OUT_OF_RANGE",
+     "fields": [
+      "fraud_score"
+     ]
+    }
+   }
+  },
+  {
+   "id": "TH-13",
+   "category": "threshold_alert",
+   "title": "score là chuỗi → từ chối",
+   "score": "0.9",
+   "threshold": 0.5,
+   "expect": {
+    "error": {
+     "code": "BAD_TYPE",
+     "fields": [
+      "fraud_score"
+     ]
+    }
+   }
+  },
+  {
+   "id": "TH-14",
+   "category": "threshold_alert",
+   "title": "score là boolean → từ chối",
+   "score": true,
+   "threshold": 0.5,
+   "expect": {
+    "error": {
+     "code": "BAD_TYPE",
+     "fields": [
+      "fraud_score"
+     ]
+    }
+   }
+  },
+  {
+   "id": "TH-15",
+   "category": "threshold_alert",
+   "title": "threshold ngoài [0, 1] → từ chối",
+   "score": 0.5,
+   "threshold": 1.5,
+   "expect": {
+    "error": {
+     "code": "OUT_OF_RANGE",
+     "fields": [
+      "threshold"
+     ]
+    }
+   }
+  }
+ ],
+ "threshold_select": [
+  {
+   "id": "TH-20",
+   "category": "threshold_select",
+   "title": "tách hoàn toàn: chọn ngưỡng thấp nhất vẫn bắt đủ positive",
+   "y": [
+    1,
+    1,
+    0,
+    0
+   ],
+   "scores": [
+    0.9,
+    0.8,
+    0.2,
+    0.1
+   ],
+   "min_recall": 0.8,
+   "expect": {
+    "threshold": 0.8,
+    "precision": 1.0,
+    "recall": 1.0,
+    "alerts": 2,
+    "tp": 2,
+    "fp": 0,
+    "fn": 0,
+    "rule": "max_precision_at_min_recall"
+   }
+  },
+  {
+   "id": "TH-21",
+   "category": "threshold_select",
+   "title": "ràng buộc recall ≥ 0,8 buộc phải hạ ngưỡng xuống 0,3",
+   "y": [
+    1,
+    0,
+    1,
+    0,
+    1
+   ],
+   "scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6,
+    0.3
+   ],
+   "min_recall": 0.8,
+   "expect": {
+    "threshold": 0.3,
+    "precision": 0.6,
+    "recall": 1.0,
+    "alerts": 5,
+    "tp": 3,
+    "fp": 2,
+    "fn": 0,
+    "rule": "max_precision_at_min_recall"
+   }
+  },
+  {
+   "id": "TH-22",
+   "category": "threshold_select",
+   "title": "mọi score bằng nhau: chỉ có một ứng viên, alert tất cả",
+   "y": [
+    1,
+    0,
+    0,
+    1
+   ],
+   "scores": [
+    0.5,
+    0.5,
+    0.5,
+    0.5
+   ],
+   "min_recall": 0.8,
+   "expect": {
+    "threshold": 0.5,
+    "precision": 0.5,
+    "recall": 1.0,
+    "alerts": 4,
+    "tp": 2,
+    "fp": 2,
+    "fn": 0,
+    "rule": "max_precision_at_min_recall"
+   }
+  },
+  {
+   "id": "TH-23",
+   "category": "threshold_select",
+   "title": "min_recall = 0,5: dừng ở ngưỡng cao nhất vẫn đạt recall",
+   "y": [
+    1,
+    1,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.6,
+    0.5,
+    0.4,
+    0.3,
+    0.2
+   ],
+   "min_recall": 0.5,
+   "expect": {
+    "threshold": 0.8,
+    "precision": 1.0,
+    "recall": 0.6666666666666666,
+    "alerts": 2,
+    "tp": 2,
+    "fp": 0,
+    "fn": 1,
+    "rule": "max_precision_at_min_recall"
+   }
+  },
+  {
+   "id": "TH-24",
+   "category": "threshold_select",
+   "title": "hòa precision (cùng bằng 1): chọn ngưỡng có recall cao hơn",
+   "y": [
+    1,
+    1,
+    1,
+    0
+   ],
+   "scores": [
+    0.9,
+    0.8,
+    0.7,
+    0.1
+   ],
+   "min_recall": 0.5,
+   "expect": {
+    "threshold": 0.7,
+    "precision": 1.0,
+    "recall": 1.0,
+    "alerts": 3,
+    "tp": 3,
+    "fp": 0,
+    "fn": 0,
+    "rule": "max_precision_at_min_recall"
+   }
+  },
+  {
+   "id": "TH-25",
+   "category": "threshold_select",
+   "title": "lỗ hổng của quy tắc W1: không đặt min_precision thì chọn ngưỡng thấp nhất (alert gần như tất cả, precision 9%)",
+   "scenario": {
+    "pos_top": [
+     0.99,
+     0.98,
+     0.97,
+     0.96,
+     0.95
+    ],
+    "neg_start": 0.9,
+    "neg_step": 0.004,
+    "neg_count": 100,
+    "pos_bottom": [
+     0.4,
+     0.3,
+     0.2,
+     0.1,
+     0.05
+    ]
+   },
+   "min_recall": 0.8,
+   "expect": {
+    "threshold": 0.05,
+    "precision": 0.09090909090909091,
+    "recall": 1.0,
+    "alerts": 110,
+    "tp": 10,
+    "fp": 100,
+    "fn": 0,
+    "rule": "max_precision_at_min_recall"
+   }
+  },
+  {
+   "id": "TH-26",
+   "category": "threshold_select",
+   "title": "đặt min_precision = 0,5 mà không đạt → dự phòng chọn F2 cao nhất (recall 0,5, precision 1)",
+   "scenario": {
+    "pos_top": [
+     0.99,
+     0.98,
+     0.97,
+     0.96,
+     0.95
+    ],
+    "neg_start": 0.9,
+    "neg_step": 0.004,
+    "neg_count": 100,
+    "pos_bottom": [
+     0.4,
+     0.3,
+     0.2,
+     0.1,
+     0.05
+    ]
+   },
+   "min_recall": 0.8,
+   "min_precision": 0.5,
+   "expect": {
+    "threshold": 0.95,
+    "precision": 1.0,
+    "recall": 0.5,
+    "alerts": 5,
+    "tp": 5,
+    "fp": 0,
+    "fn": 5,
+    "rule": "max_f2_fallback"
+   }
+  },
+  {
+   "id": "TH-27",
+   "category": "threshold_select",
+   "title": "không có mẫu dương → từ chối",
+   "y": [
+    0,
+    0,
+    0
+   ],
+   "scores": [
+    0.1,
+    0.2,
+    0.3
+   ],
+   "min_recall": 0.8,
+   "expect": {
+    "raises": "ValueError"
+   }
+  },
+  {
+   "id": "TH-28",
+   "category": "threshold_select",
+   "title": "score NaN → từ chối",
+   "y": [
+    0,
+    1,
+    1
+   ],
+   "scores": [
+    0.1,
+    {
+     "$float": "nan"
+    },
+    0.3
+   ],
+   "min_recall": 0.8,
+   "expect": {
+    "error": {
+     "code": "NON_FINITE",
+     "fields": [
+      "scores"
+     ]
+    }
+   }
+  },
+  {
+   "id": "TH-29",
+   "category": "threshold_select",
+   "title": "nhãn ngoài {0,1} → từ chối",
+   "y": [
+    0,
+    1,
+    2
+   ],
+   "scores": [
+    0.1,
+    0.2,
+    0.3
+   ],
+   "min_recall": 0.8,
+   "expect": {
+    "raises": "ValueError"
+   }
+  },
+  {
+   "id": "TH-30",
+   "category": "threshold_select",
+   "title": "độ dài y và scores khác nhau → từ chối",
+   "y": [
+    0,
+    1
+   ],
+   "scores": [
+    0.1,
+    0.2,
+    0.3
+   ],
+   "min_recall": 0.8,
+   "expect": {
+    "raises": "ValueError"
+   }
+  },
+  {
+   "id": "TH-31",
+   "category": "threshold_select",
+   "title": "min_recall = 0 → từ chối",
+   "y": [
+    0,
+    1
+   ],
+   "scores": [
+    0.1,
+    0.2
+   ],
+   "min_recall": 0.0,
+   "expect": {
+    "raises": "ValueError"
+   }
+  }
+ ]
+}
