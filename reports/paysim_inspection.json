@@ -9,7 +9,7 @@
     },
     {
       "name": "type",
-      "dtype": "str"
+      "dtype": "object"
     },
     {
       "name": "amount",
@@ -17,7 +17,7 @@
     },
     {
       "name": "nameOrig",
-      "dtype": "str"
+      "dtype": "object"
     },
     {
       "name": "oldbalanceOrg",
@@ -29,7 +29,7 @@
     },
     {
       "name": "nameDest",
-      "dtype": "str"
+      "dtype": "object"
     },
     {
       "name": "oldbalanceDest",

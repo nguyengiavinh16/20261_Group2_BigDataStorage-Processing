@@ -1,85 +1,143 @@
 # Real-time Financial Fraud Detection and Alerting System
 
-An academic prototype for historical fraud analysis and replay-based near-real-time fraud detection. It uses public or synthetic data; it is not a production banking system.
+An academic prototype for PaySim fraud detection with batch processing, model training, Kafka replay, Spark Structured Streaming, MongoDB persistence, FastAPI serving, Streamlit UI, Docker Compose and starter Kubernetes manifests. This is not a production banking system.
 
-## Current milestone
+## Current project structure
 
-Week 1 foundation:
-- project scope and Lambda Architecture documentation
-- configuration and environment templates
-- PaySim schema inspection utility
-- a small synthetic fixture for smoke testing
-- basic unit tests and package layout
-
-Later milestones add Spark/HDFS, Kafka, model training, Structured Streaming, MongoDB, FastAPI, Streamlit, Docker Compose, and Kubernetes.
+- `scripts/inspect_data.py`: schema/profile inspection of a bounded sample.
+- `scripts/run_etl.py`: local CSV-to-Parquet conversion.
+- `scripts/run_spark_etl.py`: Spark CSV-to-Parquet job.
+- `src/fraud_detection/processing/`: shared feature handling and ETL.
+- `src/fraud_detection/modeling/train.py`: model training and metrics.
+- `src/fraud_detection/ingestion/kafka_producer.py`: replay transactions to Kafka.
+- `src/fraud_detection/streaming/spark_stream.py`: streaming inference and MongoDB sink.
+- `src/fraud_detection/serving/`: predictor and FastAPI.
+- `app/dashboard.py`: Streamlit transaction-scoring UI.
+- `docker-compose.yml`: Kafka, MongoDB, API and dashboard.
+- `deployment/kubernetes/`: starter namespace, deployment and service manifests.
+- `docs/implementation_guide_vi.md`: step-by-step instructions in Vietnamese.
 
 ## Requirements
 
-- Python 3.10 or 3.11
-- Git
-- A virtual environment
-- The full PaySim CSV is optional for Week 1; use the included synthetic fixture to test the inspector.
+- Python 3.10 (recommended for this project) or 3.11.
+- For Docker deployment: Docker Desktop with Docker Compose.
+- For Spark jobs: a compatible Java installation, PySpark and the matching Kafka connector for streaming.
+- Full PaySim CSV placed at `data/raw/paysim_dataset.csv`.
 
-Java, Spark, Hadoop, Kafka, and MongoDB versions will be pinned and validated before their integration milestones.
+Do not commit the full dataset, `.env`, credentials, virtual environments, checkpoints, or generated model artifacts to Git.
 
-## Setup
-
-### Windows PowerShell
+## Setup (Windows PowerShell)
 
 ```powershell
-py -3.11 -m venv .venv
+py -3.10 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
-pip install -e ".[dev]"
+pip install -e ".[dev,dashboard,batch,streaming]"
 Copy-Item .env.example .env
-python scripts/inspect_data.py --input data/sample/transactions_sample.csv
-pytest
 ```
 
-### Linux/macOS
+If Python 3.10 is not installed, install it first or use an installed supported version. Check `python --version` after activating the virtual environment.
 
-```bash
-python3.11 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-pip install -e ".[dev]"
-cp .env.example .env
-python scripts/inspect_data.py --input data/sample/transactions_sample.csv
-pytest
+## Week 1: inspect and test
+
+```powershell
+python scripts/inspect_data.py --input data/raw/paysim_dataset.csv --sample-rows 100000 --output reports/paysim_inspection.json
+python -m pytest -q
 ```
 
-The sample is synthetic and intentionally small. It only verifies schema inspection mechanics; it is not suitable for training or evaluating a fraud model.
+The inspection report describes only the rows read by the configured sample limit. It is not automatically a full-file audit.
 
-## Full PaySim dataset
+## Week 2: ETL
 
-Obtain PaySim from a reputable dataset host such as its Kaggle dataset page, following the host's current terms and access procedure. Place the extracted CSV under `data/raw/`, for example:
-
-```text
-data/raw/PS_20174392719_1491204439457_log.csv
+```powershell
+python scripts/run_etl.py --input data/raw/paysim_dataset.csv --output data/processed/paysim.parquet
 ```
 
-Then run:
+For a Spark environment:
 
-```bash
-python scripts/inspect_data.py --input data/raw/PS_20174392719_1491204439457_log.csv
+```powershell
+python scripts/run_spark_etl.py --input data/raw/paysim_dataset.csv --output data/processed/paysim_parquet
 ```
 
-Do not commit the full dataset, credentials, local virtual environments, or model artifacts to Git.
+## Week 3: train model
 
-## Repository status
+```powershell
+python -m fraud_detection.modeling.train --input data/raw/paysim_dataset.csv --algorithm logistic
+```
 
-Generated Week 1 files are a starting foundation. No external services are started by this milestone. Do not describe Spark, Kafka, HDFS, MongoDB, API, dashboard, or Kubernetes as implemented until their milestones are coded and verified.
+Try the Random Forest baseline:
 
-## Project documentation
+```powershell
+python -m fraud_detection.modeling.train --input data/raw/paysim_dataset.csv --algorithm forest
+```
 
-- `docs/project_charter.md`
-- `docs/architecture.md`
-- `docs/data_dictionary.md`
-- `docs/data_flow.md`
-- `docs/weekly_roadmap.md`
-- `docs/testing_strategy.md`
-- `docs/performance_evaluation.md`
+Outputs: `artifacts/fraud_model.joblib` and `reports/model_metrics.json`. The baseline uses a stratified random split. Compare with a temporal split by `step` before making claims about future performance. Threshold `0.5` is a starting point, not a tuned operational threshold.
 
-## License and data
+## Week 4: Kafka replay and streaming
 
-The source code license is in `LICENSE`. Dataset licensing and usage are governed by the dataset provider and must be checked separately.
+Start Kafka with `docker compose up -d kafka`, then in separate terminals run:
+
+```powershell
+python -m fraud_detection.ingestion.kafka_producer --input data/raw/paysim_dataset.csv --limit 10000 --delay-ms 20
+python -m fraud_detection.streaming.spark_stream
+```
+
+Spark streaming needs a Spark Kafka connector compatible with the installed Spark version. The Compose stack does not create a Spark cluster or HDFS cluster.
+
+## Week 5: API and dashboard
+
+First ensure the trained model artifact exists, then:
+
+```powershell
+uvicorn fraud_detection.serving.api:app --reload --app-dir src
+```
+
+Open `http://127.0.0.1:8000/docs`. Start the UI in another terminal:
+
+```powershell
+streamlit run app/dashboard.py
+```
+
+Open `http://localhost:8501`.
+
+## Week 6: basic benchmark
+
+```powershell
+python scripts/benchmark_api.py --url http://localhost:8000/health --requests 100
+python -m pytest -q
+```
+
+This is a simple latency/error probe, not a distributed load test.
+
+## Week 7: Docker Compose
+
+Train the model on the host first so `artifacts/fraud_model.joblib` exists, then run:
+
+```powershell
+docker compose up --build -d
+```
+
+- API: `http://localhost:8000/health`
+- API docs: `http://localhost:8000/docs`
+- Dashboard: `http://localhost:8501`
+- Kafka: `localhost:9092`
+- MongoDB: `localhost:27017`
+
+The Compose file starts Kafka, MongoDB, API and dashboard. Spark streaming is launched separately in a compatible Spark environment.
+
+## Week 8: validation and report
+
+Run tests, record model metrics and threshold, measure API latency and end-to-end streaming delay, test restart behavior, and document actual results. Do not report unmeasured performance values.
+
+## Important limitations
+
+- Academic prototype only; no authentication, secrets management, human review workflow, or production-grade alert delivery.
+- `isFraud` is a label and must never be used as an inference feature.
+- The baseline excludes `nameOrig` and `nameDest` from model inputs to avoid huge identifier cardinality.
+- API MongoDB persistence is best-effort. Production systems need retries, idempotency, monitoring, access control and audit logs.
+- Kubernetes manifests are a starting template. Configure image registry, model delivery, secrets, resources, networking, Kafka/MongoDB services and security before using them.
+- Dataset terms and licensing remain the responsibility of the dataset provider.
+
+## Documentation
+
+See `docs/implementation_guide_vi.md`, `docs/architecture.md`, `docs/data_dictionary.md`, `docs/data_flow.md`, `docs/testing_strategy.md`, and `docs/performance_evaluation.md`.
