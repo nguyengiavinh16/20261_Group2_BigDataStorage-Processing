@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "paysim.record.schema.json",
+  "title": "PaySim transaction record",
+  "description": "One mobile-money transaction. Cross-field business rules (balance arithmetic, flag rule, merchant rules) are enforced by scripts/validate_paysim.py, not by this file.",
+  "type": "object",
+  "required": ["step", "type", "amount", "nameOrig", "oldbalanceOrg", "newbalanceOrig", "nameDest", "oldbalanceDest", "newbalanceDest", "isFraud", "isFlaggedFraud"],
+  "additionalProperties": false,
+  "properties": {
+    "step": {"type": "integer", "minimum": 1, "maximum": 744, "description": "Hour index of the simulation (1 step = 1 hour)."},
+    "type": {"type": "string", "enum": ["CASH_IN", "CASH_OUT", "DEBIT", "PAYMENT", "TRANSFER"]},
+    "amount": {"type": "number", "minimum": 0},
+    "nameOrig": {"type": "string", "pattern": "^C[0-9]+$"},
+    "oldbalanceOrg": {"type": "number", "minimum": 0},
+    "newbalanceOrig": {"type": "number", "minimum": 0},
+    "nameDest": {"type": "string", "pattern": "^[CM][0-9]+$"},
+    "oldbalanceDest": {"type": "number", "minimum": 0},
+    "newbalanceDest": {"type": "number", "minimum": 0},
+    "isFraud": {"type": "integer", "enum": [0, 1]},
+    "isFlaggedFraud": {"type": "integer", "enum": [0, 1]}
+  }
+}
