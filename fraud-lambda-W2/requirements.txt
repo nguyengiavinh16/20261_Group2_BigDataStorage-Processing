@@ -1,0 +1,8 @@
+pyspark==3.5.1
+pandas
+pyarrow
+pyyaml
+matplotlib
+jupyter
+pytest
+jsonschema
