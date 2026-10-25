@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "event_time": "2026-01-01T01:00:00Z",
+  "event_time_step": 1,
+  "transaction_type": "PAYMENT",
+  "amount": 125.75,
+  "origin_account_id": "C10001",
+  "destination_account_id": "M20411",
+  "origin_balance_before": 500.0,
+  "origin_balance_after": 374.25,
+  "destination_balance_before": 1200.0,
+  "destination_balance_after": 1325.75,
+  "source_dataset": "paysim",
+  "source_row_id": "paysim-v1-row-000001"
+}

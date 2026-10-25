@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Prediction and Alert Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "transaction_id",
+    "event_time",
+    "scored_at",
+    "fraud_score",
+    "risk_level",
+    "alert_triggered",
+    "model_version",
+    "threshold"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "transaction_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "scored_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "fraud_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    "alert_triggered": {
+      "type": "boolean"
+    },
+    "model_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "threshold": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "source_dataset": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

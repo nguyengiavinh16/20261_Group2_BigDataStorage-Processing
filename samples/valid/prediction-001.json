@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "transaction_id": "paysim-v1-row-000001",
+  "event_time": "2026-01-01T01:00:00Z",
+  "scored_at": "2026-01-01T01:00:02Z",
+  "fraud_score": 0.82,
+  "risk_level": "high",
+  "alert_triggered": true,
+  "model_version": "baseline-v1",
+  "threshold": 0.7,
+  "source_dataset": "paysim"
+}

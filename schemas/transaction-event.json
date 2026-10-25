@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Transaction Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "transaction_id",
+    "event_time",
+    "event_time_step",
+    "transaction_type",
+    "amount",
+    "source_dataset",
+    "source_row_id"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "transaction_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "event_time_step": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "transaction_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "amount": {
+      "type": "number",
+      "minimum": 0
+    },
+    "origin_account_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "destination_account_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "origin_balance_before": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "origin_balance_after": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "destination_balance_before": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "destination_balance_after": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "source_dataset": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_row_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}
