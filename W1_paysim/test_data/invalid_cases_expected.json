@@ -1,0 +1,72 @@
+[
+  {
+    "row": 0,
+    "case": "null_amount",
+    "expected_code": "NULL_VALUES"
+  },
+  {
+    "row": 1,
+    "case": "bad_type",
+    "expected_code": "TYPE_DOMAIN"
+  },
+  {
+    "row": 2,
+    "case": "step_zero",
+    "expected_code": "STEP_RANGE"
+  },
+  {
+    "row": 3,
+    "case": "negative_amount",
+    "expected_code": "AMOUNT_NONNEGATIVE"
+  },
+  {
+    "row": 4,
+    "case": "negative_balance",
+    "expected_code": "BALANCE_NONNEGATIVE"
+  },
+  {
+    "row": 5,
+    "case": "fraud_label_2",
+    "expected_code": "FRAUD_LABEL_DOMAIN"
+  },
+  {
+    "row": 6,
+    "case": "bad_orig_prefix",
+    "expected_code": "ORIG_ID_FORMAT"
+  },
+  {
+    "row": 7,
+    "case": "bad_dest_prefix",
+    "expected_code": "DEST_ID_FORMAT"
+  },
+  {
+    "row": 8,
+    "case": "flag_on_payment",
+    "expected_code": "FLAG_RULE"
+  },
+  {
+    "row": 9,
+    "case": "flag_under_threshold",
+    "expected_code": "FLAG_RULE"
+  },
+  {
+    "row": 10,
+    "case": "origin_balance_mismatch",
+    "expected_code": "ORIG_BALANCE_MATCH"
+  },
+  {
+    "row": 11,
+    "case": "transfer_dest_mismatch",
+    "expected_code": "DEST_BALANCE_MATCH"
+  },
+  {
+    "row": 12,
+    "case": "merchant_dest_on_transfer",
+    "expected_code": "MERCHANT_DEST_TYPE"
+  },
+  {
+    "row": 13,
+    "case": "fraud_on_payment",
+    "expected_code": "FRAUD_TYPE_PROFILE"
+  }
+]
