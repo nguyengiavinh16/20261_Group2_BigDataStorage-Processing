@@ -1,7 +1,0 @@
-# Version and deployment settings must be validated before Week 2 integration.
-app_name: "fraud-detection-system"
-master: "local[*]"
-shuffle_partitions: 8
-raw_hdfs_path: "hdfs://namenode:9000/fraud/raw"
-processed_hdfs_path: "hdfs://namenode:9000/fraud/processed"
-checkpoint_path: "hdfs://namenode:9000/fraud/checkpoints/transactions"
