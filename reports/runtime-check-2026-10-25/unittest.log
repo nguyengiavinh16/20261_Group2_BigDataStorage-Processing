@@ -1,0 +1,18 @@
+test_negative_amount_rejected (test_data_quality.DataQualityTests.test_negative_amount_rejected) ... ok
+test_null_amount_rejected (test_data_quality.DataQualityTests.test_null_amount_rejected) ... ok
+test_same_payload_different_ids_not_assumed_same_transaction (test_data_quality.DataQualityTests.test_same_payload_different_ids_not_assumed_same_transaction) ... ok
+test_same_transaction_id_is_duplicate (test_data_quality.DataQualityTests.test_same_transaction_id_is_duplicate) ... ok
+test_unknown_category_warns (test_data_quality.DataQualityTests.test_unknown_category_warns) ... ok
+test_valid_record_accepted (test_data_quality.DataQualityTests.test_valid_record_accepted) ... ok
+test_amount_string_rejected (test_schema.SchemaTests.test_amount_string_rejected) ... ok
+test_invalid_timestamp_rejected (test_schema.SchemaTests.test_invalid_timestamp_rejected) ... ok
+test_malformed_json_rejected (test_schema.SchemaTests.test_malformed_json_rejected) ... ok
+test_missing_required_field (test_schema.SchemaTests.test_missing_required_field) ... ok
+test_unknown_category_warns_but_schema_accepts (test_schema.SchemaTests.test_unknown_category_warns_but_schema_accepts) ... ok
+test_valid_prediction (test_schema.SchemaTests.test_valid_prediction) ... ok
+test_valid_transaction_has_required_fields (test_schema.SchemaTests.test_valid_transaction_has_required_fields) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.006s
+
+OK

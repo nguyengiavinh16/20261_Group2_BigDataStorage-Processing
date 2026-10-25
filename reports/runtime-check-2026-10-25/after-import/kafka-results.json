@@ -1,0 +1,20 @@
+{
+  "topic": "codex-check-20261025-30dc88c8c01a",
+  "bootstrap_servers": "127.0.0.1:9092",
+  "python": "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+  "status": "PASS",
+  "created": true,
+  "producer": {
+    "returncode": 0,
+    "stdout": "{\n  \"sent\": 2,\n  \"rejected\": 0,\n  \"warned\": 0\n}\n",
+    "stderr": "2026-10-25 23:20:57,508 INFO <BrokerConnection node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: connecting to 127.0.0.1:9092 [('127.0.0.1', 9092) IPv4]\n2026-10-25 23:20:57,510 INFO Probing node bootstrap-0 broker version\n2026-10-25 23:20:57,510 INFO <BrokerConnection node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: Connection complete.\n2026-10-25 23:20:57,616 INFO Broker version identified as 2.5.0\n2026-10-25 23:20:57,616 INFO Set configuration api_version=(2, 5, 0) to skip auto check_version requests on startup\n2026-10-25 23:20:57,620 INFO HISTORICAL REPLAY (not live): topic=codex-check-20261025-30dc88c8c01a\n2026-10-25 23:20:57,628 INFO <BrokerConnection node_id=1 host=localhost:9092 <connecting> [IPv6 ('::1', 9092, 0, 0)]>: connecting to localhost:9092 [('::1', 9092, 0, 0) IPv6]\n2026-10-25 23:20:57,629 INFO <BrokerConnection node_id=1 host=localhost:9092 <connecting> [IPv6 ('::1', 9092, 0, 0)]>: Connection complete.\n2026-10-25 23:20:57,629 INFO <BrokerConnection node_id=bootstrap-0 host=127.0.0.1:9092 <connected> [IPv4 ('127.0.0.1', 9092)]>: Closing connection. \n2026-10-25 23:20:57,653 INFO Closing the Kafka producer with 10 secs timeout.\n2026-10-25 23:20:57,654 INFO <BrokerConnection node_id=1 host=localhost:9092 <connected> [IPv6 ('::1', 9092, 0, 0)]>: Closing connection. \n"
+  },
+  "consumer": {
+    "returncode": 0,
+    "stdout": "Listening to codex-check-20261025-30dc88c8c01a; target=2; timeout=15.0s\n{\"count\": 1, \"partition\": 0, \"offset\": 0, \"key\": \"paysim-395b234468e6df23-row-000000000001\", \"value\": {\"schema_version\": \"1.0\", \"transaction_id\": \"paysim-395b234468e6df23-row-000000000001\", \"event_time\": \"2026-01-01T01:00:00Z\", \"event_time_step\": 1, \"transaction_type\": \"PAYMENT\", \"amount\": 125.75, \"source_dataset\": \"paysim\", \"source_row_id\": \"395b234468e6df23:1\", \"origin_account_id\": \"C10001\", \"destination_account_id\": \"M20411\", \"origin_balance_before\": 500.0, \"origin_balance_after\": 374.25, \"destination_balance_before\": 1200.0, \"destination_balance_after\": 1325.75}}\n{\"count\": 2, \"partition\": 0, \"offset\": 1, \"key\": \"paysim-395b234468e6df23-row-000000000002\", \"value\": {\"schema_version\": \"1.0\", \"transaction_id\": \"paysim-395b234468e6df23-row-000000000002\", \"event_time\": \"2026-01-01T02:00:00Z\", \"event_time_step\": 2, \"transaction_type\": \"CASH_OUT\", \"amount\": 900.0, \"source_dataset\": \"paysim\", \"source_row_id\": \"395b234468e6df23:2\", \"origin_account_id\": \"C10002\", \"destination_account_id\": \"C30005\", \"origin_balance_before\": 900.0, \"origin_balance_after\": 0.0, \"destination_balance_before\": 350.0, \"destination_balance_after\": 1250.0}}\n{\n  \"topic\": \"codex-check-20261025-30dc88c8c01a\",\n  \"received\": 2,\n  \"target\": 2,\n  \"status\": \"PASS\"\n}\n",
+    "stderr": ""
+  },
+  "received": 2,
+  "schema_valid_messages": 2,
+  "temporary_topic_deleted": true
+}

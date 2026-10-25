@@ -1,0 +1,124 @@
+{
+  "environment": {
+    "python": "3.11.17 | packaged by Anaconda, Inc. | (main, Oct  1 2026, 20:16:54) [MSC v.1942 64 bit (AMD64)]",
+    "executable": "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+    "conda_prefix": "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata",
+    "base_commit": "3ddb62a45c849a4c13414214bb200312f79929d7",
+    "source": "working tree after importing selected dat/week2-spark-etl support files",
+    "checked_at": "2026-10-25T23:17:35.598960+07:00"
+  },
+  "checks": [
+    {
+      "name": "etl-help",
+      "argv": [
+        "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+        "-m",
+        "src.processing.etl",
+        "--help"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "seconds": 0.256,
+      "log": "etl-help.log",
+      "status": "PASS"
+    },
+    {
+      "name": "data-quality-tests",
+      "argv": [
+        "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_data_quality.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "seconds": 0.133,
+      "log": "data-quality-tests.log",
+      "status": "PASS"
+    },
+    {
+      "name": "schema-tests",
+      "argv": [
+        "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_schema.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "seconds": 1.335,
+      "log": "schema-tests.log",
+      "status": "PASS"
+    },
+    {
+      "name": "notebook-01_data_profiling",
+      "status": "PASS",
+      "seconds": 104.745,
+      "error": null,
+      "executed_code_cells": 15,
+      "code_cells": 15,
+      "installation_cells_skipped": [],
+      "kernel": "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+      "working_directory": "C:\\Users\\lenovo\\AppData\\Local\\Temp\\fraud-conda-bigdata-check-ej62a20h\\source\\notebooks",
+      "executed_copy": "notebook-runs/01_data_profiling.ipynb"
+    },
+    {
+      "name": "notebook-paysim_basic_eda",
+      "status": "PASS",
+      "seconds": 34.963,
+      "error": null,
+      "executed_code_cells": 11,
+      "code_cells": 11,
+      "installation_cells_skipped": [],
+      "kernel": "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+      "working_directory": "C:\\Users\\lenovo\\AppData\\Local\\Temp\\fraud-conda-bigdata-check-ej62a20h\\source\\notebooks",
+      "executed_copy": "notebook-runs/paysim_basic_eda.ipynb"
+    },
+    {
+      "name": "notebook-w1_eda_label_evaluation",
+      "status": "PASS",
+      "seconds": 75.844,
+      "error": null,
+      "executed_code_cells": 19,
+      "code_cells": 19,
+      "installation_cells_skipped": [],
+      "kernel": "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+      "working_directory": "C:\\Users\\lenovo\\AppData\\Local\\Temp\\fraud-conda-bigdata-check-ej62a20h\\source\\notebooks",
+      "executed_copy": "notebook-runs/w1_eda_label_evaluation.ipynb"
+    }
+  ],
+  "findings": [],
+  "work_directory": "C:\\Users\\lenovo\\AppData\\Local\\Temp\\fraud-conda-bigdata-check-ej62a20h",
+  "restored_files": [
+    ".dockerignore",
+    "Dockerfile.jupyter",
+    "docker-compose.yml",
+    "README.md",
+    "configs/README.md",
+    "configs/etl.json",
+    "configs/paysim_schema.json",
+    "configs/data_profiling.json",
+    "src/processing/schema.py",
+    "tests/test_etl.py",
+    "tests/fixtures/paysim_etl.csv",
+    "reports/week2-unit-tests.log"
+  ],
+  "notebook_data": {
+    "source": "existing local backup branch, not a download",
+    "file": "backup/main-before-sync-2026-10-25:data/paysim dataset.csv",
+    "bytes": 493534783,
+    "temporary_path": "C:\\Users\\lenovo\\AppData\\Local\\Temp\\fraud-conda-bigdata-check-ej62a20h\\source\\data\\paysim dataset.csv",
+    "alias_for_w1_notebook": "C:\\Users\\lenovo\\AppData\\Local\\Temp\\fraud-conda-bigdata-check-ej62a20h\\source\\data\\raw\\PS_20174392719_1491204439457_log.csv",
+    "note": "Original notebooks, local historical reports and outputs remain untouched."
+  }
+}

@@ -1,0 +1,18 @@
+usage: etl.py [-h] [--config CONFIG] [--input INPUT_PATH]
+              [--output-root OUTPUT_ROOT] [--limit LIMIT] [--master MASTER]
+
+PaySim batch ETL: raw CSV -> validated Parquet and replay handoff. Run from
+the project root: python -m src.processing.etl --limit 10000 Or run directly:
+python ./src/processing/etl.py --limit 10000 Input is one local UTF-8 CSV with
+one record per physical line. Local Docker storage is supported here; HDFS and
+multiline CSV require separate ingestion.
+
+options:
+  -h, --help            show this help message and exit
+  --config CONFIG
+  --input INPUT_PATH    One local CSV file, using the container path
+  --output-root OUTPUT_ROOT
+                        Parent directory for versioned ETL outputs
+  --limit LIMIT         Process the first N physical data lines, including
+                        invalid rows
+  --master MASTER       Override local[2] from config

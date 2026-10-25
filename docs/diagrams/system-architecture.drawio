@@ -1,0 +1,243 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="drawio-skill" agent="drawio-skill | source-backed architecture" version="3.0.0" modified="2026-10-25T00:00:00.000Z" data-source-snapshot="Base main @ 3ddb62a + local W2 imports (uncommitted)" data-deployment="{&quot;batch_service&quot;:&quot;spark&quot;,&quot;container_os&quot;:&quot;Linux&quot;,&quot;spark_version&quot;:&quot;4.2.0&quot;,&quot;java_version&quot;:&quot;21&quot;,&quot;spark_master&quot;:&quot;local[2]&quot;,&quot;project_mount&quot;:&quot;.:/workspace&quot;,&quot;host_notebook_environment&quot;:&quot;Windows Conda bigdata&quot;,&quot;runtime_verification&quot;:&quot;unverified&quot;}">
+  <diagram id="target-architecture" name="01 Target architecture">
+    <mxGraphModel dx="1600" dy="1140" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1140" math="0" shadow="0" background="#ffffff">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="serve-lane" value="03   QUERY + PRESENTATION" vertex="1" parent="1" style="swimlane;startSize=42;horizontal=1;container=1;collapsible=0;pointerEvents=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;swimlaneFillColor=#ffffff;strokeColor=#82b366;fontColor=#17202a;fontFamily=Helvetica;fontSize=17;fontStyle=1;align=left;spacingLeft=18;rounded=1;arcSize=6;">
+          <mxGeometry x="940" y="760" width="620" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="stream-lane" value="02   HISTORICAL REPLAY + STREAMING INFERENCE" vertex="1" parent="1" style="swimlane;startSize=42;horizontal=1;container=1;collapsible=0;pointerEvents=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;swimlaneFillColor=#ffffff;strokeColor=#d6b656;fontColor=#17202a;fontFamily=Helvetica;fontSize=17;fontStyle=1;align=left;spacingLeft=18;rounded=1;arcSize=6;">
+          <mxGeometry x="340" y="460" width="1220" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="offline-lane" value="01   OFFLINE BATCH | Docker Linux: Spark 4.2 / Java 21 | /workspace host bind" vertex="1" parent="1" style="swimlane;startSize=42;horizontal=1;container=1;collapsible=0;pointerEvents=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;swimlaneFillColor=#ffffff;strokeColor=#6c8ebf;fontColor=#17202a;fontFamily=Helvetica;fontSize=17;fontStyle=1;align=left;spacingLeft=18;rounded=1;arcSize=6;">
+          <mxGeometry x="40" y="160" width="1520" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="paysim" value="&lt;b&gt;PaySim dataset&lt;/b&gt;&lt;br&gt;&lt;br&gt;Historical / synthetic CSV&lt;br&gt;Source for batch and replay" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;" vertex="1" parent="offline-lane" data-model-id="paysim" data-kind="external" data-properties="{&quot;implementation_status&quot;:&quot;source&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-source-properties="{&quot;implementation_status&quot;:&quot;source&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-source-label="PaySim dataset&#10;Historical / synthetic CSV&#10;Source for batch and replay" data-provenance="{&quot;path&quot;:&quot;docs/week1/data-source.md&quot;,&quot;revision&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="40" y="70" width="220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="batch-etl" value="&lt;b&gt;Spark batch ETL&lt;/b&gt;&lt;br&gt;&lt;br&gt;Parse, validate, normalize&lt;br&gt;Code + schema/config present" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;" vertex="1" parent="offline-lane" data-model-id="batch-etl" data-kind="service" data-properties="{&quot;implementation_status&quot;:&quot;code-and-config-present&quot;,&quot;environment&quot;:&quot;docker-linux&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;,&quot;runtime_verification&quot;:&quot;unverified&quot;,&quot;working_tree_source&quot;:&quot;dat/week2-spark-etl imports; uncommitted&quot;,&quot;runtime_status&quot;:&quot;fixture-etl-verified&quot;}" data-source-properties="{&quot;implementation_status&quot;:&quot;code-and-config-present&quot;,&quot;environment&quot;:&quot;docker-linux&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;,&quot;runtime_verification&quot;:&quot;unverified&quot;,&quot;working_tree_source&quot;:&quot;dat/week2-spark-etl imports; uncommitted&quot;}" data-source-label="Spark batch ETL&#10;Parse, validate, normalize&#10;Code + schema/config present" data-provenance="{&quot;path&quot;:&quot;src/processing/etl.py&quot;,&quot;revision&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="340" y="70" width="220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="parquet" value="&lt;b&gt;Parquet storage&lt;/b&gt;&lt;br&gt;&lt;br&gt;Local: data/processed/&lt;br&gt;HDFS target: planned" style="shape=cylinder3;whiteSpace=wrap;html=1;arcSize=10;size=15;boundedLbl=1;spacingTop=12;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;" vertex="1" parent="offline-lane" data-model-id="parquet" data-kind="database" data-properties="{&quot;implementation_status&quot;:&quot;code-present&quot;,&quot;environment&quot;:&quot;docker-host-bind&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;,&quot;runtime_verification&quot;:&quot;unverified&quot;,&quot;working_tree_source&quot;:&quot;dat/week2-spark-etl imports; uncommitted&quot;,&quot;runtime_status&quot;:&quot;fixture-etl-verified&quot;}" data-source-properties="{&quot;implementation_status&quot;:&quot;code-present&quot;,&quot;environment&quot;:&quot;docker-host-bind&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;,&quot;runtime_verification&quot;:&quot;unverified&quot;,&quot;working_tree_source&quot;:&quot;dat/week2-spark-etl imports; uncommitted&quot;}" data-source-label="Parquet storage&#10;Local: data/processed/&#10;HDFS target: planned" data-provenance="{&quot;path&quot;:&quot;src/processing/etl.py&quot;,&quot;revision&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="640" y="70" width="220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="training" value="&lt;b&gt;Model training&lt;/b&gt;&lt;br&gt;&lt;br&gt;Logistic regression baseline&lt;br&gt;Random forest candidate" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;dashed=1;dashPattern=6 4;" vertex="1" parent="offline-lane" data-model-id="training" data-kind="service" data-properties="{&quot;implementation_status&quot;:&quot;planned&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-source-properties="{&quot;implementation_status&quot;:&quot;planned&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-source-label="Model training&#10;Logistic regression baseline&#10;Random forest candidate" data-provenance="{&quot;path&quot;:&quot;configs/model.yaml&quot;,&quot;revision&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="940" y="70" width="220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="model-artifact" value="&lt;b&gt;Versioned model&lt;/b&gt;&lt;br&gt;&lt;br&gt;Pipeline + metadata.json&lt;br&gt;Features, threshold, version" style="shape=cylinder3;whiteSpace=wrap;html=1;arcSize=10;size=15;boundedLbl=1;spacingTop=12;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;dashed=1;dashPattern=6 4;" vertex="1" parent="offline-lane" data-model-id="model-artifact" data-kind="database" data-properties="{&quot;implementation_status&quot;:&quot;planned&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-source-properties="{&quot;implementation_status&quot;:&quot;planned&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-source-label="Versioned model&#10;Pipeline + metadata.json&#10;Features, threshold, version" data-provenance="{&quot;path&quot;:&quot;docs/week1/architecture.md&quot;,&quot;revision&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="1240" y="70" width="240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="producer" value="&lt;b&gt;CSV replay producer&lt;/b&gt;&lt;br&gt;&lt;br&gt;Map + validate JSON events&lt;br&gt;Code present" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;" vertex="1" parent="stream-lane" data-model-id="producer" data-kind="service" data-properties="{&quot;implementation_status&quot;:&quot;code-present&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-source-properties="{&quot;implementation_status&quot;:&quot;code-present&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-source-label="CSV replay producer&#10;Map + validate JSON events&#10;Code present" data-provenance="{&quot;path&quot;:&quot;src/ingestion/producer.py&quot;,&quot;revision&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="40" y="70" width="220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="kafka" value="&lt;b&gt;Apache Kafka&lt;/b&gt;&lt;br&gt;&lt;br&gt;Topic: transactions&lt;br&gt;Broker smoke verified" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;dashed=0;dashPattern=6 4;" vertex="1" parent="stream-lane" data-model-id="kafka" data-kind="queue" data-properties="{&quot;implementation_status&quot;:&quot;configured&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;,&quot;runtime_status&quot;:&quot;broker-smoke-verified&quot;}" data-source-properties="{&quot;implementation_status&quot;:&quot;configured&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-source-label="Apache Kafka&#10;Topic: transactions&#10;Configured; runtime unverified" data-provenance="{&quot;path&quot;:&quot;configs/kafka.yaml&quot;,&quot;revision&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="340" y="70" width="220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="streaming" value="&lt;b&gt;Streaming inference&lt;/b&gt;&lt;br&gt;&lt;br&gt;Spark Structured Streaming&lt;br&gt;Load model; score; checkpoint" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;dashed=1;dashPattern=6 4;" vertex="1" parent="stream-lane" data-model-id="streaming" data-kind="service" data-properties="{&quot;implementation_status&quot;:&quot;planned&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-source-properties="{&quot;implementation_status&quot;:&quot;planned&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-source-label="Streaming inference&#10;Spark Structured Streaming&#10;Load model; score; checkpoint" data-provenance="{&quot;path&quot;:&quot;docs/week1/architecture.md&quot;,&quot;revision&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="640" y="70" width="220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="nosql" value="&lt;b&gt;MongoDB (proposed)&lt;/b&gt;&lt;br&gt;&lt;br&gt;Predictions / alert records&lt;br&gt;Collection layout pending" style="shape=cylinder3;whiteSpace=wrap;html=1;arcSize=10;size=15;boundedLbl=1;spacingTop=12;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;dashed=1;dashPattern=6 4;" vertex="1" parent="stream-lane" data-model-id="nosql" data-kind="database" data-properties="{&quot;implementation_status&quot;:&quot;proposed&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-source-properties="{&quot;implementation_status&quot;:&quot;proposed&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-source-label="MongoDB (proposed)&#10;Predictions / alert records&#10;Collection layout pending" data-provenance="{&quot;path&quot;:&quot;docs/week1/nosql-access-patterns.md&quot;,&quot;revision&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="940" y="70" width="240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="api" value="&lt;b&gt;FastAPI&lt;/b&gt;&lt;br&gt;&lt;br&gt;Query predictions and alerts&lt;br&gt;Filters + pagination" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;dashed=1;dashPattern=6 4;" vertex="1" parent="serve-lane" data-model-id="api" data-kind="gateway" data-properties="{&quot;implementation_status&quot;:&quot;planned&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-source-properties="{&quot;implementation_status&quot;:&quot;planned&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-source-label="FastAPI&#10;Query predictions and alerts&#10;Filters + pagination" data-provenance="{&quot;path&quot;:&quot;docs/week1/interfaces.md&quot;,&quot;revision&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="340" y="70" width="240" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="dashboard" value="&lt;b&gt;Fraud dashboard&lt;/b&gt;&lt;br&gt;&lt;br&gt;Alert list, counts, trends&lt;br&gt;Planned user interface" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;dashed=1;dashPattern=6 4;" vertex="1" parent="serve-lane" data-model-id="dashboard" data-kind="service" data-properties="{&quot;implementation_status&quot;:&quot;planned&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-source-properties="{&quot;implementation_status&quot;:&quot;planned&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-source-label="Fraud dashboard&#10;Alert list, counts, trends&#10;Planned user interface" data-provenance="{&quot;path&quot;:&quot;docs/week1/architecture.md&quot;,&quot;revision&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="40" y="70" width="220" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-system-0" value="batch" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=0;entryPerimeter=0;" edge="1" parent="1" source="paysim" target="batch-etl" data-model-id="csv-to-etl" data-kind="dataflow" data-properties="{}" data-source-properties="{}" data-source-label="batch">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-system-1" value="Parquet" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=0;entryPerimeter=0;" edge="1" parent="1" source="batch-etl" target="parquet" data-model-id="etl-to-parquet" data-kind="dataflow" data-properties="{}" data-source-properties="{}" data-source-label="Parquet">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-system-2" value="offline labels" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=0;entryPerimeter=0;dashed=1;dashPattern=6 4;" edge="1" parent="1" source="parquet" target="training" data-model-id="parquet-to-training" data-kind="dataflow" data-properties="{}" data-source-properties="{}" data-source-label="offline labels">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-system-3" value="publish" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=0;entryPerimeter=0;dashed=1;dashPattern=6 4;" edge="1" parent="1" source="training" target="model-artifact" data-model-id="training-to-artifact" data-kind="dataflow" data-properties="{}" data-source-properties="{}" data-source-label="publish">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-system-4" value="raw CSV" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0;entryY=0.5;exitPerimeter=0;entryPerimeter=0;" edge="1" parent="1" source="paysim" target="producer" data-model-id="csv-to-producer" data-kind="dataflow" data-properties="{}" data-source-properties="{}" data-source-label="raw CSV">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="190" y="590" />
+            </Array>
+            <mxPoint x="-44" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-system-5" value="JSON events" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=0;entryPerimeter=0;" edge="1" parent="1" source="producer" target="kafka" data-model-id="producer-to-kafka" data-kind="dataflow" data-properties="{}" data-source-properties="{}" data-source-label="JSON events">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-system-6" value="consume" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=0;entryPerimeter=0;dashed=1;dashPattern=6 4;" edge="1" parent="1" source="kafka" target="streaming" data-model-id="kafka-to-streaming" data-kind="dataflow" data-properties="{}" data-source-properties="{}" data-source-label="consume">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-system-7" value="load model" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;exitPerimeter=0;entryPerimeter=0;dashed=1;dashPattern=6 4;" edge="1" parent="1" source="model-artifact" target="streaming" data-model-id="artifact-to-streaming" data-kind="model-load" data-properties="{}" data-source-properties="{}" data-source-label="load model">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1400" y="430" />
+              <mxPoint x="1090" y="430" />
+            </Array>
+            <mxPoint x="0" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-system-8" value="scores" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=0;entryPerimeter=0;dashed=1;dashPattern=6 4;" edge="1" parent="1" source="streaming" target="nosql" data-model-id="streaming-to-nosql" data-kind="dataflow" data-properties="{}" data-source-properties="{}" data-source-label="scores">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-system-9" value="query results" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=0.5;exitY=1;entryX=0.5;entryY=0;exitPerimeter=0;entryPerimeter=0;dashed=1;dashPattern=6 4;" edge="1" parent="1" source="nosql" target="api" data-model-id="nosql-to-api" data-kind="dataflow" data-properties="{}" data-source-properties="{}" data-source-label="query results">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="60" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-system-10" value="JSON" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;entryX=1;entryY=0.5;exitPerimeter=0;entryPerimeter=0;dashed=1;dashPattern=6 4;" edge="1" parent="1" source="api" target="dashboard" data-model-id="api-to-dashboard" data-kind="dataflow" data-properties="{}" data-source-properties="{}" data-source-label="JSON">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="title-target" value="FINANCIAL FRAUD DETECTION" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;spacing=10;fillColor=none;strokeColor=none;fontColor=#17202a;fontFamily=Helvetica;fontSize=32;fontStyle=1;">
+          <mxGeometry x="40" y="25" width="1520" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle-target" value="System architecture | Base main @ 3ddb62a + local W2 imports (uncommitted) | Historical replay" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;spacing=10;fillColor=none;strokeColor=none;fontColor=#566573;fontFamily=Helvetica;fontSize=17;fontStyle=0;">
+          <mxGeometry x="40" y="90" width="1520" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-target" value="Solid service border: code present   /   Dashed border or arrow: planned, proposed, or runtime unverified" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;spacing=10;fillColor=#f5f5f5;strokeColor=#dddddd;fontColor=#17202a;fontFamily=Helvetica;fontSize=16;fontStyle=0;">
+          <mxGeometry x="40" y="1010" width="1520" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="footer-target" value="Configured batch: Docker Linux Spark 4.2 / Java 21; project bind-mounted at /workspace. Host Conda bigdata: notebooks/checks.&#10;Labels stay offline; API queries stored results; logs/metrics span services. HDFS remains planned. Full scoring pipeline remains planned." vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;spacing=10;fillColor=none;strokeColor=none;fontColor=#566573;fontFamily=Helvetica;fontSize=15;fontStyle=0;">
+          <mxGeometry x="40" y="1060" width="1520" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="checkpoint-note" value="MODEL CONTRACT&#10;Feature order + preprocessing + threshold&#10;are loaded into the streaming scorer." vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;spacing=10;fillColor=#f5f5f5;strokeColor=#dddddd;fontColor=#17202a;fontFamily=Helvetica;fontSize=17;fontStyle=0;">
+          <mxGeometry x="380" y="800" width="500" height="110" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="current-main" name="02 Current main">
+    <mxGraphModel dx="1600" dy="1140" grid="1" gridSize="10" page="1" pageScale="1" pageWidth="1600" pageHeight="1140" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title-current" value="CURRENT MAIN: CODE + INTEGRATION BOUNDARIES" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;spacing=10;fillColor=none;strokeColor=none;fontColor=#17202a;fontFamily=Helvetica;fontSize=30;fontStyle=1;">
+          <mxGeometry x="40" y="25" width="1520" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle-current" value="Base main @ 3ddb62a + local W2 imports (uncommitted) | Fixture ETL + replay smoke verified" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;spacing=10;fillColor=none;strokeColor=none;fontColor=#566573;fontFamily=Helvetica;fontSize=17;fontStyle=0;">
+          <mxGeometry x="40" y="90" width="1520" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="batch-current" value="01   DOCKER LINUX BATCH | Spark 4.2 / Java 21 | /workspace host bind | local[2]" vertex="1" parent="1" style="swimlane;startSize=42;horizontal=1;container=1;collapsible=0;pointerEvents=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;swimlaneFillColor=#ffffff;strokeColor=#6c8ebf;fontColor=#17202a;fontFamily=Helvetica;fontSize=17;fontStyle=1;align=left;spacingLeft=18;rounded=1;arcSize=6;">
+          <mxGeometry x="40" y="160" width="1520" height="440" as="geometry" />
+        </mxCell>
+        <mxCell id="replay-current" value="02   REPLAY PATH — CSV PRODUCER + SMOKE CONSUMER" vertex="1" parent="1" style="swimlane;startSize=42;horizontal=1;container=1;collapsible=0;pointerEvents=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;swimlaneFillColor=#ffffff;strokeColor=#d6b656;fontColor=#17202a;fontFamily=Helvetica;fontSize=17;fontStyle=1;align=left;spacingLeft=18;rounded=1;arcSize=6;">
+          <mxGeometry x="40" y="650" width="1520" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="current--paysim" value="&lt;b&gt;PaySim dataset&lt;/b&gt;&lt;br&gt;&lt;br&gt;Historical / synthetic CSV&lt;br&gt;Source for batch and replay" style="rounded=1;dashed=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;" vertex="1" parent="batch-current" data-model-id="paysim" data-kind="external" data-properties="{&quot;implementation_status&quot;: &quot;source&quot;, &quot;environment&quot;: &quot;local&quot;, &quot;source_commit&quot;: &quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-provenance="{&quot;path&quot;: &quot;docs/week1/data-source.md&quot;, &quot;revision&quot;: &quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="40" y="170" width="220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="current--batch-etl" value="&lt;b&gt;Spark batch ETL&lt;/b&gt;&lt;br&gt;&lt;br&gt;Code + schema/config present&lt;br&gt;Fixture ETL verified" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;" vertex="1" parent="batch-current" data-model-id="batch-etl" data-kind="service" data-properties="{&quot;implementation_status&quot;:&quot;code-and-config-present&quot;,&quot;environment&quot;:&quot;docker-linux&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;,&quot;runtime_verification&quot;:&quot;unverified&quot;,&quot;working_tree_source&quot;:&quot;dat/week2-spark-etl imports; uncommitted&quot;,&quot;runtime_status&quot;:&quot;fixture-etl-verified&quot;}" data-provenance="{&quot;path&quot;: &quot;src/processing/etl.py&quot;, &quot;revision&quot;: &quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-source-label="Spark batch ETL&#10;Parse, validate, normalize&#10;Code + schema/config present">
+          <mxGeometry x="380" y="170" width="240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="current--producer" value="&lt;b&gt;CSV replay producer&lt;/b&gt;&lt;br&gt;&lt;br&gt;Map + validate JSON events&lt;br&gt;Code present" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;" vertex="1" parent="replay-current" data-model-id="producer" data-kind="service" data-properties="{&quot;implementation_status&quot;: &quot;code-present&quot;, &quot;environment&quot;: &quot;local&quot;, &quot;source_commit&quot;: &quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-provenance="{&quot;path&quot;: &quot;src/ingestion/producer.py&quot;, &quot;revision&quot;: &quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="380" y="80" width="240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="current--kafka" value="&lt;b&gt;Apache Kafka&lt;/b&gt;&lt;br&gt;&lt;br&gt;Topic: transactions&lt;br&gt;Broker smoke verified" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;dashed=0;dashPattern=6 4;" vertex="1" parent="replay-current" data-model-id="kafka" data-kind="queue" data-properties="{&quot;implementation_status&quot;:&quot;configured&quot;,&quot;environment&quot;:&quot;local&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;,&quot;runtime_status&quot;:&quot;broker-smoke-verified&quot;}" data-provenance="{&quot;path&quot;: &quot;configs/kafka.yaml&quot;, &quot;revision&quot;: &quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="780" y="80" width="260" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="current--processed-output" value="&lt;b&gt;Processed Parquet&lt;/b&gt;&lt;br&gt;&lt;br&gt;Typed valid features&lt;br&gt;Local filesystem output" style="shape=cylinder3;whiteSpace=wrap;html=1;arcSize=10;size=15;boundedLbl=1;spacingTop=12;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;" vertex="1" parent="batch-current" data-model-id="processed-output" data-kind="database" data-properties="{&quot;implementation_status&quot;:&quot;code-present&quot;,&quot;environment&quot;:&quot;docker-host-bind&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;,&quot;runtime_verification&quot;:&quot;unverified&quot;,&quot;working_tree_source&quot;:&quot;dat/week2-spark-etl imports; uncommitted&quot;,&quot;runtime_status&quot;:&quot;fixture-etl-verified&quot;}" data-provenance="{&quot;path&quot;: &quot;src/processing/etl.py&quot;, &quot;revision&quot;: &quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="780" y="90" width="260" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="current--labels-output" value="&lt;b&gt;Labels Parquet&lt;/b&gt;&lt;br&gt;&lt;br&gt;Ground truth kept offline&lt;br&gt;Separate from scoring events" style="shape=cylinder3;whiteSpace=wrap;html=1;arcSize=10;size=15;boundedLbl=1;spacingTop=12;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;" vertex="1" parent="batch-current" data-model-id="labels-output" data-kind="database" data-properties="{&quot;implementation_status&quot;:&quot;code-present&quot;,&quot;environment&quot;:&quot;docker-host-bind&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;,&quot;runtime_verification&quot;:&quot;unverified&quot;,&quot;working_tree_source&quot;:&quot;dat/week2-spark-etl imports; uncommitted&quot;,&quot;runtime_status&quot;:&quot;fixture-etl-verified&quot;}" data-provenance="{&quot;path&quot;: &quot;src/processing/etl.py&quot;, &quot;revision&quot;: &quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="1180" y="90" width="280" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="current--quarantine-output" value="&lt;b&gt;Quarantine Parquet&lt;/b&gt;&lt;br&gt;&lt;br&gt;Rejected rows + reasons&lt;br&gt;For data-quality review" style="shape=cylinder3;whiteSpace=wrap;html=1;arcSize=10;size=15;boundedLbl=1;spacingTop=12;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;" vertex="1" parent="batch-current" data-model-id="quarantine-output" data-kind="database" data-properties="{&quot;implementation_status&quot;:&quot;code-present&quot;,&quot;environment&quot;:&quot;docker-host-bind&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;,&quot;runtime_verification&quot;:&quot;unverified&quot;,&quot;working_tree_source&quot;:&quot;dat/week2-spark-etl imports; uncommitted&quot;,&quot;runtime_status&quot;:&quot;fixture-etl-verified&quot;}" data-provenance="{&quot;path&quot;: &quot;src/processing/etl.py&quot;, &quot;revision&quot;: &quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="780" y="280" width="260" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="current--replay-output" value="&lt;b&gt;Replay Parquet&lt;/b&gt;&lt;br&gt;&lt;br&gt;ETL handoff output&lt;br&gt;Producer bridge is missing" style="shape=cylinder3;whiteSpace=wrap;html=1;arcSize=10;size=15;boundedLbl=1;spacingTop=12;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;" vertex="1" parent="batch-current" data-model-id="replay-output" data-kind="database" data-properties="{&quot;implementation_status&quot;:&quot;code-present&quot;,&quot;environment&quot;:&quot;docker-host-bind&quot;,&quot;source_commit&quot;:&quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;,&quot;runtime_verification&quot;:&quot;unverified&quot;,&quot;working_tree_source&quot;:&quot;dat/week2-spark-etl imports; uncommitted&quot;,&quot;runtime_status&quot;:&quot;fixture-etl-verified&quot;}" data-provenance="{&quot;path&quot;: &quot;src/processing/etl.py&quot;, &quot;revision&quot;: &quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="1180" y="280" width="280" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="current--smoke-consumer" value="&lt;b&gt;Kafka smoke consumer&lt;/b&gt;&lt;br&gt;&lt;br&gt;Read / print / count events&lt;br&gt;No model inference" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;" vertex="1" parent="replay-current" data-model-id="smoke-consumer" data-kind="service" data-properties="{&quot;implementation_status&quot;: &quot;code-present&quot;, &quot;environment&quot;: &quot;local&quot;, &quot;source_commit&quot;: &quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}" data-provenance="{&quot;path&quot;: &quot;src/ingestion/consumer_test.py&quot;, &quot;revision&quot;: &quot;3ddb62a45c849a4c13414214bb200312f79929d7&quot;}">
+          <mxGeometry x="1180" y="80" width="280" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="current-csv-etl" value="raw CSV" edge="1" parent="1" source="current--paysim" target="current--batch-etl" data-kind="dataflow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=0;entryPerimeter=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="current-etl-processed" value="" edge="1" parent="1" source="current--batch-etl" target="current--processed-output" data-kind="dataflow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=1;exitY=0.25;entryX=0;entryY=0.5;exitPerimeter=0;entryPerimeter=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="730" y="360" />
+              <mxPoint x="730" y="310" />
+            </Array>
+            <mxPoint x="0" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="current-etl-labels" value="" edge="1" parent="1" source="current--batch-etl" target="current--labels-output" data-kind="dataflow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=0.75;exitY=0;entryX=0.5;entryY=0;exitPerimeter=0;entryPerimeter=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="600" y="220" />
+              <mxPoint x="1360" y="220" />
+            </Array>
+            <mxPoint x="0" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="current-etl-quarantine" value="" edge="1" parent="1" source="current--batch-etl" target="current--quarantine-output" data-kind="dataflow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=1;exitY=0.75;entryX=0;entryY=0.5;exitPerimeter=0;entryPerimeter=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="730" y="420" />
+              <mxPoint x="730" y="500" />
+            </Array>
+            <mxPoint x="0" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="current-etl-replay" value="" edge="1" parent="1" source="current--batch-etl" target="current--replay-output" data-kind="dataflow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=0.75;exitY=1;entryX=0.5;entryY=1;exitPerimeter=0;entryPerimeter=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="600" y="580" />
+              <mxPoint x="1360" y="580" />
+            </Array>
+            <mxPoint x="0" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="current-csv-producer" value="raw CSV" edge="1" parent="1" source="current--paysim" target="current--producer" data-kind="dataflow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=0;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=0;entryPerimeter=0;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="20" y="390" />
+              <mxPoint x="20" y="790" />
+            </Array>
+            <mxPoint x="40" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="current-producer-kafka" value="JSON events" edge="1" parent="1" source="current--producer" target="current--kafka" data-kind="dataflow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=0;entryPerimeter=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="current-kafka-smoke" value="consume" edge="1" parent="1" source="current--kafka" target="current--smoke-consumer" data-kind="dataflow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;endSize=8;strokeColor=#566573;strokeWidth=1.8;fontColor=#34495e;fontFamily=Helvetica;fontSize=13;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=0;entryY=0.5;exitPerimeter=0;entryPerimeter=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-14" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="current-gap" value="WORKING TREE + INTEGRATION&#10;W2 Docker/ETL support imported (uncommitted). Windows Conda bigdata: local notebooks/checks; batch: Docker Linux.&#10;ETL vs producer IDs/fields differ; producer reads raw CSV, without a replay Parquet bridge. Full scoring pipeline remains planned." vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;spacing=10;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#17202a;fontFamily=Helvetica;fontSize=17;fontStyle=0;">
+          <mxGeometry x="40" y="920" width="1520" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="current-future" value="NEXT COMPONENTS (PLANNED)&#10;Model training + artifacts -&gt; Structured Streaming -&gt; MongoDB (proposed) -&gt; FastAPI -&gt; dashboard.&#10;Current topic: transactions. Week 1 documents still contain the older transaction-events name." vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=middle;spacing=10;fillColor=none;strokeColor=none;fontColor=#566573;fontFamily=Helvetica;fontSize=16;fontStyle=0;">
+          <mxGeometry x="40" y="1040" width="1520" height="80" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

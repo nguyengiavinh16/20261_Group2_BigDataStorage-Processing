@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\lenovo\project\bigdata\src\ingestion\consumer_test.py", line 27, in <module>
+    if __name__=="__main__": main()
+                             ^^^^^^
+  File "C:\Users\lenovo\project\bigdata\src\ingestion\consumer_test.py", line 12, in main
+    c=KafkaConsumer(a.topic,bootstrap_servers=a.bootstrap_servers.split(","),group_id=a.group_id,
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lenovo\AppData\Local\miniconda3\envs\bigdata\Lib\site-packages\kafka\consumer\group.py", line 356, in __init__
+    self._client = KafkaClient(metrics=self._metrics, **self.config)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lenovo\AppData\Local\miniconda3\envs\bigdata\Lib\site-packages\kafka\client_async.py", line 244, in __init__
+    self.config['api_version'] = self.check_version(timeout=check_timeout)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lenovo\AppData\Local\miniconda3\envs\bigdata\Lib\site-packages\kafka\client_async.py", line 927, in check_version
+    raise Errors.NoBrokersAvailable()
+kafka.errors.NoBrokersAvailable: NoBrokersAvailable

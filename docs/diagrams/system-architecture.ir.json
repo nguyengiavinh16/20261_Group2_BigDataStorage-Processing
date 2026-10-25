@@ -1,0 +1,316 @@
+{
+  "schema": "drawio-skill/diagram-ir/v1",
+  "metadata": {
+    "title": "Financial Fraud Detection | System Architecture",
+    "revision": "3ddb62a45c849a4c13414214bb200312f79929d7",
+    "scope": "Target design and local main working tree with uncommitted W2 Docker/ETL imports; runtime unverified",
+    "style_preset": "default",
+    "source_snapshot": "Base main @ 3ddb62a + local W2 imports (uncommitted)",
+    "working_tree_source": "dat/week2-spark-etl imports; uncommitted",
+    "deployment": {
+      "batch_service": "spark",
+      "container_os": "Linux",
+      "spark_version": "4.2.0",
+      "java_version": "21",
+      "spark_master": "local[2]",
+      "project_mount": ".:/workspace",
+      "host_notebook_environment": "Windows Conda bigdata",
+      "runtime_verification": "unverified"
+    },
+    "runtime_evidence": "reports/project-check-2026-10-25.md; fixture ETL + local Kafka smoke verified"
+  },
+  "nodes": [
+    {
+      "id": "paysim",
+      "label": "PaySim dataset\nHistorical / synthetic CSV\nSource for batch and replay",
+      "kind": "external",
+      "properties": {
+        "implementation_status": "source",
+        "environment": "local",
+        "source_commit": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "provenance": {
+        "path": "docs/week1/data-source.md",
+        "revision": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "style": "rounded=1;dashed=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;",
+      "width": 220,
+      "height": 120
+    },
+    {
+      "id": "batch-etl",
+      "label": "Spark batch ETL\nParse, validate, normalize\nCode + schema/config present",
+      "kind": "service",
+      "properties": {
+        "implementation_status": "code-and-config-present",
+        "environment": "docker-linux",
+        "source_commit": "3ddb62a45c849a4c13414214bb200312f79929d7",
+        "runtime_verification": "unverified",
+        "working_tree_source": "dat/week2-spark-etl imports; uncommitted",
+        "supporting_files": [
+          "src/processing/schema.py",
+          "configs/etl.json",
+          "configs/paysim_schema.json",
+          "Dockerfile.jupyter",
+          "docker-compose.yml"
+        ],
+        "runtime_status": "fixture-etl-verified"
+      },
+      "provenance": {
+        "path": "src/processing/etl.py",
+        "revision": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "style": "rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;",
+      "width": 220,
+      "height": 120
+    },
+    {
+      "id": "parquet",
+      "label": "Parquet storage\nLocal: data/processed/\nHDFS target: planned",
+      "kind": "database",
+      "properties": {
+        "implementation_status": "code-present",
+        "environment": "docker-host-bind",
+        "source_commit": "3ddb62a45c849a4c13414214bb200312f79929d7",
+        "runtime_verification": "unverified",
+        "working_tree_source": "dat/week2-spark-etl imports; uncommitted",
+        "runtime_status": "fixture-etl-verified"
+      },
+      "provenance": {
+        "path": "src/processing/etl.py",
+        "revision": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "style": "shape=cylinder3;whiteSpace=wrap;html=1;arcSize=10;size=15;boundedLbl=1;spacingTop=12;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;",
+      "width": 220,
+      "height": 120
+    },
+    {
+      "id": "training",
+      "label": "Model training\nLogistic regression baseline\nRandom forest candidate",
+      "kind": "service",
+      "properties": {
+        "implementation_status": "planned",
+        "environment": "local",
+        "source_commit": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "provenance": {
+        "path": "configs/model.yaml",
+        "revision": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "style": "rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;dashed=1;dashPattern=6 4;",
+      "width": 220,
+      "height": 120
+    },
+    {
+      "id": "model-artifact",
+      "label": "Versioned model\nPipeline + metadata.json\nFeatures, threshold, version",
+      "kind": "database",
+      "properties": {
+        "implementation_status": "planned",
+        "environment": "local",
+        "source_commit": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "provenance": {
+        "path": "docs/week1/architecture.md",
+        "revision": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "style": "shape=cylinder3;whiteSpace=wrap;html=1;arcSize=10;size=15;boundedLbl=1;spacingTop=12;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;dashed=1;dashPattern=6 4;",
+      "width": 220,
+      "height": 120
+    },
+    {
+      "id": "producer",
+      "label": "CSV replay producer\nMap + validate JSON events\nCode present",
+      "kind": "service",
+      "properties": {
+        "implementation_status": "code-present",
+        "environment": "local",
+        "source_commit": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "provenance": {
+        "path": "src/ingestion/producer.py",
+        "revision": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "style": "rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;",
+      "width": 220,
+      "height": 120
+    },
+    {
+      "id": "kafka",
+      "label": "Apache Kafka\nTopic: transactions\nBroker smoke verified",
+      "kind": "queue",
+      "properties": {
+        "implementation_status": "configured",
+        "environment": "local",
+        "source_commit": "3ddb62a45c849a4c13414214bb200312f79929d7",
+        "runtime_status": "broker-smoke-verified"
+      },
+      "provenance": {
+        "path": "configs/kafka.yaml",
+        "revision": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "style": "rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;dashed=0;dashPattern=6 4;",
+      "width": 220,
+      "height": 120
+    },
+    {
+      "id": "streaming",
+      "label": "Streaming inference\nSpark Structured Streaming\nLoad model; score; checkpoint",
+      "kind": "service",
+      "properties": {
+        "implementation_status": "planned",
+        "environment": "local",
+        "source_commit": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "provenance": {
+        "path": "docs/week1/architecture.md",
+        "revision": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "style": "rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;dashed=1;dashPattern=6 4;",
+      "width": 220,
+      "height": 120
+    },
+    {
+      "id": "nosql",
+      "label": "MongoDB (proposed)\nPredictions / alert records\nCollection layout pending",
+      "kind": "database",
+      "properties": {
+        "implementation_status": "proposed",
+        "environment": "local",
+        "source_commit": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "provenance": {
+        "path": "docs/week1/nosql-access-patterns.md",
+        "revision": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "style": "shape=cylinder3;whiteSpace=wrap;html=1;arcSize=10;size=15;boundedLbl=1;spacingTop=12;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;dashed=1;dashPattern=6 4;",
+      "width": 220,
+      "height": 120
+    },
+    {
+      "id": "api",
+      "label": "FastAPI\nQuery predictions and alerts\nFilters + pagination",
+      "kind": "gateway",
+      "properties": {
+        "implementation_status": "planned",
+        "environment": "local",
+        "source_commit": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "provenance": {
+        "path": "docs/week1/interfaces.md",
+        "revision": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "style": "rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#ffe6cc;strokeColor=#d79b00;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;dashed=1;dashPattern=6 4;",
+      "width": 220,
+      "height": 120
+    },
+    {
+      "id": "dashboard",
+      "label": "Fraud dashboard\nAlert list, counts, trends\nPlanned user interface",
+      "kind": "service",
+      "properties": {
+        "implementation_status": "planned",
+        "environment": "local",
+        "source_commit": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "provenance": {
+        "path": "docs/week1/architecture.md",
+        "revision": "3ddb62a45c849a4c13414214bb200312f79929d7"
+      },
+      "style": "rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#17202a;fontFamily=Helvetica;fontSize=15;spacing=14;strokeWidth=1.6;dashed=1;dashPattern=6 4;",
+      "width": 220,
+      "height": 120
+    }
+  ],
+  "edges": [
+    {
+      "id": "csv-to-etl",
+      "source": "paysim",
+      "target": "batch-etl",
+      "label": "batch",
+      "kind": "dataflow",
+      "properties": {}
+    },
+    {
+      "id": "etl-to-parquet",
+      "source": "batch-etl",
+      "target": "parquet",
+      "label": "Parquet",
+      "kind": "dataflow",
+      "properties": {}
+    },
+    {
+      "id": "parquet-to-training",
+      "source": "parquet",
+      "target": "training",
+      "label": "offline labels",
+      "kind": "dataflow",
+      "properties": {}
+    },
+    {
+      "id": "training-to-artifact",
+      "source": "training",
+      "target": "model-artifact",
+      "label": "publish",
+      "kind": "dataflow",
+      "properties": {}
+    },
+    {
+      "id": "csv-to-producer",
+      "source": "paysim",
+      "target": "producer",
+      "label": "raw CSV",
+      "kind": "dataflow",
+      "properties": {}
+    },
+    {
+      "id": "producer-to-kafka",
+      "source": "producer",
+      "target": "kafka",
+      "label": "JSON events",
+      "kind": "dataflow",
+      "properties": {}
+    },
+    {
+      "id": "kafka-to-streaming",
+      "source": "kafka",
+      "target": "streaming",
+      "label": "consume",
+      "kind": "dataflow",
+      "properties": {}
+    },
+    {
+      "id": "artifact-to-streaming",
+      "source": "model-artifact",
+      "target": "streaming",
+      "label": "load model",
+      "kind": "model-load",
+      "properties": {}
+    },
+    {
+      "id": "streaming-to-nosql",
+      "source": "streaming",
+      "target": "nosql",
+      "label": "scores",
+      "kind": "dataflow",
+      "properties": {}
+    },
+    {
+      "id": "nosql-to-api",
+      "source": "nosql",
+      "target": "api",
+      "label": "query results",
+      "kind": "dataflow",
+      "properties": {}
+    },
+    {
+      "id": "api-to-dashboard",
+      "source": "api",
+      "target": "dashboard",
+      "label": "JSON",
+      "kind": "dataflow",
+      "properties": {}
+    }
+  ],
+  "views": []
+}

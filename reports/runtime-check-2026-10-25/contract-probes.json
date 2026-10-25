@@ -1,0 +1,65 @@
+[
+  {
+    "case": "invalid_timestamp",
+    "helper": {
+      "status": "ACCEPT",
+      "errors": [],
+      "warnings": []
+    },
+    "schema_errors": [
+      "'not-a-time' is not a 'date-time'"
+    ]
+  },
+  {
+    "case": "wrong_schema_version",
+    "helper": {
+      "status": "ACCEPT",
+      "errors": [],
+      "warnings": []
+    },
+    "schema_errors": [
+      "'1.0' was expected"
+    ]
+  },
+  {
+    "case": "empty_source_dataset",
+    "helper": {
+      "status": "ACCEPT",
+      "errors": [],
+      "warnings": []
+    },
+    "schema_errors": [
+      "'' should be non-empty"
+    ]
+  },
+  {
+    "case": "unexpected_label_field",
+    "helper": {
+      "status": "ACCEPT",
+      "errors": [],
+      "warnings": []
+    },
+    "schema_errors": [
+      "Additional properties are not allowed ('isFraud' was unexpected)"
+    ]
+  },
+  {
+    "case": "huge_integer_amount",
+    "exception": "OverflowError",
+    "message": "int too large to convert to float"
+  },
+  {
+    "case": "truncated_optional_balance",
+    "exception": "AttributeError",
+    "message": "'NoneType' object has no attribute 'strip'"
+  },
+  {
+    "case": "nan_optional_balance",
+    "helper": {
+      "status": "ACCEPT",
+      "errors": [],
+      "warnings": []
+    },
+    "valid_standard_json": false
+  }
+]

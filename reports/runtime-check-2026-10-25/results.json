@@ -1,0 +1,336 @@
+{
+  "environment": {
+    "python": "3.11.17 | packaged by Anaconda, Inc. | (main, Oct  1 2026, 20:16:54) [MSC v.1942 64 bit (AMD64)]",
+    "executable": "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+    "conda_prefix": "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata",
+    "packages": {
+      "pyspark": "4.2.0",
+      "pandas": "2.2.3",
+      "numpy": "2.4.6",
+      "pytest": "MISSING",
+      "jsonschema": "4.26.0",
+      "kafka-python": "2.0.2",
+      "nbformat": "5.11.1",
+      "nbclient": "0.11.0",
+      "ipykernel": "7.4.0",
+      "matplotlib": "3.11.2",
+      "scikit-learn": "1.9.1",
+      "PyYAML": "6.0.3"
+    },
+    "java_home": "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.101-hotspot\\",
+    "git_commit": "3ddb62a45c849a4c13414214bb200312f79929d7",
+    "checked_at": "2026-10-25T23:09:19.954128+07:00"
+  },
+  "checks": [
+    {
+      "name": "static-source-config-and-schema",
+      "status": "PASS",
+      "detail": {
+        "python_files": 7,
+        "json_files": 11,
+        "yaml_files": 4,
+        "notebooks": 3,
+        "code_cells": 45,
+        "intentional_invalid_json": [
+          "fixtures/invalid/malformed-json.json"
+        ],
+        "valid_event_fixtures": 3
+      },
+      "seconds": 3.771
+    },
+    {
+      "name": "unittest",
+      "argv": [
+        "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "seconds": 1.521,
+      "log": "unittest.log",
+      "status": "PASS"
+    },
+    {
+      "name": "etl-help",
+      "argv": [
+        "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "src.processing.etl",
+        "--help"
+      ],
+      "returncode": 1,
+      "timed_out": false,
+      "seconds": 0.965,
+      "log": "etl-help.log",
+      "status": "FAIL"
+    },
+    {
+      "name": "producer-help",
+      "argv": [
+        "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+        "-m",
+        "src.ingestion.producer",
+        "--help"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "seconds": 0.13,
+      "log": "producer-help.log",
+      "status": "PASS"
+    },
+    {
+      "name": "consumer-help",
+      "argv": [
+        "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+        "-m",
+        "src.ingestion.consumer_test",
+        "--help"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "seconds": 0.101,
+      "log": "consumer-help.log",
+      "status": "PASS"
+    },
+    {
+      "name": "producer-default-log",
+      "argv": [
+        "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+        "-m",
+        "src.ingestion.producer",
+        "--csv",
+        "fixtures/sample_paysim.csv",
+        "--max-records",
+        "1",
+        "--rate",
+        "0"
+      ],
+      "returncode": 1,
+      "timed_out": false,
+      "seconds": 0.122,
+      "log": "producer-default-log.log",
+      "status": "FAIL"
+    },
+    {
+      "name": "kafka-local-port",
+      "status": "BLOCKED",
+      "endpoint": "127.0.0.1:9092",
+      "reachable": false
+    },
+    {
+      "name": "consumer-runtime",
+      "argv": [
+        "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+        "-m",
+        "src.ingestion.consumer_test",
+        "--count",
+        "1",
+        "--timeout",
+        "3",
+        "--group-id",
+        "codex-bigdata-check-20261025"
+      ],
+      "returncode": 1,
+      "timed_out": false,
+      "seconds": 2.844,
+      "log": "consumer-runtime.log",
+      "status": "FAIL"
+    },
+    {
+      "name": "producer-mapping-and-serialization-mock",
+      "status": "PASS",
+      "detail": {
+        "mode": "mock broker; no network publish",
+        "sent": 2,
+        "schema_valid_messages": 2,
+        "producer_summary": "{\n  \"sent\": 2,\n  \"rejected\": 0,\n  \"warned\": 0\n}"
+      },
+      "seconds": 0.047
+    },
+    {
+      "name": "contract-edge-case-probes",
+      "status": "PASS",
+      "detail": {
+        "probes": 7,
+        "details": "contract-probes.json",
+        "note": "These are observed defects/gaps, not passing regression tests."
+      },
+      "seconds": 0.002
+    },
+    {
+      "name": "java-version",
+      "argv": [
+        "java",
+        "-version"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "seconds": 0.827,
+      "log": "java-version.log",
+      "status": "PASS"
+    },
+    {
+      "name": "spark-environment-smoke",
+      "argv": [
+        "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+        "C:\\Users\\lenovo\\AppData\\Local\\Temp\\fraud-conda-bigdata-check-b7ro1mw9\\spark_probe.py"
+      ],
+      "returncode": 1,
+      "timed_out": true,
+      "seconds": 51.079,
+      "log": "spark-environment-smoke.log",
+      "status": "FAIL"
+    },
+    {
+      "name": "notebook-01_data_profiling",
+      "status": "FAIL",
+      "seconds": 16.487,
+      "error": "An error occurred while executing the following cell:\n------------------\nfrom pathlib import Path\nimport numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\nfrom IPython.display import display\n\npd.set_option('display.max_columns', 20)\npd.set_option('display.float_format', lambda x: f'{x:,.4f}')\nplt.style.use('default')\nplt.rcParams.update({'figure.figsize': (9, 5), 'axes.grid': True})\nimport json\n\nPROJECT_ROOT = next((p for p in [Path.cwd(), *Path.cwd().parents]\n                     if (p / 'configs/data_profiling.json').is_file()), None)\nif PROJECT_ROOT is None:\n    raise FileNotFoundError('Project configuration not found: configs/data_profiling.json')\nCONFIG_PATH = PROJECT_ROOT / 'configs/data_profiling.json'\nCONFIG = json.loads(CONFIG_PATH.read_text(encoding='utf-8'))\nSCHEMA_PATH = PROJECT_ROOT / CONFIG['dataset']['schema_path']\nSCHEMA = json.loads(SCHEMA_PATH.read_text(encoding='utf-8'))\nRANDOM_STATE = CONFIG['visualization']['random_seed']\nplt.rcParams['figure.dpi'] = CONFIG['visualization']['figure_dpi']\n\n------------------\n\n\n\u001b[31m---------------------------------------------------------------------------\u001b[39m\n\u001b[31mFileNotFoundError\u001b[39m                         Traceback (most recent call last)\n\u001b[36mCell\u001b[39m\u001b[36m \u001b[39m\u001b[32mIn[1]\u001b[39m\u001b[32m, line 16\u001b[39m\n\u001b[32m     12\u001b[39m \n\u001b[32m     13\u001b[39m PROJECT_ROOT = next((p for p in [Path.cwd(), *Path.cwd().parents]\n\u001b[32m     14\u001b[39m                      if (p / 'configs/data_profiling.json').is_file()), None)\n\u001b[32m     15\u001b[39m \u001b[38;5;28;01mif\u001b[39;00m PROJECT_ROOT \u001b[38;5;28;01mis\u001b[39;00m \u001b[38;5;28;01mNone\u001b[39;00m:\n\u001b[32m---> \u001b[39m\u001b[32m16\u001b[39m     \u001b[38;5;28;01mraise\u001b[39;00m FileNotFoundError(\u001b[33m'Project configuration not found: configs/data_profiling.json'\u001b[39m)\n\u001b[32m     17\u001b[39m CONFIG_PATH = PROJECT_ROOT / \u001b[33m'configs/data_profiling.json'\u001b[39m\n\u001b[32m     18\u001b[39m CONFIG = json.loads(CONFIG_PATH.read_text(encoding=\u001b[33m'utf-8'\u001b[39m))\n\u001b[32m     19\u001b[39m SCHEMA_PATH = PROJECT_ROOT / CONFIG[\u001b[33m'dataset'\u001b[39m][\u001b[33m'schema_path'\u001b[39m]\n\n\u001b[31mFileNotFoundError\u001b[39m: Project configuration not found: configs/data_profiling.json\n",
+      "executed_code_cells": 1,
+      "code_cells": 15,
+      "installation_cells_skipped": [],
+      "kernel": "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+      "working_directory": "C:\\Users\\lenovo\\AppData\\Local\\Temp\\fraud-conda-bigdata-check-b7ro1mw9\\source\\notebooks",
+      "executed_copy": "notebook-runs/01_data_profiling.ipynb"
+    },
+    {
+      "name": "notebook-paysim_basic_eda",
+      "status": "FAIL",
+      "seconds": 5.352,
+      "error": "An error occurred while executing the following cell:\n------------------\ncandidates = [Path('data/paysim dataset.csv'), Path('../data/paysim dataset.csv')]\nDATA_PATH = next((path for path in candidates if path.is_file()), None)\nif DATA_PATH is None:\n    raise FileNotFoundError('Place paysim dataset.csv in the project data directory.')\n\ndtypes = {\n    'step': 'int32', 'type': 'category',\n    'nameOrig': 'string', 'nameDest': 'string',\n    'isFraud': 'int8', 'isFlaggedFraud': 'int8',\n}\ndf = pd.read_csv(DATA_PATH, dtype=dtypes)\nprint(f'Loaded {len(df):,} rows and {df.shape[1]} columns.')\nprint(f'DataFrame memory: {df.memory_usage(deep=True).sum() / 1024**2:,.1f} MB')\ndisplay(df.head())\n\n------------------\n\n\n\u001b[31m---------------------------------------------------------------------------\u001b[39m\n\u001b[31mFileNotFoundError\u001b[39m                         Traceback (most recent call last)\n\u001b[36mCell\u001b[39m\u001b[36m \u001b[39m\u001b[32mIn[3]\u001b[39m\u001b[32m, line 4\u001b[39m\n\u001b[32m      1\u001b[39m candidates = [Path(\u001b[33m'data/paysim dataset.csv'\u001b[39m), Path(\u001b[33m'../data/paysim dataset.csv'\u001b[39m)]\n\u001b[32m      2\u001b[39m DATA_PATH = next((path \u001b[38;5;28;01mfor\u001b[39;00m path \u001b[38;5;28;01min\u001b[39;00m candidates \u001b[38;5;28;01mif\u001b[39;00m path.is_file()), \u001b[38;5;28;01mNone\u001b[39;00m)\n\u001b[32m      3\u001b[39m \u001b[38;5;28;01mif\u001b[39;00m DATA_PATH \u001b[38;5;28;01mis\u001b[39;00m \u001b[38;5;28;01mNone\u001b[39;00m:\n\u001b[32m----> \u001b[39m\u001b[32m4\u001b[39m     \u001b[38;5;28;01mraise\u001b[39;00m FileNotFoundError(\u001b[33m'Place paysim dataset.csv in the project data directory.'\u001b[39m)\n\u001b[32m      5\u001b[39m \n\u001b[32m      6\u001b[39m dtypes = {\n\u001b[32m      7\u001b[39m     \u001b[33m'step'\u001b[39m: \u001b[33m'int32'\u001b[39m, \u001b[33m'type'\u001b[39m: \u001b[33m'category'\u001b[39m,\n\n\u001b[31mFileNotFoundError\u001b[39m: Place paysim dataset.csv in the project data directory.\n",
+      "executed_code_cells": 3,
+      "code_cells": 11,
+      "installation_cells_skipped": [],
+      "kernel": "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+      "working_directory": "C:\\Users\\lenovo\\AppData\\Local\\Temp\\fraud-conda-bigdata-check-b7ro1mw9\\source\\notebooks",
+      "executed_copy": "notebook-runs/paysim_basic_eda.ipynb"
+    },
+    {
+      "name": "notebook-w1_eda_label_evaluation",
+      "status": "FAIL",
+      "seconds": 21.334,
+      "error": "An error occurred while executing the following cell:\n------------------\nsize = DATA_PATH.stat().st_size\nsha = None\nif COMPUTE_CHECKSUM:\n    h = hashlib.sha256()\n    with open(DATA_PATH, \"rb\") as f:\n        for chunk in iter(lambda: f.read(1 << 22), b\"\"):\n            h.update(chunk)\n    sha = h.hexdigest()\n\nDTYPES = {\"step\": \"int32\", \"type\": \"category\", \"amount\": \"float64\", \"nameOrig\": \"string\",\n          \"oldbalanceOrg\": \"float64\", \"newbalanceOrig\": \"float64\", \"nameDest\": \"string\",\n          \"oldbalanceDest\": \"float64\", \"newbalanceDest\": \"float64\",\n          \"isFraud\": \"int8\", \"isFlaggedFraud\": \"int8\"}\ndf = pd.read_csv(DATA_PATH, dtype=DTYPES)\n# PaySim không có ID giao dịch: dùng số thứ tự dòng trong file gốc (0-based) làm transaction_id đề xuất\ndf[\"row_id\"] = np.arange(len(df), dtype=\"int64\")\n\nsrc = {\"file\": DATA_PATH.name, \"bytes\": size, \"sha256\": sha, \"rows\": len(df), \"columns\": df.shape[1] - 1}\nsummary[\"source\"] = src\nprint(json.dumps(src, indent=2))\nprint(\"Khớp file gốc:\", size == EXPECTED[\"bytes\"] and len(df) == EXPECTED[\"rows\"]\n      and (sha is None or sha == EXPECTED[\"sha256\"]))\n------------------\n\n\n\u001b[31m---------------------------------------------------------------------------\u001b[39m\n\u001b[31mFileNotFoundError\u001b[39m                         Traceback (most recent call last)\n\u001b[36mCell\u001b[39m\u001b[36m \u001b[39m\u001b[32mIn[2]\u001b[39m\u001b[32m, line 1\u001b[39m\n\u001b[32m----> \u001b[39m\u001b[32m1\u001b[39m size = DATA_PATH.stat().st_size\n\u001b[32m      2\u001b[39m sha = \u001b[38;5;28;01mNone\u001b[39;00m\n\u001b[32m      3\u001b[39m \u001b[38;5;28;01mif\u001b[39;00m COMPUTE_CHECKSUM:\n\u001b[32m      4\u001b[39m     h = hashlib.sha256()\n\n\u001b[36mFile \u001b[39m\u001b[32m~\\AppData\\Local\\miniconda3\\envs\\bigdata\\Lib\\pathlib.py:1013\u001b[39m, in \u001b[36mPath.stat\u001b[39m\u001b[34m(self, follow_symlinks)\u001b[39m\n\u001b[32m   1008\u001b[39m \u001b[38;5;28;01mdef\u001b[39;00m\u001b[38;5;250m \u001b[39m\u001b[34mstat\u001b[39m(\u001b[38;5;28mself\u001b[39m, *, follow_symlinks=\u001b[38;5;28;01mTrue\u001b[39;00m):\n\u001b[32m   1009\u001b[39m \u001b[38;5;250m    \u001b[39m\u001b[33;03m\"\"\"\u001b[39;00m\n\u001b[32m   1010\u001b[39m \u001b[33;03m    Return the result of the stat() system call on this path, like\u001b[39;00m\n\u001b[32m   1011\u001b[39m \u001b[33;03m    os.stat() does.\u001b[39;00m\n\u001b[32m   1012\u001b[39m \u001b[33;03m    \"\"\"\u001b[39;00m\n\u001b[32m-> \u001b[39m\u001b[32m1013\u001b[39m     \u001b[38;5;28;01mreturn\u001b[39;00m os.stat(\u001b[38;5;28mself\u001b[39m, follow_symlinks=follow_symlinks)\n\n\u001b[31mFileNotFoundError\u001b[39m: [WinError 3] The system cannot find the path specified: '..\\\\data\\\\raw\\\\PS_20174392719_1491204439457_log.csv'\n",
+      "executed_code_cells": 2,
+      "code_cells": 19,
+      "installation_cells_skipped": [],
+      "kernel": "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+      "working_directory": "C:\\Users\\lenovo\\AppData\\Local\\Temp\\fraud-conda-bigdata-check-b7ro1mw9\\source\\notebooks",
+      "executed_copy": "notebook-runs/w1_eda_label_evaluation.ipynb"
+    },
+    {
+      "name": "diagram-structural",
+      "argv": [
+        "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+        "C:\\Users\\lenovo\\.codex\\skills\\drawio-skill\\scripts\\validate.py",
+        "C:\\Users\\lenovo\\project\\bigdata\\docs\\diagrams\\system-architecture.drawio",
+        "--score"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "seconds": 0.112,
+      "log": "diagram-structural.log",
+      "status": "PASS"
+    },
+    {
+      "name": "diagram-semantic",
+      "argv": [
+        "C:\\Users\\lenovo\\AppData\\Local\\miniconda3\\envs\\bigdata\\python.exe",
+        "C:\\Users\\lenovo\\.codex\\skills\\drawio-skill\\scripts\\diagramctl.py",
+        "test",
+        "C:\\Users\\lenovo\\project\\bigdata\\docs\\diagrams\\system-architecture.ir.json"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "seconds": 0.179,
+      "log": "diagram-semantic.log",
+      "status": "PASS"
+    }
+  ],
+  "findings": [
+    {
+      "case": "invalid_timestamp",
+      "helper": {
+        "status": "ACCEPT",
+        "errors": [],
+        "warnings": []
+      },
+      "schema_errors": [
+        "'not-a-time' is not a 'date-time'"
+      ]
+    },
+    {
+      "case": "wrong_schema_version",
+      "helper": {
+        "status": "ACCEPT",
+        "errors": [],
+        "warnings": []
+      },
+      "schema_errors": [
+        "'1.0' was expected"
+      ]
+    },
+    {
+      "case": "empty_source_dataset",
+      "helper": {
+        "status": "ACCEPT",
+        "errors": [],
+        "warnings": []
+      },
+      "schema_errors": [
+        "'' should be non-empty"
+      ]
+    },
+    {
+      "case": "unexpected_label_field",
+      "helper": {
+        "status": "ACCEPT",
+        "errors": [],
+        "warnings": []
+      },
+      "schema_errors": [
+        "Additional properties are not allowed ('isFraud' was unexpected)"
+      ]
+    },
+    {
+      "case": "huge_integer_amount",
+      "exception": "OverflowError",
+      "message": "int too large to convert to float"
+    },
+    {
+      "case": "truncated_optional_balance",
+      "exception": "AttributeError",
+      "message": "'NoneType' object has no attribute 'strip'"
+    },
+    {
+      "case": "nan_optional_balance",
+      "helper": {
+        "status": "ACCEPT",
+        "errors": [],
+        "warnings": []
+      },
+      "valid_standard_json": false
+    }
+  ],
+  "work_directory": "C:\\Users\\lenovo\\AppData\\Local\\Temp\\fraud-conda-bigdata-check-b7ro1mw9",
+  "missing_project_files": [
+    "src/processing/schema.py",
+    "configs/etl.json",
+    "configs/paysim_schema.json",
+    "configs/data_profiling.json",
+    "tests/test_etl.py",
+    "tests/fixtures/paysim_etl.csv",
+    "requirements-ingestion.txt",
+    "docker-compose.yml",
+    "data/paysim dataset.csv",
+    "data/raw/PS_20174392719_1491204439457_log.csv"
+  ]
+}

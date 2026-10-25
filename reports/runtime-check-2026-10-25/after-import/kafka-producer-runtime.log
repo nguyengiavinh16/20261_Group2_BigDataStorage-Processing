@@ -1,0 +1,11 @@
+2026-10-25 23:20:57,508 INFO <BrokerConnection node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: connecting to 127.0.0.1:9092 [('127.0.0.1', 9092) IPv4]
+2026-10-25 23:20:57,510 INFO Probing node bootstrap-0 broker version
+2026-10-25 23:20:57,510 INFO <BrokerConnection node_id=bootstrap-0 host=127.0.0.1:9092 <connecting> [IPv4 ('127.0.0.1', 9092)]>: Connection complete.
+2026-10-25 23:20:57,616 INFO Broker version identified as 2.5.0
+2026-10-25 23:20:57,616 INFO Set configuration api_version=(2, 5, 0) to skip auto check_version requests on startup
+2026-10-25 23:20:57,620 INFO HISTORICAL REPLAY (not live): topic=codex-check-20261025-30dc88c8c01a
+2026-10-25 23:20:57,628 INFO <BrokerConnection node_id=1 host=localhost:9092 <connecting> [IPv6 ('::1', 9092, 0, 0)]>: connecting to localhost:9092 [('::1', 9092, 0, 0) IPv6]
+2026-10-25 23:20:57,629 INFO <BrokerConnection node_id=1 host=localhost:9092 <connecting> [IPv6 ('::1', 9092, 0, 0)]>: Connection complete.
+2026-10-25 23:20:57,629 INFO <BrokerConnection node_id=bootstrap-0 host=127.0.0.1:9092 <connected> [IPv4 ('127.0.0.1', 9092)]>: Closing connection. 
+2026-10-25 23:20:57,653 INFO Closing the Kafka producer with 10 secs timeout.
+2026-10-25 23:20:57,654 INFO <BrokerConnection node_id=1 host=localhost:9092 <connected> [IPv6 ('::1', 9092, 0, 0)]>: Closing connection. 

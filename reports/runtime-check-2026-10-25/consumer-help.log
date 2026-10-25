@@ -1,0 +1,11 @@
+usage: consumer_test.py [-h] [--bootstrap-servers BOOTSTRAP_SERVERS]
+                        [--topic TOPIC] [--count COUNT] [--timeout TIMEOUT]
+                        [--group-id GROUP_ID]
+
+options:
+  -h, --help            show this help message and exit
+  --bootstrap-servers BOOTSTRAP_SERVERS
+  --topic TOPIC
+  --count COUNT
+  --timeout TIMEOUT
+  --group-id GROUP_ID

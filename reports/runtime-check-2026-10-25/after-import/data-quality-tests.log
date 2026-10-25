@@ -1,0 +1,11 @@
+test_negative_amount_rejected (test_data_quality.DataQualityTests.test_negative_amount_rejected) ... ok
+test_null_amount_rejected (test_data_quality.DataQualityTests.test_null_amount_rejected) ... ok
+test_same_payload_different_ids_not_assumed_same_transaction (test_data_quality.DataQualityTests.test_same_payload_different_ids_not_assumed_same_transaction) ... ok
+test_same_transaction_id_is_duplicate (test_data_quality.DataQualityTests.test_same_transaction_id_is_duplicate) ... ok
+test_unknown_category_warns (test_data_quality.DataQualityTests.test_unknown_category_warns) ... ok
+test_valid_record_accepted (test_data_quality.DataQualityTests.test_valid_record_accepted) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+OK

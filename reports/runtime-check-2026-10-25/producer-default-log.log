@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\lenovo\project\bigdata\src\ingestion\producer.py", line 67, in <module>
+    if __name__=="__main__": main()
+                             ^^^^^^
+  File "C:\Users\lenovo\project\bigdata\src\ingestion\producer.py", line 35, in main
+    handlers=[logging.StreamHandler(),logging.FileHandler(a.log_file,encoding="utf-8")])
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lenovo\AppData\Local\miniconda3\envs\bigdata\Lib\logging\__init__.py", line 1181, in __init__
+    StreamHandler.__init__(self, self._open())
+                                 ^^^^^^^^^^^^
+  File "C:\Users\lenovo\AppData\Local\miniconda3\envs\bigdata\Lib\logging\__init__.py", line 1213, in _open
+    return open_func(self.baseFilename, self.mode,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\lenovo\\project\\bigdata\\logs\\producer.log'

@@ -1,0 +1,11 @@
+Listening to codex-check-20261025-30dc88c8c01a; target=2; timeout=15.0s
+{"count": 1, "partition": 0, "offset": 0, "key": "paysim-395b234468e6df23-row-000000000001", "value": {"schema_version": "1.0", "transaction_id": "paysim-395b234468e6df23-row-000000000001", "event_time": "2026-01-01T01:00:00Z", "event_time_step": 1, "transaction_type": "PAYMENT", "amount": 125.75, "source_dataset": "paysim", "source_row_id": "395b234468e6df23:1", "origin_account_id": "C10001", "destination_account_id": "M20411", "origin_balance_before": 500.0, "origin_balance_after": 374.25, "destination_balance_before": 1200.0, "destination_balance_after": 1325.75}}
+{"count": 2, "partition": 0, "offset": 1, "key": "paysim-395b234468e6df23-row-000000000002", "value": {"schema_version": "1.0", "transaction_id": "paysim-395b234468e6df23-row-000000000002", "event_time": "2026-01-01T02:00:00Z", "event_time_step": 2, "transaction_type": "CASH_OUT", "amount": 900.0, "source_dataset": "paysim", "source_row_id": "395b234468e6df23:2", "origin_account_id": "C10002", "destination_account_id": "C30005", "origin_balance_before": 900.0, "origin_balance_after": 0.0, "destination_balance_before": 350.0, "destination_balance_after": 1250.0}}
+{
+  "topic": "codex-check-20261025-30dc88c8c01a",
+  "received": 2,
+  "target": 2,
+  "status": "PASS"
+}
+
+STDERR

@@ -1,0 +1,67 @@
+{
+  "config_version": "1.0",
+  "dataset": {
+    "path": "data/paysim dataset.csv",
+    "path_environment_variable": "PAYSIM_DATA_PATH",
+    "schema_path": "configs/paysim_schema.json",
+    "reference_sha256": "16910f90577b0d981bf8ff289714510bb89bc71bff7d3f220f024e287e4eea6b",
+    "currency_unit": null,
+    "step_unit": null
+  },
+  "csv": {
+    "encoding": "utf-8",
+    "separator": ",",
+    "dtype_overrides": {
+      "type": "category",
+      "nameOrig": "string",
+      "nameDest": "string"
+    },
+    "numeric_type_handling": "infer_then_validate",
+    "malformed_rows": "error"
+  },
+  "profiling": {
+    "scope": "full_dataset",
+    "numeric_percentiles": [0.01, 0.25, 0.5, 0.75, 0.95, 0.99, 0.999],
+    "amount_percentiles_by_label": [0.5, 0.9, 0.99],
+    "iqr_multiplier": 1.5,
+    "duplicate_policy": "report_without_removal",
+    "zero_amount_policy": "report_without_removal",
+    "outlier_policy": "report_without_removal"
+  },
+  "balance_checks": {
+    "absolute_tolerance": 0.01,
+    "origin_amount_sign": {
+      "CASH_IN": 1,
+      "CASH_OUT": -1,
+      "DEBIT": -1,
+      "PAYMENT": -1,
+      "TRANSFER": -1
+    },
+    "destination_amount_sign": {
+      "CASH_IN": -1,
+      "CASH_OUT": 1,
+      "TRANSFER": 1
+    },
+    "destination_account_prefix": "C",
+    "exclude_both_destination_balances_zero": true,
+    "interpretation": "diagnostic_assumptions_not_approved_etl_rules"
+  },
+  "visualization": {
+    "random_seed": 42,
+    "scatter_sample_rows": 30000,
+    "amount_histogram_bins": 60,
+    "figure_dpi": 100
+  },
+  "temporal_split": {
+    "target_row_fractions": [0.7, 0.15, 0.15],
+    "split_names": ["train", "validation", "test"],
+    "boundary_unit": "whole_step",
+    "status": "exploratory_not_final_training_split"
+  },
+  "output": {
+    "report_directory": "reports",
+    "tables_directory": "reports/data-profiling",
+    "manifest_filename": "manifest.json",
+    "quality_report_filename": "data-quality-report.md"
+  }
+}

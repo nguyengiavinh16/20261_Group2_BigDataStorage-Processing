@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "dataset": "PaySim",
+  "status": "profiling_reference_pending_team_contract_review",
+  "columns": [
+    {"name": "step", "kind": "integer", "role": "simulation_step"},
+    {"name": "type", "kind": "categorical", "role": "transaction_type"},
+    {"name": "amount", "kind": "number", "role": "transaction_amount"},
+    {"name": "nameOrig", "kind": "string", "role": "origin_account_identifier"},
+    {"name": "oldbalanceOrg", "kind": "number", "role": "origin_balance_before"},
+    {"name": "newbalanceOrig", "kind": "number", "role": "origin_balance_after"},
+    {"name": "nameDest", "kind": "string", "role": "destination_account_identifier"},
+    {"name": "oldbalanceDest", "kind": "number", "role": "destination_balance_before"},
+    {"name": "newbalanceDest", "kind": "number", "role": "destination_balance_after"},
+    {"name": "isFraud", "kind": "integer", "role": "target_label"},
+    {"name": "isFlaggedFraud", "kind": "integer", "role": "existing_system_flag"}
+  ],
+  "domain_checks": {
+    "required_columns": "all",
+    "blank_string_columns": ["type", "nameOrig", "nameDest"],
+    "finite_numeric_values": true,
+    "step_minimum": 1,
+    "step_integer_only": true,
+    "amount_minimum": 0,
+    "transaction_types": ["CASH_IN", "CASH_OUT", "DEBIT", "PAYMENT", "TRANSFER"],
+    "label_values": {
+      "isFraud": [0, 1],
+      "isFlaggedFraud": [0, 1]
+    }
+  },
+  "feature_context": {
+    "candidate_mvp_columns": ["amount", "type"],
+    "traceability_columns": ["nameOrig", "nameDest"],
+    "availability_review_columns": ["step", "oldbalanceOrg", "oldbalanceDest"],
+    "post_transaction_columns": ["newbalanceOrig", "newbalanceDest"],
+    "excluded_from_default_scoring": ["isFraud", "isFlaggedFraud", "newbalanceOrig", "newbalanceDest"]
+  }
+}

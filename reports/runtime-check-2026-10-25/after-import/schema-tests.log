@@ -1,0 +1,12 @@
+test_amount_string_rejected (test_schema.SchemaTests.test_amount_string_rejected) ... ok
+test_invalid_timestamp_rejected (test_schema.SchemaTests.test_invalid_timestamp_rejected) ... ok
+test_malformed_json_rejected (test_schema.SchemaTests.test_malformed_json_rejected) ... ok
+test_missing_required_field (test_schema.SchemaTests.test_missing_required_field) ... ok
+test_unknown_category_warns_but_schema_accepts (test_schema.SchemaTests.test_unknown_category_warns_but_schema_accepts) ... ok
+test_valid_prediction (test_schema.SchemaTests.test_valid_prediction) ... ok
+test_valid_transaction_has_required_fields (test_schema.SchemaTests.test_valid_transaction_has_required_fields) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.004s
+
+OK

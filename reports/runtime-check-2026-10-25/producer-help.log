@@ -1,0 +1,15 @@
+usage: producer.py [-h] --csv CSV [--bootstrap-servers BOOTSTRAP_SERVERS]
+                   [--topic TOPIC] [--rate RATE] [--max-records MAX_RECORDS]
+                   [--simulation-start SIMULATION_START]
+                   [--known-categories KNOWN_CATEGORIES] [--log-file LOG_FILE]
+
+options:
+  -h, --help            show this help message and exit
+  --csv CSV
+  --bootstrap-servers BOOTSTRAP_SERVERS
+  --topic TOPIC
+  --rate RATE
+  --max-records MAX_RECORDS
+  --simulation-start SIMULATION_START
+  --known-categories KNOWN_CATEGORIES
+  --log-file LOG_FILE
