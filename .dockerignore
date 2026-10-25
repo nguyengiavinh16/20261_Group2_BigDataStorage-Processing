@@ -1,0 +1,9 @@
+.git
+.codex
+.agents
+.aws
+data
+reports
+notebooks
+**/__pycache__
+**/*.pyc
