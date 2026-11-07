@@ -1,0 +1,25 @@
+# Example only. Merge into existing docker-compose.yml explicitly.
+services:
+  fraud-metrics:
+    image: prom/node-exporter:v1.8.2
+    command:
+      - --collector.textfile.directory=/var/metrics
+    volumes:
+      - ../reports/evidence/w4/metrics:/var/metrics:ro
+    networks: [fraud-monitoring]
+  fraud-prometheus:
+    image: prom/prometheus:v2.54.1
+    volumes:
+      - ../monitoring/prometheus-week4.yaml:/etc/prometheus/prometheus.yml:ro
+      - ../monitoring/alerts-week4.yaml:/etc/prometheus/alerts.yml:ro
+    command: ["--config.file=/etc/prometheus/prometheus.yml"]
+    ports: ["127.0.0.1:9090:9090"]
+    networks: [fraud-monitoring]
+  fraud-grafana:
+    image: grafana/grafana:11.2.0
+    ports: ["127.0.0.1:3000:3000"]
+    networks: [fraud-monitoring]
+networks:
+  fraud-monitoring: {}
+# Grafana datasource and dashboard provisioning must be configured on deploy.
+# Pin image digests/credentials before production. No public endpoints by default.

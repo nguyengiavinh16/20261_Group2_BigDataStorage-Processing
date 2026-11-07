@@ -1,0 +1,6 @@
+# Pure-Python W1 unit/contract verification only. Runtime Spark/Kafka installed separately.
+pytest>=8,<10
+jsonschema>=4,<5
+PyYAML>=6,<7
+# Optional publish: pip install confluent-kafka
+# Optional real smoke: use the Spark container's pyspark and compatible Iceberg/Kafka JARs

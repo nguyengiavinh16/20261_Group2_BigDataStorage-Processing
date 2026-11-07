@@ -1,8 +1,0 @@
-target_column: "isFraud"
-baseline_model: "logistic_regression"
-candidate_models:
-  - "random_forest"
-alert_threshold: 0.80
-split_strategy: "temporal"
-# Feature columns will be finalized only after inspecting the supplied dataset
-# and completing a leakage review.

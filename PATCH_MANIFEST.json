@@ -1,0 +1,239 @@
+{
+  "deliverable": "Fraud Analytics W1 additive source overlay",
+  "status": "fixture tests pass; full distributed G0 open",
+  "file_count": 58,
+  "files": [
+    {
+      "path": "README_WEEK1.md",
+      "sha256": "5d96277ed80832ae8009955accbd3d7f408afb5628d8dd8b3edf8e0819a3763e"
+    },
+    {
+      "path": "configs/ingestion/replay-w1.yaml",
+      "sha256": "a0e3b80c78990cc7fb1a68f8fa3a26de6d4a710ae28b1f9c7d58dd86291beb67"
+    },
+    {
+      "path": "configs/model-w1-protocol.yaml",
+      "sha256": "0926d2c3df9309032fad88791198f79f5248288178df979c7ff7d715f35d21f6"
+    },
+    {
+      "path": "configs/platform/runtime-w1.yaml",
+      "sha256": "7b97b4c2cbed4324601ca27c23e24a2da0292ecbf6c9f1bda6854de2115270c3"
+    },
+    {
+      "path": "deploy/w1-smoke-profile.md",
+      "sha256": "f2783b326f2353a9a755b495c5cdc2aedd46cd31b9a090b338a4a76df2483eb8"
+    },
+    {
+      "path": "docs/adr/0001-w1-contract-v2.md",
+      "sha256": "7c4286cea4bcf342300fc31bffbb19200d104d53c69cd175a717e53c1fba3a88"
+    },
+    {
+      "path": "docs/week1/INTEGRATION.md",
+      "sha256": "28a87be771830357999a42b434819c61245d118166017d47ace5a9e429b2bd7f"
+    },
+    {
+      "path": "docs/week1/STATUS.md",
+      "sha256": "2a981f4700b13313dd11457eecb4b452660dd8a331ca9075ca7a43e31cdc1245"
+    },
+    {
+      "path": "fixtures/contracts/v2/good-event.json",
+      "sha256": "0481449552253d9415effeb3be8717550d4d3722a7e5ecec430b3f3f889d726c"
+    },
+    {
+      "path": "fixtures/contracts/v2/good-label-sidecar-OFFLINE.json",
+      "sha256": "e1fc896805f24aa61211d84caa58ffb957f0390d73bec3e377911bf167625769"
+    },
+    {
+      "path": "fixtures/contracts/v2/negative-rows.json",
+      "sha256": "01d8f2c0beed5f57256150d0bd17d9a513e4465b4fc9718cf19ae16deb470c44"
+    },
+    {
+      "path": "monitoring/metric-dictionary-v1.json",
+      "sha256": "4ce4c5310fb8ee06805a844cda9a29403f26808ad6e37689b27035f936e38767"
+    },
+    {
+      "path": "reports/evidence/README.md",
+      "sha256": "505cb42ab97d7f6899c4f00185badd4101fc1c0f9c60d0ec0d8af2660f9dcd7f"
+    },
+    {
+      "path": "reports/evidence/w1-fixture-evidence.json",
+      "sha256": "1e7be921d108553f4cb4b4b274a535495edb9a67beba6b5ffa3735f20b70d8e2"
+    },
+    {
+      "path": "reports/evidence/w1-local-pytest.log",
+      "sha256": "478a3a641bb371d1a8e23d8c170fded6deb9bd62a9bb4c144b7954ec545b4b68"
+    },
+    {
+      "path": "reports/evidence/w1-reconciliation-negative.json",
+      "sha256": "574b2bd804a8b9ccbeb37595cee6407f718963225c0999ea668176eb69467627"
+    },
+    {
+      "path": "reports/evidence/w1-synthetic-split-audit.json",
+      "sha256": "750d9863b31a2a98b221c77cbd6603d81c47d09b7bba32a7e295c767441e033f"
+    },
+    {
+      "path": "reports/features/w1-feature-spec.md",
+      "sha256": "072775ca0875f7f815053bffcf143589865a3388eea1854af80472e12261b899"
+    },
+    {
+      "path": "reports/ml/w1-evaluation-protocol.md",
+      "sha256": "407ceab70b8ccc30f1ebe50a1863c210ab2d0dfc7bb64d91447df9bb7b5a1a64"
+    },
+    {
+      "path": "requirements-w1.txt",
+      "sha256": "7427927118ec44f752f90f4155af98b35fe14dc17cb89983d19718e701709341"
+    },
+    {
+      "path": "schemas/feature-contract-v1.json",
+      "sha256": "5123f25db338ed8074fb89c70b7b82744a76802d32fdf1b01718ba13abb3654c"
+    },
+    {
+      "path": "schemas/model-metadata-v1.json",
+      "sha256": "4e440cf211ebbd8a87c80936f657c80fa2874329324a96d2ff7618fbc6cfcc97"
+    },
+    {
+      "path": "schemas/prediction-event-v2.json",
+      "sha256": "4d175a70835ad66e1ca23de9f43fda9b1ca5aed990ae4f4e911139e04fb84391"
+    },
+    {
+      "path": "schemas/transaction-event-v2.json",
+      "sha256": "8223bf7244770489551c5753d9812529c8be68e8d02678494a62823354bb2cc0"
+    },
+    {
+      "path": "schemas/validation-report-v1.json",
+      "sha256": "b0e651b5aeb85ca5e79bf1d38ba991b7906644a2b552a5fa2587a3cb066c2fac"
+    },
+    {
+      "path": "scripts/dev/audit_paysim_split_w1.py",
+      "sha256": "7a3a249af0d63cb3a8dbbb3fe3759f742f1279761012aac9d59eb0e21ad68cf6"
+    },
+    {
+      "path": "scripts/dev/check_w1.py",
+      "sha256": "bbdd3147b1e5a951e5909f8396e0c5f13769ff4f22504df9a7d6fe1a564260a9"
+    },
+    {
+      "path": "scripts/dev/generate_w1_fixtures.py",
+      "sha256": "914970149d0744503b6985a1221291202cde72fc9a76dda7f7e8913b6b3607b4"
+    },
+    {
+      "path": "scripts/dev/runtime_inventory.py",
+      "sha256": "605966ed914f7648b83684b75228f08d3217de8bd337872443bea553b022231a"
+    },
+    {
+      "path": "scripts/dev/smoke_platform_w1.py",
+      "sha256": "ef218a54472d199d380231026c3568dfd7f0e25d78c623046ab5d38026a62980"
+    },
+    {
+      "path": "src/api/api-contract-v1.json",
+      "sha256": "bc1594252d3d16294f638814cb547e6628e6031318a1f1ade00952a4d36515b3"
+    },
+    {
+      "path": "src/common/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/common/contracts_v2.py",
+      "sha256": "bee4561c30a1cf5aa2fea0d7e0694285400cf1eaa6981867148ecb01e7194e1a"
+    },
+    {
+      "path": "src/evaluation/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/evaluation/preprocess_reference_v1.py",
+      "sha256": "2a3f39704c7857dddb5f802033647c7eeb9bda6a4ee61c00d29616556f5b315d"
+    },
+    {
+      "path": "src/evaluation/protocol_v1.py",
+      "sha256": "c3062c0222a51a4f3d45dd42a4fb8672d2c25ca8d1e5291e34aed9d92624c042"
+    },
+    {
+      "path": "src/features/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/features/reference_v2.py",
+      "sha256": "d0751bcc4deac7825124d34360a14582be7e9c151e0e5334b2e4c37a01a1de45"
+    },
+    {
+      "path": "src/ingestion/replay_v2.py",
+      "sha256": "584e24c61440a93c8ec99e7fb59a50f2da0b96e816ab7c7a0a2ea9101e7438a8"
+    },
+    {
+      "path": "src/processing/labels_v2.py",
+      "sha256": "a885e5d80d32ac2cdaca384be478b1fefc94e466286e98f88260a019f7b1ec79"
+    },
+    {
+      "path": "src/processing/snapshot_v2.py",
+      "sha256": "9f2c3b1cd38d17b269e67166c14c419ae243756a7f56901c1b73cb3cc1b0cfef"
+    },
+    {
+      "path": "tests/contracts/test_w1_contract.py",
+      "sha256": "3f182c97b43b76d87955adb715f72b6f14c1cdf3c3bca8f308594d2bf62a140a"
+    },
+    {
+      "path": "tests/contracts/test_w1_negative_time.py",
+      "sha256": "5f390efaa0c3ac7498674f8887abd5e4714f32567ab9de060520c9004fd0224a"
+    },
+    {
+      "path": "tests/evaluation/test_w1_csv_split_audit.py",
+      "sha256": "e15cb6c1932613872507654efe7bbb0b14b490e01babb74a7b94b97c4ca1f230"
+    },
+    {
+      "path": "tests/evaluation/test_w1_protocol.py",
+      "sha256": "41ccb98c1d2ca9da99a53e84f6080365ce55868e00648991338c3fe613ea8fe6"
+    },
+    {
+      "path": "tests/features/expected-history-v1.json",
+      "sha256": "33af4b3ed3abc77b000f4fcf56bf1095b13fed04f1cfaa38023cd75094cc9a4c"
+    },
+    {
+      "path": "tests/features/test_w1_golden_file.py",
+      "sha256": "8b3a9500797e154bf0badebfad2b72115afe8a921dda8e7ddcac800abf8173b7"
+    },
+    {
+      "path": "tests/features/test_w1_reference.py",
+      "sha256": "f9cabcebc0dab7606f82156cf5404275028056b71ca314ab483556c6c6dd0805"
+    },
+    {
+      "path": "tests/ingestion/test_w1_replay.py",
+      "sha256": "b69ab1803f209e0a22e5ce095efdbd6f09353e755905106653175e431325c928"
+    },
+    {
+      "path": "tests/integration/fixtures/README.md",
+      "sha256": "7c4c697e6bf667e139e55b7ba592a440a438605a2fc2f234947d2e3914b0e0ef"
+    },
+    {
+      "path": "tests/integration/fixtures/context-complete.json",
+      "sha256": "846e6ad34484e71fdd0603cfcfb2212078ba639c3863f92f78574250c7784678"
+    },
+    {
+      "path": "tests/integration/fixtures/context-missing-cutoff.json",
+      "sha256": "c56c10da5937efdc637b871de26d4faf54b96e6d56fd6159daf426b663abeeec"
+    },
+    {
+      "path": "tests/integration/fixtures/ids-actual-mismatch.json",
+      "sha256": "b15fb88b45b20f3cb40b43566cefea5ec82581f913482f3fd4207f1d79f5cffd"
+    },
+    {
+      "path": "tests/integration/fixtures/ids-expected.json",
+      "sha256": "ebe7cd0f0fd38b6e7ba1beb3871633bdfef385a5c5b0d888c7ca252f0ac4e4f4"
+    },
+    {
+      "path": "tests/integration/fixtures/w1_paysim.csv",
+      "sha256": "e94f71715ac035c6f00ae3f8d6ff4890650e345cc07988cbfb408b2a039d249f"
+    },
+    {
+      "path": "tests/integration/test_w1_validation.py",
+      "sha256": "8d2b79b4788c23ba16ed4adf5a625ec2e4bf7e724d5fba0cb3458cc37ef38ecd"
+    },
+    {
+      "path": "tests/processing/test_w1_snapshot.py",
+      "sha256": "2252e4555be76ae8e9b28005c5d4023f3320eb9675024b4a07e2bd42dec3d502"
+    },
+    {
+      "path": "validation/reconcile_v1.py",
+      "sha256": "b6e9be1f8bad30aac5cc87df2cd3050309e2b3962b9ecab4d74cb8e3ecbaf78e"
+    }
+  ]
+}

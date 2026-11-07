@@ -1,0 +1,12 @@
+{
+  "status": "PASS_FIXTURE_ONLY",
+  "test_suite": "W1_TO_W6_COMBINED_LOCAL_PYTEST",
+  "passed": 287,
+  "skipped": 3,
+  "fixture_reproduction": {"w3_stateful_fixture": "PASS", "w4_history_parity": "PASS", "w5_synthetic_evaluator": "PASS"},
+  "reproduction_mode": "filesystem_copy_not_checkout",
+  "g5": "INCONCLUSIVE",
+  "g5_reason": "G4_LIVE_GATE_NOT_PASSED",
+  "not_proven": ["Git clean checkout by independent team member", "Spark/Iceberg/HDFS cluster integration", "Kafka archive/scoring live", "Mongo durable ACK and API live", "Restart/fault and actual W5 benchmarks", "Independent model load on Spark", "Five team member signoffs"],
+  "claim": "Execution scope of patch generation only; not a live fraud detection benchmark."
+}

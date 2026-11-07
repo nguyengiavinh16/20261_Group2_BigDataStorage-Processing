@@ -1,0 +1,12 @@
+{
+  "run_id": "REPLACE_ACTUAL_RUN_ID",
+  "cutoff": 743,
+  "model_version": "REPLACE_FROZEN_MODEL",
+  "feature_version": "history-v1",
+  "silver_snapshot_id": "REPLACE_SNAPSHOT_ID",
+  "commit": "REPLACE_REAL_GIT_SHA",
+  "config_sha256": "REPLACE_REAL_64_HEX_CONFIG_SHA256",
+  "input_sha256": "REPLACE_REAL_64_HEX_INPUT_SHA256",
+  "author": "REPLACE_AUTHOR",
+  "signoffs": {}
+}

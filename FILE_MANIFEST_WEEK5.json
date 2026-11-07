@@ -1,0 +1,180 @@
+{
+  "week": 5,
+  "mode": "incremental_patch",
+  "base": "weeks_1_to_4_merged",
+  "status": "SOURCE_AND_LOCAL_TESTS_COMPLETE_G4_INCONCLUSIVE",
+  "local_test_report": "reports/week5/local-test-results.txt",
+  "file_count_excluding_manifest": 34,
+  "files": [
+    {
+      "path": "README_WEEK5.md",
+      "sha256": "30bf5ccc84b9f2a30c80f5e586225c62f9b42a0f2444c2040ddcbe91b45c897b",
+      "bytes": 2984
+    },
+    {
+      "path": "configs/week5/benchmark-matrix.example.json",
+      "sha256": "2f8ebcfa0fcd7de988ff2167c82b13221bdf6ce6206ab49b1de5a94bc8c97697",
+      "bytes": 822
+    },
+    {
+      "path": "configs/week5/g3-result.example.json",
+      "sha256": "f9a51f9ea926a298ea5bec2846720ba1f2aa611177de96e7b19d8d7008358894",
+      "bytes": 104
+    },
+    {
+      "path": "configs/week5/g4-context.example.json",
+      "sha256": "490b91e47b77bb7780ee0c506b99c73fa35643b9a309a53ae516a1dfd81f1894",
+      "bytes": 248
+    },
+    {
+      "path": "configs/week5/g4-task-reports.example.json",
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "bytes": 3
+    },
+    {
+      "path": "configs/week5/monitoring.example.json",
+      "sha256": "3764ac78eddeb773527984282a204f64bddd97d05c3a4cbb64ef5dd2b442b898",
+      "bytes": 301
+    },
+    {
+      "path": "configs/week5/runner.example.json",
+      "sha256": "fd7f6260fa982dbd659a4002bbca5b91cde2e0abd2b45a7ddd175bf45dcfbebe",
+      "bytes": 444
+    },
+    {
+      "path": "docs/week5/G4_CHECKLIST.md",
+      "sha256": "76745844b4f807c3565e2eb2b1efcf00ae42816c996bea9cf5f1440cb2e56102",
+      "bytes": 15604
+    },
+    {
+      "path": "docs/week5/INTEGRATION.md",
+      "sha256": "c4f406bd7898317787f174200b0cb3ad30ee70c8c0bc701542c35485a0fbd147",
+      "bytes": 9291
+    },
+    {
+      "path": "docs/week5/RUNBOOK.md",
+      "sha256": "b52800e64726e1815d3155dc8c185101a79890a4393b45a505999215bd829c28",
+      "bytes": 3935
+    },
+    {
+      "path": "docs/week5/STATUS.md",
+      "sha256": "413c08a43a6406c46d79c288a67eea61186d1f27f04a88750d8534ad19b43e5d",
+      "bytes": 3929
+    },
+    {
+      "path": "fixtures/week5/synthetic-test-fixture.json",
+      "sha256": "f9af75ad1a6b58191867d6f814776f45f3c05d61bf3a412d8e651428a6daf713",
+      "bytes": 1080
+    },
+    {
+      "path": "monitoring/baseline_w5.py",
+      "sha256": "70d0fb9474ca891a3927382ed8f488827a552e9d02d5c263021cb9220d82048c",
+      "bytes": 1390
+    },
+    {
+      "path": "reports/week5/local-test-results.txt",
+      "sha256": "6b27beb885426dd20caab7c38b1f23a3c91492cea2d5e17d0de3a9c2e0cdafc1",
+      "bytes": 351
+    },
+    {
+      "path": "reports/week5/synthetic-sanity.json",
+      "sha256": "a09b0b21cf045809e01f7edea1afac23db69cfa5d763fd111349dffc296cbf18",
+      "bytes": 268
+    },
+    {
+      "path": "requirements-w5.txt",
+      "sha256": "ed3740a612a8b3aceec4736928bedfd9e072a7d87a08c8516752f8e88e6c89b8",
+      "bytes": 202
+    },
+    {
+      "path": "scripts/week5/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "scripts/week5/collect.py",
+      "sha256": "1f6c6db5e086e7bfc26eaa9626fa4a3648e4b7559df0a0d65222d6fb51fe2c1c",
+      "bytes": 3792
+    },
+    {
+      "path": "scripts/week5/controlled_fault.py",
+      "sha256": "9c75af9e1a3eab782e18af6624727effcf69004ab50dec8f63043522efcbe28b",
+      "bytes": 2675
+    },
+    {
+      "path": "scripts/week5/demo_fixture.py",
+      "sha256": "5ca3100d7c9e8de96408c35a72a83a9b894532b619f2f9262516831f69968a99",
+      "bytes": 2368
+    },
+    {
+      "path": "scripts/week5/evaluate.py",
+      "sha256": "49bf08e9efdc416b384c0516cb65a1c70d05ed247bbeb7e68863de62e2213794",
+      "bytes": 2917
+    },
+    {
+      "path": "scripts/week5/spark_snapshot_benchmark.py",
+      "sha256": "083ad219aa0b53d9e6a447ef393e3db8ef1eebd3799e3a6f1da3ce1fe513bca5",
+      "bytes": 4064
+    },
+    {
+      "path": "src/api/reporting_w5.py",
+      "sha256": "3fec4cc8a7071d89eb7f7ee2e88778bcb64cbf7084db94aa84e2093bfeda3cb1",
+      "bytes": 3666
+    },
+    {
+      "path": "src/benchmark/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "src/benchmark/fault_w5.py",
+      "sha256": "6c521bb3c9aec3ce8e44f11c633d249627b234514faf833956771d02d74d6390",
+      "bytes": 4875
+    },
+    {
+      "path": "src/benchmark/lakehouse_w5.py",
+      "sha256": "702e1f9c40595af8a6e5d3b4b4ccba1215b9f6c051d549a85317561bcce17384",
+      "bytes": 3108
+    },
+    {
+      "path": "src/benchmark/protocol_w5.py",
+      "sha256": "5094a8a1a605986f4a5d29bf92368de6553ea942ff1c7eecd8354fb5ab39337c",
+      "bytes": 5893
+    },
+    {
+      "path": "src/benchmark/stream_w5.py",
+      "sha256": "b62b2bf616860319fd94e102c9bdeea50939ca56c6a51cad98b98a0bb4a935b8",
+      "bytes": 4029
+    },
+    {
+      "path": "src/ml/ablation_w5.py",
+      "sha256": "afc03e886a909ffac8293ba616e00dec77368fc64ecd190444523b6626b0e82d",
+      "bytes": 5477
+    },
+    {
+      "path": "src/ml/evaluate_w5.py",
+      "sha256": "691f55625ce2a1660e6c648367cae200efe4a1069b71408115f1f58a6a3464c0",
+      "bytes": 7678
+    },
+    {
+      "path": "tests/week5/test_benchmarks_w5.py",
+      "sha256": "10bbad439f24c9ca31ba7405e92d19c25c45410f2566077a879d46d01d3e1eb4",
+      "bytes": 6652
+    },
+    {
+      "path": "tests/week5/test_fault_gate_dashboard_w5.py",
+      "sha256": "da1d3b1eaeeb2f6efb165ccdc4eda91afb5bc0140d7d42c91f05a31956a074ed",
+      "bytes": 8596
+    },
+    {
+      "path": "tests/week5/test_ml_w5.py",
+      "sha256": "06263e11fb4350322e7387a370387cccd1d6363515ba95629fb2f47ead699183",
+      "bytes": 4872
+    },
+    {
+      "path": "validation/gate_w5.py",
+      "sha256": "208df69ac5d86cf2ac0146d3126ff89f81b9406abe04fc7af8e0629f45ce14a0",
+      "bytes": 5048
+    }
+  ]
+}

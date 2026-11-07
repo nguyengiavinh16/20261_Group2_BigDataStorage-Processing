@@ -1,0 +1,283 @@
+{
+  "patch": "Fraud Analytics Week 2 additive overlay",
+  "patch_version": "2.0",
+  "depends_on": "Week 1 overlay applied to original repo",
+  "scope": [
+    "P1-W2A",
+    "P1-W2B",
+    "P2-W2A",
+    "P2-W2B",
+    "P3-W2A",
+    "P3-W2B",
+    "P4-W2A",
+    "P4-W2B",
+    "P5-W2A",
+    "P5-W2B"
+  ],
+  "test_evidence": "58 passed, 1 skipped (PySpark unavailable); local only",
+  "G1_status": "INCONCLUSIVE_PEND_REAL_INFRASTRUCTURE",
+  "additive_only": true,
+  "file_count_excluding_manifest": 52,
+  "files": [
+    {
+      "path": "README_WEEK2.md",
+      "sha256": "8590712d1fcc0ee0dc4f3cddf5626075fd84cf5e623b6baab3502ce5518bac73",
+      "size_bytes": 4604
+    },
+    {
+      "path": "configs/week2/lr-w2.yaml",
+      "sha256": "82003d26ca7ea4f29ff5c30baf88a78d30691b61c380df38747670a7fabe2329",
+      "size_bytes": 569
+    },
+    {
+      "path": "configs/week2/run-spec.example.json",
+      "sha256": "ed17cc38b652dbbb1e1ddd45ffb8902a40126ee1be6b74a80d4f0b8915ea8bf5",
+      "size_bytes": 604
+    },
+    {
+      "path": "configs/week2/runtime.env.example",
+      "sha256": "9a05216e722cb927e8709fae19eab25979a1690e6b93e70521f03bb6b8ec9bcc",
+      "size_bytes": 583
+    },
+    {
+      "path": "configs/week2/spark-submit.example.sh",
+      "sha256": "ae465a62ffad5a4289a2ba2659c1257a2369a9b9e0c0e058e63aeaf24f79bd25",
+      "size_bytes": 793
+    },
+    {
+      "path": "deploy/compose.week2.example.yaml",
+      "sha256": "ab2064cf76731c775a39ba85d361571e2974fc7a51a1b28d38c2399aa9691813",
+      "size_bytes": 2849
+    },
+    {
+      "path": "deploy/week2-query-indexes.md",
+      "sha256": "2b7843efe3f744320001c6534ec29b869b69ba3b4c4763fd38e3d3e3bd00cea9",
+      "size_bytes": 871
+    },
+    {
+      "path": "docs/week2/INTEGRATION.md",
+      "sha256": "5a0c40fc082a6a5589ef3561dd25ecc914570a5f87dcad6f9f38b75c0e0a3bc3",
+      "size_bytes": 9281
+    },
+    {
+      "path": "docs/week2/STATUS.md",
+      "sha256": "a51ea13ba4769515bbf9d952d1e2fba9470ca24ff8668f0c3ef6ea75d52ca119",
+      "size_bytes": 4489
+    },
+    {
+      "path": "fixtures/week2/predictions-fixture.json",
+      "sha256": "69a7a5f338e841f3d148ce636f5264a97762f94ce1a293b8f06c02ac80467e55",
+      "size_bytes": 7459
+    },
+    {
+      "path": "reports/evidence/w2-example-runner-cli.log",
+      "sha256": "f8175e6f6912e19a0663ea162af4ce61f9f78dce3204db5378a3411bfa56a00a",
+      "size_bytes": 765
+    },
+    {
+      "path": "reports/evidence/w2-example-runner-success.json",
+      "sha256": "4a1a97e97093c4cc2a051521320351b67967bb4b51e780e5d0aee943a49e4ccd",
+      "size_bytes": 849
+    },
+    {
+      "path": "reports/evidence/w2-invalid-fixture-cli.log",
+      "sha256": "b441401f870393823cc356f96dd683b64ec8832e6671b6902c8f09fd88cd7172",
+      "size_bytes": 191
+    },
+    {
+      "path": "reports/evidence/w2-invalid-fixture.json",
+      "sha256": "057268a5ca0de68611c3a5ef5656238b810989ef22364e64054be0061e06bd9b",
+      "size_bytes": 347
+    },
+    {
+      "path": "reports/evidence/w2-local-pytest.log",
+      "sha256": "ae8d2585f744b4286a38d76100086cbd783b2cd4c0454e41b4f2f728bf69c89b",
+      "size_bytes": 110
+    },
+    {
+      "path": "reports/evidence/w2-missing-input-cli.log",
+      "sha256": "eb54d3c974c483072d4b3233b9ceb0a8a7812c96c8840ebaa83b9ac524dbd780",
+      "size_bytes": 247
+    },
+    {
+      "path": "reports/evidence/w2-missing-input.json",
+      "sha256": "d7fc60cf8d2e0a1f42addc7d59698ff61a48e73657fd98b111e65f92d968e4fa",
+      "size_bytes": 400
+    },
+    {
+      "path": "reports/evidence/w2-source-packaging.json",
+      "sha256": "b24426f611755eb152412798e70cd41ef673f01e7f0f7d3ac5579105dfd1409a",
+      "size_bytes": 165
+    },
+    {
+      "path": "reports/evidence/w2-valid-fixture-cli.log",
+      "sha256": "e2294d3b6bcd632f1b788ab039a312028b60f3433176af091b6cbb582b143fc6",
+      "size_bytes": 110
+    },
+    {
+      "path": "reports/evidence/w2-valid-fixture.json",
+      "sha256": "72b83a85470c1b622bf6ca9a296e4086a0ec52cc6cb338cfd1393b492d9e40c2",
+      "size_bytes": 242
+    },
+    {
+      "path": "requirements-w2.txt",
+      "sha256": "0bb9358ec5c9876931d211818491c769fc7289bf0de4914726e4428f2de713d7",
+      "size_bytes": 241
+    },
+    {
+      "path": "schemas/run-attempt-w2.json",
+      "sha256": "f9d322d2081661bbbf0072c3543bdb68b84f452708ea5bf4b3c3fa43d1f16540",
+      "size_bytes": 891
+    },
+    {
+      "path": "scripts/dev/build_fixture_w2.py",
+      "sha256": "af546bb84f32a949d56aed90af2de1b34fea95642e0e4026218773a95522784c",
+      "size_bytes": 1356
+    },
+    {
+      "path": "scripts/dev/cluster_audit_w2.py",
+      "sha256": "52a56d66cd38b6b46334823f022b8fd10a5b6b7f8496b700e0e7b6f1b93f629f",
+      "size_bytes": 2756
+    },
+    {
+      "path": "scripts/dev/executor_network_probe_w2.py",
+      "sha256": "b7ca82e1adac62687ce473f2eba87465d7dc58e27b21004dec3bbc543270fb73",
+      "size_bytes": 2110
+    },
+    {
+      "path": "scripts/dev/model_reload_check_w2.py",
+      "sha256": "46e15f1731ba1d78a770093c7b7f76e8b9694ad51747676d63cc3fe20395080e",
+      "size_bytes": 2662
+    },
+    {
+      "path": "scripts/dev/package_code_w2.py",
+      "sha256": "aec97b529b8d5edd6e010647c7aab30368a9faa8e7d78a3ee4be9363e76a07f5",
+      "size_bytes": 1244
+    },
+    {
+      "path": "src/__init__.py",
+      "sha256": "2d5ad90f579df79f939dee283287852bd8692281dd77dc8ebac31c6680d70008",
+      "size_bytes": 64
+    },
+    {
+      "path": "src/api/__init__.py",
+      "sha256": "77b5cc12c7bac30b4b391aab4269e168a308f0a3379494b345513b1d5b24ab5c",
+      "size_bytes": 19
+    },
+    {
+      "path": "src/api/repository_w2.py",
+      "sha256": "a49498e023f49164e8d0c797447cd3631e5b013d9b8607f3aa7e829eab2018d1",
+      "size_bytes": 5183
+    },
+    {
+      "path": "src/api/service_w2.py",
+      "sha256": "7e39e169664583e26a455d77d45564575257cec0b99d22d870f49606179625a0",
+      "size_bytes": 2254
+    },
+    {
+      "path": "src/features/offline_w2.py",
+      "sha256": "38d9607a7f24a2f9198113a471078f1630ef8e83245cd0fb7acbd617aa773cf2",
+      "size_bytes": 5165
+    },
+    {
+      "path": "src/ingestion/__init__.py",
+      "sha256": "38ebf3518cad3551791949eb529a81d38a56a9ec8ce8eaaee4c9ff77c4406706",
+      "size_bytes": 25
+    },
+    {
+      "path": "src/ml/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "src/ml/lr_w2.py",
+      "sha256": "b75200440b63cbb28f6c5628e2642a0fb6f0f47edd0b801343eb0f2c7fb3dd12",
+      "size_bytes": 12250
+    },
+    {
+      "path": "src/platform/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "src/platform/runner_w2.py",
+      "sha256": "02161efbe7a0a88fd522a4c0d5bb62bc31fbf85082dcc5301956ccf50eea6b73",
+      "size_bytes": 5264
+    },
+    {
+      "path": "src/platform/storage_w2.py",
+      "sha256": "113982ea034e8dcdaa522b17545cfc6ed63852ca87f7c69ee0e1606783c5cb3e",
+      "size_bytes": 1992
+    },
+    {
+      "path": "src/processing/__init__.py",
+      "sha256": "38ef43d0818efaaacd34f769ba6ff04a0f718184a9dd45ffa0361fce3445ea2c",
+      "size_bytes": 26
+    },
+    {
+      "path": "src/processing/iceberg_w2.py",
+      "sha256": "02e2d4e3bf93428fa5c87760e9afe4e084937f6af63e3d4f9e099afa94b47ab5",
+      "size_bytes": 13303
+    },
+    {
+      "path": "src/streaming/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "src/streaming/queries_w2.py",
+      "sha256": "76badfeedf492f31517b8b6b3844387bd5f41dfa89e99088f3d1a2f3ec102215",
+      "size_bytes": 9713
+    },
+    {
+      "path": "tests/week2/test_api_validator_w2.py",
+      "sha256": "7b2746b767d4ac19ae9ecd398a9f80cc356a566c14676164b165a766c5ff290c",
+      "size_bytes": 2878
+    },
+    {
+      "path": "tests/week2/test_artifact_storage_w2.py",
+      "sha256": "2402c22960d86e25192318f98522d48e428aa52bc965be5c9af5a8c0852edf43",
+      "size_bytes": 1022
+    },
+    {
+      "path": "tests/week2/test_batch_contracts_w2.py",
+      "sha256": "565e2761fbce939f2361ef1aed31028c4a24eeff2e2fed3cb1c5f8179a3f5e86",
+      "size_bytes": 1542
+    },
+    {
+      "path": "tests/week2/test_features_model_w2.py",
+      "sha256": "efb3a4ea7d3e4ced69216826467955ff5a045a0fb27f4b249e30fb9101843a2b",
+      "size_bytes": 949
+    },
+    {
+      "path": "tests/week2/test_model_loader_negative_w2.py",
+      "sha256": "8c6412861cf44722deda2f4d4ef2b8486287bdab855c48ddfc05c6cead3aa067",
+      "size_bytes": 1534
+    },
+    {
+      "path": "tests/week2/test_platform_runner_w2.py",
+      "sha256": "a6d1da78e79253109c0825060aef255de1411dbf883181527c9fddc1218bb3dc",
+      "size_bytes": 2122
+    },
+    {
+      "path": "tests/week2/test_spark_optional_w2.py",
+      "sha256": "7658166a5b72bbbcb37661abb4d861faf9c971c8097489f57262354872495a6d",
+      "size_bytes": 3225
+    },
+    {
+      "path": "tests/week2/test_stream_w2.py",
+      "sha256": "c48feccbd33c8059565f2101a497485a413b89c0e72f8fe1929f5171f74c1105",
+      "size_bytes": 1450
+    },
+    {
+      "path": "ui/index_w2.html",
+      "sha256": "2713a9cd6723defc397aee7b952cb3e9c2459a169ed4586eac7d31073fb8a6a4",
+      "size_bytes": 3894
+    },
+    {
+      "path": "validation/validate_w2.py",
+      "sha256": "af53aeccaa536e5ced38f5b902e933f72e9f415a40f6df6e68aba6c351a23211",
+      "size_bytes": 2958
+    }
+  ]
+}

@@ -1,0 +1,215 @@
+{
+  "week": 4,
+  "files": [
+    {
+      "path": "README_WEEK4.md",
+      "size_bytes": 4082,
+      "sha256": "ca3f88e995af9109e904182760a106838e9b7a3464f845b8b4632b782e3a902f"
+    },
+    {
+      "path": "configs/week4/checks.example.json",
+      "size_bytes": 3036,
+      "sha256": "85a23ca113514d3c749f8104f619cdc3cb7f6ab3e80e5bd814c4541d9e87674a"
+    },
+    {
+      "path": "configs/week4/context.example.json",
+      "size_bytes": 230,
+      "sha256": "b620e58853836fa14f7e85cb0f5be3a13e197354e994f04d588ea9727f894525"
+    },
+    {
+      "path": "configs/week4/retention.example.json",
+      "size_bytes": 153,
+      "sha256": "a987c5879f8d36e5cbf4a13c014c99a9d2a576effa28787213688d82a1f77594"
+    },
+    {
+      "path": "configs/week4/runtime.example.yaml",
+      "size_bytes": 872,
+      "sha256": "cfac5f263c816850914026d2016f1c511483d9348e843d1eba6b01c9ee2249a8"
+    },
+    {
+      "path": "deploy/compose.week4.monitoring.example.yaml",
+      "size_bytes": 956,
+      "sha256": "6e02a7e51ee411fd67efa0d2f7384f5c7db8a058bef309578adb597fb9966805"
+    },
+    {
+      "path": "docs/week4/ARCHITECTURE.md",
+      "size_bytes": 2209,
+      "sha256": "738d8d09ffc87c093b5bd467a9fba6766f85f1cb3cce3c31c80ec5ce2fc4d7bb"
+    },
+    {
+      "path": "docs/week4/DATA_DICTIONARY.md",
+      "size_bytes": 2524,
+      "sha256": "f40d724fb7fe027071c909f4dfc422346e015467f9ed43245c8edb1fd147a683"
+    },
+    {
+      "path": "docs/week4/G3_CHECKLIST.md",
+      "size_bytes": 3385,
+      "sha256": "56d8c1ab65ef184b06084e2a80bfcd72c471405684bf77581d11a1d5eba6c3d2"
+    },
+    {
+      "path": "docs/week4/INTEGRATION.md",
+      "size_bytes": 9989,
+      "sha256": "41ba2350444e5fb957f5b2200d41003751eddcaa158ccd3df7d4543e3b14cad8"
+    },
+    {
+      "path": "docs/week4/STATUS.md",
+      "size_bytes": 3803,
+      "sha256": "bf0f998da9c0e4476a6554ffab0e5c5d186b86941e7f02625c58cddb159e6598"
+    },
+    {
+      "path": "fixtures/week4/boundary-events.json",
+      "size_bytes": 722,
+      "sha256": "660431ed24a9c6e66f176d46e04e971dd1f29886122d0f67208f5888d220d28c"
+    },
+    {
+      "path": "fixtures/week4/faults.json",
+      "size_bytes": 590,
+      "sha256": "9b189f3ee0b66a503af5e756ab3be5813dd0386e7891259135361080a462b94c"
+    },
+    {
+      "path": "monitoring/alerts-week4.yaml",
+      "size_bytes": 553,
+      "sha256": "c4bbe3fafae1d901d7f503d2ca1c9eafa3e96b42706721ff28cdf26e52b36ebc"
+    },
+    {
+      "path": "monitoring/exporter_w4.py",
+      "size_bytes": 2536,
+      "sha256": "860f1ec51b53d232a9624fb3a63fcdb1e3e177080d182146e764492014a6afcc"
+    },
+    {
+      "path": "monitoring/grafana-week4.json",
+      "size_bytes": 7607,
+      "sha256": "c5c16c5f7cb3b5672fb3cec9814fae7ca1e26954b206b6faf1a5d0bc4fcb1504"
+    },
+    {
+      "path": "monitoring/prometheus-week4.yaml",
+      "size_bytes": 448,
+      "sha256": "ba3505899a2f5cd5675f82209f6a1f88c7a3d607f6e1be11b67a390e598c87da"
+    },
+    {
+      "path": "requirements-w4.txt",
+      "size_bytes": 285,
+      "sha256": "5f84e5d8ee5590b3866629769d68c11e6945eb22aa3e6f3483de8b35f319a53f"
+    },
+    {
+      "path": "scripts/week4/__init__.py",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "scripts/week4/cli.py",
+      "size_bytes": 2757,
+      "sha256": "030b25bbe318547a93a37c960d0cf0e5d444103f56751449a4dea5378285c4b8"
+    },
+    {
+      "path": "scripts/week4/compare_models.py",
+      "size_bytes": 1160,
+      "sha256": "0011d36afad34d0e848f6754f88295f00885b95b678088057a7adacdb2350997"
+    },
+    {
+      "path": "scripts/week4/export_metrics.py",
+      "size_bytes": 823,
+      "sha256": "50910c7df318384d2d2779511500c7a42c7ee0afe668ed72c9e261e2d393fbb6"
+    },
+    {
+      "path": "scripts/week4/run_g3.py",
+      "size_bytes": 620,
+      "sha256": "4350412fffeae33f32ad750e769e7866f78758ff731e27aeee31f409929a9c15"
+    },
+    {
+      "path": "scripts/week4/start_scoring.py",
+      "size_bytes": 1118,
+      "sha256": "f9daa07713507514c11fd84d0ea38c7ae1aebadfc6b3103effe3fb4ed4166d23"
+    },
+    {
+      "path": "src/evaluation/parity_w4.py",
+      "size_bytes": 4773,
+      "sha256": "0a9324476969aa4589716f6ffba992e2f5fce405f82fb804f9d7d84f2951e37a"
+    },
+    {
+      "path": "src/ml/lr_w4.py",
+      "size_bytes": 11346,
+      "sha256": "e458077c2912304f70fc42d99a821ea8a0867f7e8a45e13d3fd694ab823631bb"
+    },
+    {
+      "path": "src/platform/guards_w4.py",
+      "size_bytes": 7320,
+      "sha256": "a4bc66568aa6b82bbec178248a366cfa139845f13028a19e40d7cffc9dd0d4b7"
+    },
+    {
+      "path": "src/platform/workflow_gate_w4.py",
+      "size_bytes": 1377,
+      "sha256": "cff3d6d467b79790bdc1d1459780543674a044eee3d845ef1805e64a48a715d2"
+    },
+    {
+      "path": "src/processing/maintenance_w4.py",
+      "size_bytes": 3894,
+      "sha256": "eab8defa0e4feb55e531e8ae54d4e17dafd78308dc138ee1deb6debd0aa91fdc"
+    },
+    {
+      "path": "src/streaming/checkpoint_w4.py",
+      "size_bytes": 1762,
+      "sha256": "fed07d9c15082189b28de2ef52ee817b307467008f37a129980533dd7cf718f4"
+    },
+    {
+      "path": "src/streaming/replay_w4.py",
+      "size_bytes": 3784,
+      "sha256": "901477b71a639ee068b08647318c8340079378e5ba1efe8af64f55625cfa27c5"
+    },
+    {
+      "path": "src/streaming/scoring_w4.py",
+      "size_bytes": 5110,
+      "sha256": "0cfac12702de1901e05d718a8a9e0c1a4cae9c7820dbb3d20489d6e4195cc255"
+    },
+    {
+      "path": "src/streaming/state_w4.py",
+      "size_bytes": 7853,
+      "sha256": "fdc26aafaaf65c1daaa730d6d640837bea668f87d5d10e3e9ad12b034bf2affe"
+    },
+    {
+      "path": "src/streaming/stateful_spark_w4.py",
+      "size_bytes": 6198,
+      "sha256": "d8c848c082116167c74c9cf83c77227128748b825b3e215f142a078d1b600cd8"
+    },
+    {
+      "path": "tests/week4/test_gate_workflow_w4.py",
+      "size_bytes": 1576,
+      "sha256": "ac5adbea7180fbd664e9c83cf542b363d6d441eae2b770e657c4b90dab7ad996"
+    },
+    {
+      "path": "tests/week4/test_guards_w4.py",
+      "size_bytes": 2987,
+      "sha256": "b95d9bc66eef39ab445461b0faa08f3dc38fcf32b6cacb4808af0108856400a9"
+    },
+    {
+      "path": "tests/week4/test_ml_maintenance_metrics_w4.py",
+      "size_bytes": 2833,
+      "sha256": "5b40839f26ca8ff8a87bfb4695c99e099e48becc8984548c9fee94e7fdd1af68"
+    },
+    {
+      "path": "tests/week4/test_spark_optional_w4.py",
+      "size_bytes": 345,
+      "sha256": "993ec291ce7b5f6cf65849da063ee542429180f96c76b86403028868f4bed353"
+    },
+    {
+      "path": "tests/week4/test_state_w4.py",
+      "size_bytes": 5924,
+      "sha256": "bf4d64955d69405bb38a0d00896da681f39d296853a089b7608a4ce7c10c3a63"
+    },
+    {
+      "path": "tests/week4/test_validation_w4.py",
+      "size_bytes": 3499,
+      "sha256": "c9a32d32eb421e51a22379c4287b034c960394ca4cee7d6ccfbde21e0ec25f88"
+    },
+    {
+      "path": "validation/compare_w4.py",
+      "size_bytes": 2309,
+      "sha256": "d1c1d41ad10666cefdd563dead0cbab73b452588fdbeaeff8bfad13ce052c69c"
+    },
+    {
+      "path": "validation/gate_w4.py",
+      "size_bytes": 3300,
+      "sha256": "583bdd4c6ee3c3bd214aeb48bf93c34f4f7faad5c312d30ef204de4dff1dfdd6"
+    }
+  ]
+}

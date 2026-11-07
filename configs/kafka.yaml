@@ -1,9 +1,0 @@
-# Planned for Week 2. These values are local-development defaults, not a live service.
-bootstrap_servers: "localhost:9092"
-transaction_topic: "transactions"
-consumer_group: "fraud-detection-stream"
-message_key: "transaction_id"
-producer:
-  replay_rate_per_second: 10
-  max_events: 1000
-  linger_ms: 5

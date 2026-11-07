@@ -1,0 +1,13 @@
+{
+  "mode": "fresh",
+  "run_id": "REPLACE_REAL_RUN_ID",
+  "model_version": "REPLACE_FROZEN_MODEL",
+  "feature_version": "history-v1",
+  "model_uri": "hdfs://namenode:8020/fraud/models/REPLACE",
+  "mongo_uri": "mongodb://mongo:27017",
+  "archive_checkpoint": "hdfs://namenode:8020/fraud/checkpoints/REPLACE/archive",
+  "scoring_checkpoint": "hdfs://namenode:8020/fraud/checkpoints/REPLACE/scoring",
+  "replay_topic": "REPLACE_EXISTING_TOPIC",
+  "warmup_start_step": 355,
+  "score_start_step": 379
+}

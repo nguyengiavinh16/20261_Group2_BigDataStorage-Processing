@@ -1,0 +1,4 @@
+# W5 pure Python modules use only Python standard library + W1-W4 dependencies.
+# Test only:
+pytest>=8,<10
+# Optional live connections use W1-W4 pyspark, kafka, pymongo, fastapi already declared there.
