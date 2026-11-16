@@ -1,0 +1,25 @@
+services:
+  spark:
+    build:
+      context: .
+      dockerfile: Dockerfile.jupyter
+    image: fraud-spark:4.2.0
+    container_name: fraud-spark
+    init: true
+    working_dir: /workspace
+    ports:
+      - "8890:8888"
+      - "4041:4040"
+    environment:
+      PYSPARK_PYTHON: python3
+      PYTHONPATH: /workspace
+      SPARK_MASTER: "local[2]"
+    volumes:
+      - .:/workspace
+    command:
+      - /opt/jupyter/bin/jupyter
+      - lab
+      - --ip=0.0.0.0
+      - --port=8888
+      - --no-browser
+      - --ServerApp.root_dir=/workspace

@@ -1,0 +1,12 @@
+{
+ "fixture_only":true,
+ "note":"Synthetic evaluator sanity check. These numbers are NOT PaySim experimental results.",
+ "expected_ids":["s1","s2","s3","s4"],
+ "predictions":[
+  {"transaction_id":"s1","run_id":"synthetic-w5","model_version":"synthetic-lr","feature_version":"history-v1","step":379,"score":0.9,"amount_cents":100,"transaction_type":"TRANSFER"},
+  {"transaction_id":"s2","run_id":"synthetic-w5","model_version":"synthetic-lr","feature_version":"history-v1","step":379,"score":0.1,"amount_cents":200,"transaction_type":"PAYMENT"},
+  {"transaction_id":"s3","run_id":"synthetic-w5","model_version":"synthetic-lr","feature_version":"history-v1","step":380,"score":0.8,"amount_cents":300,"transaction_type":"TRANSFER"},
+  {"transaction_id":"s4","run_id":"synthetic-w5","model_version":"synthetic-lr","feature_version":"history-v1","step":380,"score":0.3,"amount_cents":400,"transaction_type":"CASH_OUT"}
+ ],
+ "labels":[{"transaction_id":"s1","is_fraud":1},{"transaction_id":"s2","is_fraud":0},{"transaction_id":"s3","is_fraud":0},{"transaction_id":"s4","is_fraud":1}]
+}

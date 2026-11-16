@@ -1,0 +1,13 @@
+{
+  "services": {
+    "spark": {"status": "not_verified", "implementation_ref": "src/platform/runner_w2.py"},
+    "hdfs": {"status": "not_verified", "implementation_ref": "deploy/compose.week2.example.yaml"},
+    "iceberg": {"status": "not_verified", "implementation_ref": "src/processing/iceberg_w2.py"},
+    "kafka": {"status": "not_verified", "implementation_ref": "src/streaming/queries_w3.py"},
+    "mongodb": {"status": "not_verified", "implementation_ref": "src/streaming/mongo_sink_w3.py"},
+    "fastapi": {"status": "not_verified", "implementation_ref": "src/api/service_w3.py"},
+    "dashboard": {"status": "not_verified", "implementation_ref": "ui/index_w2.html"},
+    "redis": {"status": "not_implemented"},
+    "airflow": {"status": "not_implemented"}
+  }
+}

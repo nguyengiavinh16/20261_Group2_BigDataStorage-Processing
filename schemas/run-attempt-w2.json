@@ -1,0 +1,16 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "type":"object",
+  "required":["run_id","attempt","pinned","command","start_utc","end_utc","exit_code","missing_outputs","status"],
+  "properties":{
+    "run_id":{"type":"string","minLength":1},
+    "attempt":{"type":"integer","minimum":1},
+    "pinned":{"type":"object","required":["run_id","git_commit","config_sha256","dataset_sha256","cutoff_step","input_snapshot_id","feature_version","model_version"],"additionalProperties":true},
+    "command":{"type":"array","items":{"type":"string"}},
+    "start_utc":{"type":"string","format":"date-time"},"end_utc":{"type":"string","format":"date-time"},
+    "elapsed_seconds":{"type":"number","minimum":0},
+    "exit_code":{"type":"integer"},
+    "missing_outputs":{"type":"array","items":{"type":"string"}},
+    "status":{"enum":["PASS","FAIL"]}
+  },"additionalProperties":true
+}

@@ -1,0 +1,10 @@
+{
+  "status": "INCONCLUSIVE",
+  "evidence_mode": "not_run",
+  "workspace_mode": "not_run",
+  "operator": null,
+  "fixture_only": true,
+  "steps": {},
+  "evidence_files": {},
+  "notes": "Must be filled from a separate human/operator's actual fresh checkout and real integrated workflow; cannot use synthetic report."
+}

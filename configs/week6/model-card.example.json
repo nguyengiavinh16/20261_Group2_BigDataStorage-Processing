@@ -1,0 +1,21 @@
+{
+  "artifact_status": "NOT_VERIFIED",
+  "model_version": "REPLACE",
+  "feature_version": "history-v1",
+  "feature_set": "A_plus_H",
+  "feature_order": ["transaction_type", "log_amount", "dest_prior24_count", "dest_prior24_amount_cents"],
+  "threshold_selection_split": "validation",
+  "threshold": null,
+  "silver_snapshot_id": "REPLACE",
+  "dataset_sha256": null,
+  "git_commit": "REPLACE",
+  "seed": 42,
+  "spark_version": "REPLACE",
+  "model_type": "SparkML_LogisticRegression",
+  "artifact_uri": "hdfs://namenode:8020/fraud/models/REPLACE",
+  "artifact_sha256": null,
+  "run_id": "REPLACE",
+  "config_sha256": null,
+  "warmup_steps": [355, 378],
+  "test_steps": [379, 743]
+}

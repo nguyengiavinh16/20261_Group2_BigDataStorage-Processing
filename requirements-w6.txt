@@ -1,0 +1,4 @@
+# Local week-6 audit, gates and package tools use Python 3.10+ standard library.
+# Tests require pytest (already required by weeks 1–5).
+pytest>=8,<10
+# Live reload of Spark models requires matching Spark/Iceberg/HDFS setup from W2/W4.

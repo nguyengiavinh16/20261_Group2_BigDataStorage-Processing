@@ -1,0 +1,216 @@
+{
+  "artifact": "Fraud Analytics Week 3 overlay",
+  "scope": "week_3_only",
+  "source_plan": "index.html 26/10/2026",
+  "based_on": "W1 and W2 overlays",
+  "runtime_evidence": "INCONCLUSIVE: no Spark/Kafka/Iceberg/Mongo infrastructure in build environment",
+  "local_test_result": "125 passed, 2 skipped",
+  "file_count_excluding_manifest": 41,
+  "files": [
+    {
+      "path": "README_WEEK3.md",
+      "size_bytes": 4746,
+      "sha256": "6c39b2949e5cae78c55bcbb265ac6dc9e6599363c8f3d2bd4c980e6b860a179f"
+    },
+    {
+      "path": "configs/week3/query-status.example.json",
+      "size_bytes": 368,
+      "sha256": "f364655bfd7633f8ad4c3c200442928e5b116cf08f4ff15ad9e35027bc1a4f42"
+    },
+    {
+      "path": "configs/week3/runtime.env.example",
+      "size_bytes": 566,
+      "sha256": "e1ece4192acc825ea33715a31197be6c10510c34994ec7ca4674f0e9281a2705"
+    },
+    {
+      "path": "configs/week3/workflow.example.json",
+      "size_bytes": 1831,
+      "sha256": "e4e64e2db0b6861644ad9103c60f9ca18bdcc81edbc98fbc833013698c7d49c1"
+    },
+    {
+      "path": "docs/week3/ARCHITECTURE.md",
+      "size_bytes": 2165,
+      "sha256": "87a6a32507de95a84e60542c9cf382346a8a9222eff864fb7e8489adbe3c8c9b"
+    },
+    {
+      "path": "docs/week3/GOLD_SQL.md",
+      "size_bytes": 1528,
+      "sha256": "53ba921702604b3e858cf9acc951b27b69b0be2381dc095712280bc5581a7b0e"
+    },
+    {
+      "path": "docs/week3/INTEGRATION.md",
+      "size_bytes": 10029,
+      "sha256": "64449f9605df243443ec1daa968f38ae8644b59c757f56816c794cd9d31ed1fc"
+    },
+    {
+      "path": "docs/week3/STATUS.md",
+      "size_bytes": 5222,
+      "sha256": "063bcde40516ec0de1c81528d1c265d4690c5c04d88cc9d54457674b28aecbb8"
+    },
+    {
+      "path": "fixtures/week3/golden_history.json",
+      "size_bytes": 1256,
+      "sha256": "bb964e4f6eaddeec8acda01a2dac1c466d45ac4639a475f86ab8cf6eb7fcc9ac"
+    },
+    {
+      "path": "fixtures/week3/ordered_events.json",
+      "size_bytes": 850,
+      "sha256": "b92e159271b7d4ba5e0b7309c6e7392f49b51c4ddfe297f68fd8f557be4a5dfa"
+    },
+    {
+      "path": "monitoring/collector_w3.py",
+      "size_bytes": 5463,
+      "sha256": "a0ede4a25fc4079e792547f62cee5d32e234c2fe5e217b78db85c26f210c88c3"
+    },
+    {
+      "path": "reports/week3/local-smoke.json",
+      "size_bytes": 1201,
+      "sha256": "e322e7abae0933efb67818748fdf1331d060d047235f72a847e7aebfd4c1e856"
+    },
+    {
+      "path": "reports/week3/local-test-results.txt",
+      "size_bytes": 191,
+      "sha256": "973dcd227e68d27e6b8f5c7ffe77458f4f771f4fef75974274e46195ec0f0e52"
+    },
+    {
+      "path": "requirements-w3.txt",
+      "size_bytes": 352,
+      "sha256": "11ddec471eb48daa4394301a421f7588961d7875f0733641f8dab00dabcf4629"
+    },
+    {
+      "path": "scripts/week3/__init__.py",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "scripts/week3/demo_local.py",
+      "size_bytes": 1679,
+      "sha256": "d947253cd5566f6cefb7c1f25ab6a626d1027c354cc81adf7a55e6a55314b527"
+    },
+    {
+      "path": "src/api/mongo_repository_w3.py",
+      "size_bytes": 3239,
+      "sha256": "381143eb7ec2fe5016b3a209bb623c5d2da3d33a7cdbc8b5c894b3ac0077ea1a"
+    },
+    {
+      "path": "src/api/service_w3.py",
+      "size_bytes": 2439,
+      "sha256": "641b7cef6a2a31b69fe0f8dae24ce9a6422276d1a52039b4d30922ba67165985"
+    },
+    {
+      "path": "src/evaluation/golden_score_w3.py",
+      "size_bytes": 2427,
+      "sha256": "cffaa02d077e32078ef4b59dc9293a980bcdb811f02d0ff7f3cc7a50d2007def"
+    },
+    {
+      "path": "src/evaluation/golden_w3.py",
+      "size_bytes": 1511,
+      "sha256": "0f78290b3efbbebb1fdad350bdf9bfeeb50de03d7b5e49846a7e145d5aa5206c"
+    },
+    {
+      "path": "src/evaluation/parity_w3.py",
+      "size_bytes": 2860,
+      "sha256": "cbf0ebfdedec5c117bed29e3b97a32624e7bced147cc075a844680051daec792"
+    },
+    {
+      "path": "src/ml/baseline_w3.py",
+      "size_bytes": 5006,
+      "sha256": "d427c848cf90dfefa452e8d4346381af1c662f57be48540be725b5ba2e7bbce9"
+    },
+    {
+      "path": "src/platform/lifecycle_w3.py",
+      "size_bytes": 6528,
+      "sha256": "0fd94dd0a2ea30be6564eda74808aa04dc3d6e28600de18897db29a4d60ac5d2"
+    },
+    {
+      "path": "src/platform/workflow_w3.py",
+      "size_bytes": 7340,
+      "sha256": "996f2037b2eb37850393d37c1f0c9c7ada72df392f8297209c3d2acf1b2c2485"
+    },
+    {
+      "path": "src/processing/archive_bridge_w3.py",
+      "size_bytes": 1680,
+      "sha256": "f2ca2d0b598fc2d113babf1e9c181d8c7f5562328a165578434864f105bd3e8a"
+    },
+    {
+      "path": "src/processing/gold_w3.py",
+      "size_bytes": 5984,
+      "sha256": "a31f23921a9ab17995ac607163416e9cba9dd10e73e353716f0bf270dc1b6a06"
+    },
+    {
+      "path": "src/streaming/mongo_sink_w3.py",
+      "size_bytes": 7700,
+      "sha256": "fcc8fa22fe29721c4a04143bfbeb279bc6bef8e1031c0c51a09a9a5a94627bc7"
+    },
+    {
+      "path": "src/streaming/queries_w3.py",
+      "size_bytes": 3942,
+      "sha256": "19edd86a5a8275f5156ad3cae2d3d88ee065bb7e61e2c1345506273e299335a4"
+    },
+    {
+      "path": "src/streaming/state_w3.py",
+      "size_bytes": 4961,
+      "sha256": "bac710ed11deec41b2afbd78f6d8501019c699787cd084a7f7ccf4a25ca71904"
+    },
+    {
+      "path": "src/streaming/stateful_spark_w3.py",
+      "size_bytes": 3736,
+      "sha256": "0732fff198f6e591aebf22490961b8e8f8ff9078a3a0465c62e4382f6fa9ac56"
+    },
+    {
+      "path": "tests/week3/__init__.py",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/week3/test_gold_bridge.py",
+      "size_bytes": 1825,
+      "sha256": "7b445143475c539c3882672325ff9610ddee17d3b0fdbc5d4755d54a2fa67e68"
+    },
+    {
+      "path": "tests/week3/test_mongo_api.py",
+      "size_bytes": 2334,
+      "sha256": "6284a71018cba2a7dead7437d4aa1222f2f29ce660946d3546f54f2b9b68b67f"
+    },
+    {
+      "path": "tests/week3/test_mongo_writer.py",
+      "size_bytes": 2987,
+      "sha256": "d65cab2deecac0c0b6fd04a240effcdba117e1c249edf391dabbd6482a4364c1"
+    },
+    {
+      "path": "tests/week3/test_parity_metrics.py",
+      "size_bytes": 1743,
+      "sha256": "7d7181bfc414263f88423b8ebd472b4dce2e827299eb6fd737b1e3c2782434b4"
+    },
+    {
+      "path": "tests/week3/test_spark_optional.py",
+      "size_bytes": 311,
+      "sha256": "daf27eff0fee480362737f46369f5b73abd13cd58d65608807961b4415f642a0"
+    },
+    {
+      "path": "tests/week3/test_state.py",
+      "size_bytes": 2552,
+      "sha256": "14c2ef02b88d12111cc51a29df86604c5095ef37e28dd7fd51beb556e7603244"
+    },
+    {
+      "path": "tests/week3/test_validator_collector.py",
+      "size_bytes": 4493,
+      "sha256": "babb29115bddbf955ee27f6266dbc709c0c30f6837dcda3be1fb392d91fd1d86"
+    },
+    {
+      "path": "tests/week3/test_workflow.py",
+      "size_bytes": 6026,
+      "sha256": "c7f11a9d91a8139cce51c408e6647da8ed6600ad4ef37f5d879d7be3833ce29c"
+    },
+    {
+      "path": "validation/run.py",
+      "size_bytes": 5394,
+      "sha256": "eebf611127b6ce17daf550fbc7c7510ac3583ede485c36e2ad53d4fae54f8060"
+    },
+    {
+      "path": "validation/validate_silver_w3.py",
+      "size_bytes": 2562,
+      "sha256": "1f5d377f30ed072fcab64e9d25375f2419286a384d37bf4a3956b3a283b4dd8e"
+    }
+  ]
+}

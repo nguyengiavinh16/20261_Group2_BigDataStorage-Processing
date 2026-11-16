@@ -1,0 +1,22 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fraud Analytics W2 · Fixture</title>
+<style>body{font:16px/1.5 system-ui;margin:2rem auto;max-width:1000px;padding:0 1rem;background:#f6f8fc;color:#172b44}header,.panel{padding:1.25rem;border:1px solid #d2dae5;background:white;border-radius:8px;margin-bottom:1rem}h1{margin:.1rem 0}.flag{display:inline-block;padding:3px 9px;background:#fff3c6;color:#644800;font-weight:bold}.controls{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem}input,button{padding:.6rem;font:inherit}.cards{display:flex;gap:1rem} .cards div{flex:1;background:#e7eef7;padding:1rem;border-radius:.4rem}table{width:100%;border-collapse:collapse}th,td{padding:.6rem;text-align:left;border-bottom:1px solid #ccd6e2}th{background:#eef3fa}#error,#stale{color:#a41227;font-weight:700}#error[hidden],#stale[hidden]{display:none}button:disabled{opacity:.5}</style></head><body>
+<header><span class="flag">FIXTURE MODE — KHÔNG PHẢI DỮ LIỆU THỰC</span><h1>Fraud Analytics</h1><p>Operational monitoring (không hiển thị accuracy/PR-AUC trên luồng không có nhãn)</p><div class="controls"><label>Run ID <input id="run" value="w2-fixture-run"></label><label>Cutoff <input id="cutoff" type="number" min="1" max="743" value="379"></label><button id="reload">Xem</button></div></header>
+<section class="panel"><p id="error" role="alert" hidden></p><p id="stale" role="alert" hidden></p><p id="meta">Chưa tải dữ liệu</p><div class="cards"><div>Tổng giao dịch <strong id="total">—</strong></div><div>Cảnh báo <strong id="alerts">—</strong></div></div></section>
+<section class="panel"><h2>Predictions</h2><table><thead><tr><th>ID</th><th>Score</th><th>Alert</th><th>Model</th><th>Time</th></tr></thead><tbody id="rows"></tbody></table><button id="next" disabled>Trang tiếp</button></section>
+<script>
+let cursor=null;const $=id=>document.getElementById(id);
+async function get(url){const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error('API HTTP '+r.status);return await r.json()}
+function clear(){ $('total').textContent='—';$('alerts').textContent='—';$('rows').replaceChildren();$('meta').textContent='Chưa có dữ liệu';$('next').disabled=true;}
+function error(msg){clear();$('error').textContent=msg;$('error').hidden=false;$('stale').hidden=true;}
+async function page(reset=false){let run=$('run').value,cutoff=Number($('cutoff').value);if(reset)cursor=null;try{
+const q=new URLSearchParams({run_id:run,cutoff:String(cutoff),limit:'20'});if(cursor)q.set('cursor',cursor);
+const summary=await get('/api/v1/summary?'+new URLSearchParams({run_id:run,cutoff:String(cutoff)}));const preds=await get('/api/v1/predictions?'+q);
+$('error').hidden=true;$('total').textContent=summary.total_predictions;$('alerts').textContent=summary.alerts;
+$('meta').textContent='Run: '+summary.run_id+' | Model: '+summary.model_versions.join(', ')+' | Feature: '+summary.feature_versions.join(', ')+' | as_of: '+(summary.as_of??'không có')+' | source: '+summary.source;
+const age=summary.as_of?Date.now()-Date.parse(summary.as_of):0;
+$('stale').hidden=!(summary.as_of&&age>3600000);$('stale').textContent='Cảnh báo: dữ liệu cũ, cập nhật lúc '+summary.as_of;
+$('rows').replaceChildren();for(const item of preds.items){const tr=document.createElement('tr');for(const v of [item.transaction_id,item.score.toFixed(4),item.decision?'Có':'Không',item.model_version,item.event_time]){const td=document.createElement('td');td.textContent=v;tr.appendChild(td)}$('rows').appendChild(tr)}
+cursor=preds.next_cursor;$('next').disabled=!cursor;
+}catch(e){error('Không thể đọc dữ liệu: '+e.message+' (không thay lỗi bằng số 0)')}}
+$('reload').onclick=()=>page(true);$('next').onclick=()=>page(false);page(true);
+</script></body></html>
