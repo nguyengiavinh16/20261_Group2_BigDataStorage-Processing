@@ -1,0 +1,7 @@
+# Normalize line endings (team mixes Windows/WSL/macOS). Shell scripts must stay LF.
+* text=auto eol=lf
+*.sh text eol=lf
+*.png binary
+*.jpg binary
+*.zip binary
+*.parquet binary

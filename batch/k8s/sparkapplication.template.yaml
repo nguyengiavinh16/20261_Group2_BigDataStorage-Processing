@@ -1,0 +1,33 @@
+# Template for any batch job. Copy, set name + mainApplicationFile args. Requires `make up-batch`, `make image-batch`.
+apiVersion: sparkoperator.k8s.io/v1beta2
+kind: SparkApplication
+metadata:
+  name: cg-bronze-to-silver-trades
+  namespace: cg-batch
+  labels: {app.kubernetes.io/part-of: cryptoguard}
+spec:
+  type: Python
+  pythonVersion: "3"
+  mode: cluster
+  image: cg-batch:dev
+  imagePullPolicy: IfNotPresent
+  mainApplicationFile: local:///app/batch/src/cg_batch/jobs/bronze_to_silver_trades.py
+  arguments: ["--date", "2026-11-01"]
+  sparkVersion: "3.5.3"
+  restartPolicy: {type: Never}
+  driver:
+    cores: 1
+    memory: 1g
+    serviceAccount: spark-operator-spark   # VERIFY name created by the chart for job namespaces
+    env:
+      - {name: CG_PROFILE, value: local}
+      - {name: CG_POSTGRES__HOST, value: cg-postgres.cg-storage}
+      - {name: CG_POSTGRES__PORT, value: "5432"}
+      - {name: CG_STORAGE__ENDPOINT, value: "http://cg-minio.cg-storage:9000"}
+    envFrom: []   # INF-05: secret with CG_STORAGE__ACCESS_KEY / SECRET_KEY / CG_POSTGRES__PASSWORD in cg-batch
+  executor:
+    instances: 1
+    cores: 1
+    memory: 2g
+    env:
+      - {name: CG_PROFILE, value: local}

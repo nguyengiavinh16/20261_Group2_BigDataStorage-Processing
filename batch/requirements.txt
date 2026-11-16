@@ -1,0 +1,6 @@
+pandas>=2.0          # mapInPandas / applyInPandas with shared feature functions
+pyarrow>=14
+boto3>=1.34
+redis>=5             # export baselines / wallet risk
+pymongo>=4.6         # export wallet risk
+graphframes-py>=0.8  # VERIFY package name/version for Spark 3.5 (BAT-08); jar via spark.jars.packages

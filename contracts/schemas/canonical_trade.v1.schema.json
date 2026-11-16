@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cryptoguard.local/schemas/canonical_trade.v1.schema.json",
+  "title": "CanonicalTrade v1",
+  "description": "One executed trade on a centralized exchange, normalized across exchanges. Replaces W1 transaction_event.v1 (PaySim). Topic: canonical.trades.v1 (key = symbol) and replay.canonical.trades.v1. Producer: streaming/normalizer [R2] and ingest/replay [R2]. Consumers: streaming/detector [R3], archiver → silver.trades [R4].",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "event_id", "exchange", "symbol", "base", "quote", "native_symbol",
+    "trade_id", "price", "qty", "quote_qty", "taker_side", "event_ts_us", "ingest_ts_us"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "pattern": "^1\\.[0-9]+$", "examples": ["1.0"]},
+    "event_id": {
+      "description": "Deterministic dedup key: '<exchange>:<native_symbol>:<trade_id>'.",
+      "type": "string",
+      "pattern": "^(binance|okx|coinbase|kraken):[^:]+:[^:]+$"
+    },
+    "exchange": {"type": "string", "enum": ["binance", "okx", "coinbase", "kraken"]},
+    "symbol": {
+      "description": "Canonical BASE-QUOTE, uppercase, from contracts/reference/symbol_map.csv (XBT→BTC etc.).",
+      "type": "string",
+      "pattern": "^[A-Z0-9]{2,15}-[A-Z0-9]{2,10}$",
+      "examples": ["BTC-USDT", "PEPE-USDT", "BTC-USD"]
+    },
+    "base": {"type": "string", "pattern": "^[A-Z0-9]{2,15}$"},
+    "quote": {"type": "string", "pattern": "^[A-Z0-9]{2,10}$"},
+    "native_symbol": {"type": "string", "maxLength": 32},
+    "trade_id": {"description": "Exchange trade id as string (some exchanges use strings, some integers).", "type": "string", "maxLength": 64},
+    "price": {"description": "Price in quote currency.", "type": "number", "exclusiveMinimum": 0},
+    "qty": {"description": "Quantity in base currency.", "type": "number", "exclusiveMinimum": 0},
+    "quote_qty": {"description": "price * qty, in quote currency.", "type": "number", "minimum": 0},
+    "quote_qty_usd": {
+      "description": "Notional in USD. Equal to quote_qty when quote is USD or a USD stablecoin (USDT/USDC/FDUSD treated as 1.0 in MVP); null if unknown.",
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "taker_side": {
+      "description": "Side of the AGGRESSOR (taker). Normalized: Binance m=true → 'sell'; Coinbase 'side' is the MAKER side → invert; OKX/Kraken 'side' is taker side. VERIFY per exchange docs (ING-01).",
+      "type": "string",
+      "enum": ["buy", "sell", "unknown"]
+    },
+    "event_ts_us": {"description": "Trade execution time from the exchange, epoch µs UTC. Used for windows/watermarks.", "type": "integer", "minimum": 1500000000000000},
+    "ingest_ts_us": {"description": "Copied from RawEnvelope.ingest_ts_us (or replay wall-clock). Used for latency metrics.", "type": "integer", "minimum": 1500000000000000},
+    "replay_run_id": {"type": ["string", "null"], "maxLength": 64}
+  }
+}

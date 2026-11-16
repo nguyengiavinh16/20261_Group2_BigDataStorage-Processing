@@ -1,0 +1,51 @@
+# One Deployment per exchange (copy the block, change SOURCE). Apply: kubectl apply -f ingest/k8s/collector.yaml
+# Replicas MUST stay 1 per source (two collectors = duplicated messages; dedup exists but don't rely on it).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: collector-binance
+  namespace: cg-ingest
+  labels: {app: collector, source: binance, app.kubernetes.io/part-of: cryptoguard}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector: {matchLabels: {app: collector, source: binance}}
+  template:
+    metadata:
+      labels: {app: collector, source: binance, app.kubernetes.io/part-of: cryptoguard}
+    spec:
+      containers:
+        - name: collector
+          image: cg-ingest:dev
+          imagePullPolicy: IfNotPresent
+          args: ["collectors.main", "--source", "binance"]
+          env:
+            - {name: CG_PROFILE, value: local}
+            - {name: CG_KAFKA__BOOTSTRAP_SERVERS, value: cg-kafka-kafka-bootstrap.cg-kafka:9092}
+          ports: [{name: metrics, containerPort: 9108}]
+          resources: {requests: {memory: 128Mi, cpu: 50m}, limits: {memory: 256Mi}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: collector-okx
+  namespace: cg-ingest
+  labels: {app: collector, source: okx, app.kubernetes.io/part-of: cryptoguard}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector: {matchLabels: {app: collector, source: okx}}
+  template:
+    metadata:
+      labels: {app: collector, source: okx, app.kubernetes.io/part-of: cryptoguard}
+    spec:
+      containers:
+        - name: collector
+          image: cg-ingest:dev
+          imagePullPolicy: IfNotPresent
+          args: ["collectors.main", "--source", "okx"]
+          env:
+            - {name: CG_PROFILE, value: local}
+            - {name: CG_KAFKA__BOOTSTRAP_SERVERS, value: cg-kafka-kafka-bootstrap.cg-kafka:9092}
+          ports: [{name: metrics, containerPort: 9108}]
+          resources: {requests: {memory: 128Mi, cpu: 50m}, limits: {memory: 256Mi}}

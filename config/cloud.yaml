@@ -1,0 +1,44 @@
+# Cloud profile (P4): GCP Compute Engine VMs running kubeadm; data lake on GCS via S3 interoperability.
+# Hosts below are in-cluster service DNS names; set secrets through env vars / K8s Secrets.
+profile: cloud
+
+kafka:
+  bootstrap_servers: cg-kafka-kafka-bootstrap.cg-kafka:9092
+  partitions_default: 6
+  replication_factor: 3
+
+storage:
+  endpoint: https://storage.googleapis.com
+  region: auto
+  bucket: cg-lake-CHANGE-ME     # set by Person 1 (INF-23)
+  path_style: false
+
+postgres:
+  host: cg-postgres.cg-storage
+  port: 5432
+
+mongo:
+  uri: mongodb://cg-mongo.cg-serving:27017
+
+redis:
+  url: redis://cg-redis.cg-serving:6379/0
+
+mlflow:
+  tracking_uri: http://cg-mlflow.cg-batch:5000
+
+exchanges:
+  enabled: [binance, okx, coinbase, kraken]
+
+data_budget:
+  max_days_history: 180
+  max_symbols: 60
+  eth_days: 90
+
+flink:
+  parallelism: 4
+  checkpoint_interval_seconds: 30
+
+spark:
+  executor_instances: 4
+  executor_memory: 6g
+  driver_memory: 2g

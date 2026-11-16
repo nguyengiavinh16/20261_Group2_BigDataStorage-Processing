@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cryptoguard.local/schemas/onchain_transfer.v1.schema.json",
+  "title": "OnchainTransfer v1",
+  "description": "One ERC-20 (or native ETH) transfer on Ethereum. Streaming: canonical.onchain_transfers.v1 produced by streaming/normalizer [R2] from eth_rpc logs. Batch: silver.onchain_transfers built by [R4] from AWS public blockchain token_transfers uses the SAME column names. Consumers: detector [R3] (risky inflow), graph [R4].",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "event_id", "chain", "block_number", "block_ts_us", "tx_hash", "log_index",
+    "token_address", "from_address", "to_address", "amount_raw", "status", "ingest_ts_us"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "pattern": "^1\\.[0-9]+$"},
+    "event_id": {"description": "'<chain>:<tx_hash>:<log_index>'", "type": "string", "pattern": "^eth:0x[0-9a-f]{64}:[0-9]+$"},
+    "chain": {"type": "string", "enum": ["eth"]},
+    "block_number": {"type": "integer", "minimum": 0},
+    "block_ts_us": {"type": "integer", "minimum": 1400000000000000},
+    "tx_hash": {"type": "string", "pattern": "^0x[0-9a-f]{64}$"},
+    "log_index": {"description": "Log index inside the block; -1 for native ETH value transfers.", "type": "integer", "minimum": -1},
+    "token_address": {"description": "Lowercase contract address; '0x0000000000000000000000000000000000000000' for native ETH.", "type": "string", "pattern": "^0x[0-9a-f]{40}$"},
+    "token_symbol": {"type": ["string", "null"], "maxLength": 16},
+    "from_address": {"type": "string", "pattern": "^0x[0-9a-f]{40}$"},
+    "to_address": {"type": "string", "pattern": "^0x[0-9a-f]{40}$"},
+    "amount_raw": {"description": "Integer amount before decimals, as decimal string (can exceed 2^64).", "type": "string", "pattern": "^[0-9]+$"},
+    "amount": {"description": "amount_raw / 10^decimals. Null if token unknown in token_registry.", "type": ["number", "null"], "minimum": 0},
+    "amount_usd": {"description": "As-of USD value using minute price; null if unavailable.", "type": ["number", "null"], "minimum": 0},
+    "status": {
+      "description": "pending = seen, fewer than N confirmations; confirmed = ≥ N confirmations; retracted = removed by a reorg (log.removed=true).",
+      "type": "string",
+      "enum": ["pending", "confirmed", "retracted"]
+    },
+    "ingest_ts_us": {"type": "integer", "minimum": 1500000000000000}
+  }
+}

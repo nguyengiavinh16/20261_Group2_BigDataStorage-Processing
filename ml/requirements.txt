@@ -1,0 +1,6 @@
+pandas>=2.0
+pyarrow>=14
+scikit-learn>=1.4
+xgboost>=2.0
+mlflow>=2.12
+trino>=0.328        # read Gold tables through Trino (optional) or use Spark

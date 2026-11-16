@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cryptoguard.local/schemas/label.v1.schema.json",
+  "title": "Label v1",
+  "description": "Unified ground-truth / weak label. Stored in silver.labels (Iceberg) by [R4]. Consumers: graph job [R4], training and evaluation [R5]. Labels are time-bounded (e.g. OFAC listings can be removed).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "label_id", "entity_type", "entity_id", "label", "source", "confidence", "valid_from_ts_us"],
+  "properties": {
+    "schema_version": {"type": "string", "pattern": "^1\\.[0-9]+$"},
+    "label_id": {"description": "Deterministic: sha1('<source>|<entity_type>|<entity_id>|<label>|<valid_from_ts_us>')", "type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "entity_type": {"type": "string", "enum": ["wallet", "pump_event"]},
+    "entity_id": {
+      "description": "wallet: lowercase 0x address. pump_event: '<SYMBOL>:<exchange>:<announce_ts_us>' e.g. 'ABC-BTC:binance:1530000000000000'.",
+      "type": "string",
+      "maxLength": 128
+    },
+    "label": {"type": "string", "enum": ["sanctioned", "scam", "phishing", "illicit", "licit", "exchange", "mixer", "pump"]},
+    "source": {"type": "string", "enum": ["ofac", "darklist", "opensanctions", "elliptic", "pump_dataset", "manual"]},
+    "confidence": {"description": "Source reliability 0..1 (ofac 1.0, darklist 0.7, manual per case…).", "type": "number", "minimum": 0, "maximum": 1},
+    "valid_from_ts_us": {"type": "integer"},
+    "valid_to_ts_us": {"type": ["integer", "null"]},
+    "metadata": {"description": "Source-specific details (OFAC entity name/program, pump group, target exchange…).", "type": "object"}
+  }
+}

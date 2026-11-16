@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cryptoguard.local/schemas/alert.v1.schema.json",
+  "title": "Alert v1",
+  "description": "A suspicious-activity alert. Every alert MUST carry machine-readable reasons (an alert without reasons is useless to an investigator). Topic: alerts.v1 / replay.alerts.v1 (key = case_id). Producer: streaming/detector [R3]. Consumers: serving sink → MongoDB [R5], evaluation [R5].",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "alert_id", "case_id", "alert_type", "symbol", "exchange",
+    "window_start_ts_us", "window_end_ts_us", "detected_at_ts_us", "risk_score", "severity",
+    "reasons", "rule_version"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "pattern": "^1\\.[0-9]+$"},
+    "alert_id": {"description": "UUIDv4", "type": "string", "pattern": "^[0-9a-f-]{36}$"},
+    "case_id": {"description": "Groups related alerts (same symbol within detector.case_merge_minutes). Format '<symbol>:<exchange>:<first_window_start_ts_us>'.", "type": "string", "maxLength": 96},
+    "alert_type": {
+      "type": "string",
+      "enum": [
+        "PUMP_SUSPECTED", "DUMP_PHASE", "WASH_TRADING_SUSPECTED",
+        "CROSS_VENUE_DIVERGENCE", "SPOOFING_SUSPECTED", "RISKY_FUNDING_INFLOW"
+      ]
+    },
+    "symbol": {"type": "string", "pattern": "^[A-Z0-9]{2,15}-[A-Z0-9]{2,10}$"},
+    "exchange": {"type": "string", "enum": ["binance", "okx", "coinbase", "kraken", "ALL"]},
+    "window_start_ts_us": {"type": "integer"},
+    "window_end_ts_us": {"type": "integer"},
+    "detected_at_ts_us": {"description": "Wall clock when emitted. latency = detected_at_ts_us - window_end_ts_us (live mode).", "type": "integer"},
+    "risk_score": {"type": "number", "minimum": 0, "maximum": 1},
+    "severity": {"description": "low <0.5, medium <0.7, high <0.9, critical ≥0.9", "type": "string", "enum": ["low", "medium", "high", "critical"]},
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "value"],
+        "properties": {
+          "code": {
+            "description": "Stable reason code; catalogue in docs/data-contracts.md §Reason codes.",
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]{2,48}$",
+            "examples": ["VOLUME_Z_HIGH", "PRICE_SPIKE", "TAKER_BUY_DOMINANT", "NO_NEWS", "CROSS_VENUE_DIVERGENCE", "RISKY_INFLOW_TO_EXCHANGE", "MODEL_SCORE_HIGH"]
+          },
+          "value": {"type": ["number", "string", "boolean", "null"]},
+          "threshold": {"type": ["number", "null"]},
+          "description": {"type": ["string", "null"], "maxLength": 300}
+        }
+      }
+    },
+    "evidence": {"description": "Feature snapshot (SymbolFeatures1m fields) used for the decision.", "type": "object"},
+    "rule_version": {"type": "string", "examples": ["pump-v1"]},
+    "model_version": {"type": ["string", "null"], "description": "MLflow '<name>/<version>' if a model contributed."},
+    "replay_run_id": {"type": ["string", "null"]}
+  }
+}

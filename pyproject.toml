@@ -1,0 +1,39 @@
+# Repo-level tooling config only. Each component keeps its own requirements.txt for its image.
+[tool.ruff]
+line-length = 100
+target-version = "py310"  # shared code must run in Spark/Flink images (3.10)
+extend-exclude = ["infra/k8s/generated", "ml/notebooks"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "N"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = [
+  "cryptoguard_common", "collectors", "replay", "archiver", "normalizer", "detector",
+  "cg_batch", "cg_ml", "cg_serving",
+]
+
+[tool.pytest.ini_options]
+testpaths = [
+  "contracts/tests",
+  "libs/common/tests",
+  "ingest/tests",
+  "streaming/normalizer/tests",
+  "streaming/detector/tests",
+  "batch/tests",
+  "ml/tests",
+  "serving/tests",
+]
+pythonpath = [
+  "ingest/src",
+  "streaming/normalizer/src",
+  "streaming/detector/src",
+  "batch/src",
+  "ml/src",
+  "serving/src",
+]
+markers = [
+  "integration: needs the local kind cluster (run with -m integration)",
+]
+addopts = "-m 'not integration' --import-mode=importlib"

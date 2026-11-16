@@ -1,3 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+
+# Data and artifacts (never commit)
+data/*
+!data/README.md
+*.parquet
+*.zip
+*.gz
+*.csv.gz
+mlruns/
+checkpoints/
+spark-warehouse/
+metastore_db/
+*.log
+
+# Secrets / local config
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+kubeconfig*
+*.kubeconfig
+gcp-*.json
+service-account*.json
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Terraform (later)
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# ---- Original repo template (Python + VS Code, toptal) ----
 # Created by https://www.toptal.com/developers/gitignore/api/python,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,visualstudiocode
 

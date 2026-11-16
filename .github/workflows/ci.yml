@@ -1,0 +1,30 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: |
+          pip install -r requirements-dev.txt
+          pip install prometheus-client fastapi httpx
+      - name: Lint
+        run: |
+          ruff check .
+          ruff format --check .
+      - name: Tests (unit + contracts)
+        run: pytest -q
+      - name: Generated topic manifests are up to date
+        run: |
+          python infra/scripts/gen_topics.py --profile local --out infra/k8s/generated/topics.local.yaml
+          python infra/scripts/gen_topics.py --profile cloud --out infra/k8s/generated/topics.cloud.yaml
+          git diff --exit-code infra/k8s/generated/

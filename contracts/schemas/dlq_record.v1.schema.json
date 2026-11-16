@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cryptoguard.local/schemas/dlq_record.v1.schema.json",
+  "title": "DlqRecord v1",
+  "description": "A message that could not be processed. Kept from the W1 DLQ envelope design. Topics: dlq.normalizer.v1, dlq.detector.v1. Producers: normalizer [R2], detector [R3]. Consumers: archiver [R2], data-quality job [R4], dashboard O7 [R5].",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "error_type", "error_message", "source_topic", "raw_value", "detected_at_ts_us", "detected_by"],
+  "properties": {
+    "schema_version": {"type": "string", "pattern": "^1\\.[0-9]+$"},
+    "error_type": {
+      "type": "string",
+      "enum": ["PARSE_ERROR", "SCHEMA_VIOLATION", "UNKNOWN_SYMBOL", "UNKNOWN_TOKEN", "INVALID_VALUE", "LATE_EVENT", "DUPLICATE", "OTHER"]
+    },
+    "error_message": {"type": "string", "maxLength": 2000},
+    "source_topic": {"type": "string"},
+    "source_partition": {"type": ["integer", "null"], "minimum": 0},
+    "source_offset": {"type": ["integer", "null"], "minimum": 0},
+    "source_key": {"type": ["string", "null"]},
+    "raw_value": {"description": "Original message value as string (truncated to 64 KB).", "type": "string", "maxLength": 65536},
+    "detected_at_ts_us": {"type": "integer", "minimum": 1500000000000000},
+    "detected_by": {"description": "'<component>.<step>' e.g. 'normalizer.binance_adapter'", "type": "string", "maxLength": 128}
+  }
+}

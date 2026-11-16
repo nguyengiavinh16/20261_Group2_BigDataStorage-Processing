@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cryptoguard.local/schemas/symbol_features_1m.v1.schema.json",
+  "title": "SymbolFeatures1m v1",
+  "description": "Per (symbol, exchange, window) market features. Streaming: features.symbol_1m.v1 from detector [R3]. Batch: gold.symbol_features_1m from [R4] MUST use the same definitions (cryptoguard_common.features) to avoid training/serving skew. Consumers: serving sink [R5], ML training [R5]. exchange='ALL' rows aggregate all exchanges for the symbol.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "symbol", "exchange", "window_seconds", "window_start_ts_us", "window_end_ts_us",
+    "trade_count", "volume_base", "volume_usd", "open", "high", "low", "close", "vwap",
+    "price_change_pct", "taker_buy_ratio", "is_complete", "computed_at_ts_us"
+  ],
+  "properties": {
+    "schema_version": {"type": "string", "pattern": "^1\\.[0-9]+$"},
+    "symbol": {"type": "string", "pattern": "^[A-Z0-9]{2,15}-[A-Z0-9]{2,10}$"},
+    "exchange": {"type": "string", "enum": ["binance", "okx", "coinbase", "kraken", "ALL"]},
+    "window_seconds": {"type": "integer", "enum": [60, 300]},
+    "window_start_ts_us": {"type": "integer"},
+    "window_end_ts_us": {"type": "integer"},
+    "trade_count": {"type": "integer", "minimum": 0},
+    "volume_base": {"type": "number", "minimum": 0},
+    "volume_usd": {"type": ["number", "null"], "minimum": 0},
+    "open": {"type": "number"},
+    "high": {"type": "number"},
+    "low": {"type": "number"},
+    "close": {"type": "number"},
+    "vwap": {"type": "number"},
+    "price_change_pct": {"description": "(close - open) / open * 100", "type": "number"},
+    "taker_buy_ratio": {"description": "Taker-buy base volume / total base volume, 0..1 (unknown sides excluded).", "type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "volume_z": {"description": "(volume_usd - baseline_mean) / baseline_std for same symbol/exchange/hour-of-day over baseline_days; null when baseline missing.", "type": ["number", "null"]},
+    "baseline_volume_usd": {"type": ["number", "null"]},
+    "is_complete": {"description": "False if a gap/reconnect was detected inside the window, or late events were dropped.", "type": "boolean"},
+    "computed_at_ts_us": {"type": "integer"},
+    "replay_run_id": {"type": ["string", "null"]}
+  }
+}
