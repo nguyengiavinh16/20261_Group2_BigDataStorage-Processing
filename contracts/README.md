@@ -1,0 +1,42 @@
+# contracts/: the interfaces between components
+
+Everything that crosses a component boundary is defined here. Producers and consumers code against these files, **not against each other's code**.
+
+| Path | Content |
+|---|---|
+| `schemas/*.schema.json` | JSON Schema (draft 2020-12) for every Kafka message and exported record |
+| `kafka-topics.yaml` | Topic registry: name, key, schema, retention, producer, consumers. Strimzi CRs are generated from it |
+| `samples/<schema>.valid.jsonl` | Messages that MUST validate (also used as test fixtures and by `make seed-samples`) |
+| `samples/<schema>.invalid.jsonl` | Messages that MUST fail (one defect per line) |
+| `reference/*.csv` | Curated reference data used by several components |
+| `tests/` | `pytest` checks run in CI |
+
+## Schemas
+
+| Schema | Topic(s) / storage | Producer | Consumers |
+|---|---|---|---|
+| `raw_envelope.v1` | `raw.trades.<exchange>.v1`, `raw.eth.transfers.v1` | collectors [R2] | normalizer [R2], archiver [R2] |
+| `canonical_trade.v1` | `canonical.trades.v1`, `replay.canonical.trades.v1`, `silver.trades` | normalizer / replay [R2] | detector [R3], batch [R4] |
+| `onchain_transfer.v1` | `canonical.onchain_transfers.v1`, `silver.onchain_transfers` | normalizer [R2], batch [R4] | detector [R3], graph [R4] |
+| `symbol_features_1m.v1` | `features.symbol_1m.v1`, `gold.symbol_features_1m` | detector [R3], batch [R4] | serving [R5], ML [R5] |
+| `alert.v1` | `alerts.v1`, `replay.alerts.v1`, Mongo `alerts` | detector [R3] | serving [R5], evaluation [R5] |
+| `wallet_risk.v1` | `gold.wallet_risk`, Redis `wallet_risk:<addr>`, Mongo `wallet_risk` | graph [R4] | detector [R3], API [R5] |
+| `label.v1` | `silver.labels` | batch [R4] | graph [R4], ML [R5] |
+| `dlq_record.v1` | `dlq.*.v1` | normalizer [R2], detector [R3] | archiver [R2], data quality [R4], dashboard [R5] |
+
+R1–R5 = role numbers (see `team/`).
+
+## Rules
+
+- `additionalProperties: false` everywhere: unknown fields are rejected (that is how we guarantee labels never leak into the live stream).
+- All timestamps: integer epoch **microseconds** UTC, suffix `_ts_us` (ADR-0004).
+- Addresses: lowercase hex. Symbols: canonical `BASE-QUOTE` uppercase.
+- Change process: see `CONTRIBUTING.md` §4. Additive → minor bump; breaking → new `.v2` file + new topic + ADR.
+
+## Reference data
+
+| File | Owner | Notes |
+|---|---|---|
+| `symbol_map.csv` | R4 (R2 consults) | Maps exchange-native symbols to canonical. Normalizer sends unmapped symbols to DLQ (`UNKNOWN_SYMBOL`). Extend when the watchlist grows (P0: DET-01/BAT-01). |
+| `token_registry.csv` | R4 | Token contract, decimals, whether USD-pegged. Only `tracked=true` tokens are ingested on-chain. |
+| `exchange_wallets.csv` | R4 | Publicly labelled exchange hot/deposit wallets. **Empty on purpose**: every row must cite a public source (`source_url`). Used to stop taint propagation and detect inflows to exchanges. |

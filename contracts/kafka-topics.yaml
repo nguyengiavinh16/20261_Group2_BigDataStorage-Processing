@@ -1,0 +1,115 @@
+# Kafka topic registry: single source of truth.
+# Naming: <layer>.<entity>[.<qualifier>].v<major>   (convention kept from W1)
+# - Breaking change → new .v<major+1> topic + ADR. Additive change → bump schema minor version only.
+# - Strimzi KafkaTopic CRs are generated from this file: `make gen-topics`.
+# - Replay topics (prefix "replay.") mirror live topics so historical replays never mix with live event-time.
+#
+# Fields: key = message key; schema = contracts/schemas file; producer/consumers = component (owner role R1..R5); phase = first phase the topic is needed (default P1-P2).
+
+defaults:
+  local: {partitions: 3, replicas: 1}
+  cloud: {partitions: 6, replicas: 3}
+  config:
+    min.insync.replicas: 1        # cloud overlay sets 2 (see gen_topics.py)
+    cleanup.policy: delete
+
+topics:
+  # ---------------- raw (collectors → normalizer) ----------------
+  - name: raw.trades.binance.v1
+    key: native_symbol
+    schema: raw_envelope.v1.schema.json
+    retention_hours: 72
+    producer: ingest/collectors (R2)
+    consumers: [streaming/normalizer (R2), ingest/archiver (R2)]
+  - name: raw.trades.okx.v1
+    key: native_symbol
+    schema: raw_envelope.v1.schema.json
+    retention_hours: 72
+    producer: ingest/collectors (R2)
+    consumers: [streaming/normalizer (R2), ingest/archiver (R2)]
+  - name: raw.trades.coinbase.v1
+    key: native_symbol
+    schema: raw_envelope.v1.schema.json
+    retention_hours: 72
+    phase: P4
+    producer: ingest/collectors (R2)
+    consumers: [streaming/normalizer (R2), ingest/archiver (R2)]
+  - name: raw.trades.kraken.v1
+    key: native_symbol
+    schema: raw_envelope.v1.schema.json
+    retention_hours: 72
+    phase: P4
+    producer: ingest/collectors (R2)
+    consumers: [streaming/normalizer (R2), ingest/archiver (R2)]
+  - name: raw.eth.transfers.v1
+    key: token_address
+    schema: raw_envelope.v1.schema.json
+    retention_hours: 72
+    phase: P3
+    producer: ingest/collectors (R2)
+    consumers: [streaming/normalizer (R2), ingest/archiver (R2)]
+
+  # ---------------- canonical (normalizer → detector, archive) ----------------
+  - name: canonical.trades.v1
+    key: symbol
+    schema: canonical_trade.v1.schema.json
+    retention_hours: 168
+    producer: streaming/normalizer (R2)
+    consumers: [streaming/detector (R3), ingest/archiver (R2)]
+  - name: canonical.onchain_transfers.v1
+    key: token_address
+    schema: onchain_transfer.v1.schema.json
+    retention_hours: 168
+    phase: P3
+    producer: streaming/normalizer (R2)
+    consumers: [streaming/detector (R3), ingest/archiver (R2)]
+
+  # ---------------- analytics outputs ----------------
+  - name: features.symbol_1m.v1
+    key: symbol
+    schema: symbol_features_1m.v1.schema.json
+    retention_hours: 168
+    producer: streaming/detector (R3)
+    consumers: [serving/sink (R5), ingest/archiver (R2)]
+  - name: alerts.v1
+    key: case_id
+    schema: alert.v1.schema.json
+    retention_hours: 720
+    producer: streaming/detector (R3)
+    consumers: [serving/sink (R5), ingest/archiver (R2)]
+
+  # ---------------- dead letters ----------------
+  - name: dlq.normalizer.v1
+    key: source_topic
+    schema: dlq_record.v1.schema.json
+    retention_hours: 336
+    partitions: 1
+    producer: streaming/normalizer (R2)
+    consumers: [ingest/archiver (R2), batch data-quality (R4)]
+  - name: dlq.detector.v1
+    key: source_topic
+    schema: dlq_record.v1.schema.json
+    retention_hours: 336
+    partitions: 1
+    producer: streaming/detector (R3)
+    consumers: [ingest/archiver (R2), batch data-quality (R4)]
+
+  # ---------------- replay mirrors (evaluation on historical pumps) ----------------
+  - name: replay.canonical.trades.v1
+    key: symbol
+    schema: canonical_trade.v1.schema.json
+    retention_hours: 72
+    producer: ingest/replay (R2)
+    consumers: [streaming/detector in replay mode (R3)]
+  - name: replay.features.symbol_1m.v1
+    key: symbol
+    schema: symbol_features_1m.v1.schema.json
+    retention_hours: 72
+    producer: streaming/detector in replay mode (R3)
+    consumers: [serving/sink (R5)]
+  - name: replay.alerts.v1
+    key: case_id
+    schema: alert.v1.schema.json
+    retention_hours: 168
+    producer: streaming/detector in replay mode (R3)
+    consumers: [serving/sink (R5), ml/evaluation (R5)]

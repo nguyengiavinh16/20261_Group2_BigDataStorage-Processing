@@ -1,0 +1,35 @@
+# Apache Airflow (official chart) for local use. Owner of DAG code: R4; owner of this deployment: R1 (INF-10).
+# - Uses the shared cg-postgres (database "airflow") instead of the chart's bundled Postgres.
+# - DAGs are baked into the image `cg-airflow:dev` (built from batch/airflow/Dockerfile by `make image-airflow`),
+#   so the same image works on GCP later. Rebuild + `helm upgrade` after DAG changes.
+executor: LocalExecutor
+images:
+  airflow:
+    repository: cg-airflow
+    tag: dev
+    pullPolicy: Never
+postgresql:
+  enabled: false
+data:
+  metadataConnection:
+    user: cg
+    pass: cg-change-me        # local only
+    protocol: postgresql
+    host: cg-postgres.cg-storage
+    port: 5432
+    db: airflow
+webserver:
+  service:
+    type: NodePort
+    ports:
+      - name: airflow-ui
+        port: 8080
+        nodePort: 30808
+redis:
+  enabled: false
+statsd:
+  enabled: false
+triggerer:
+  enabled: false
+# Airflow 3 replaces the webserver with an api-server; if the chart default is Airflow 3, map apiServer the
+# same way (VERIFY at INF-10 time).

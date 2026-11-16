@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cryptoguard.local/schemas/raw_envelope.v1.schema.json",
+  "title": "RawEnvelope v1",
+  "description": "Wrapper written by every collector to raw.* topics. The source message is kept UNCHANGED in `payload` so the normalizer can be re-run on archived data. Producer: ingest/collectors [R2]. Consumers: streaming/normalizer [R2], ingest/archiver [R2].",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "source", "channel", "ingest_ts_us", "collector_id", "conn_id", "seq", "payload"],
+  "properties": {
+    "schema_version": {"type": "string", "pattern": "^1\\.[0-9]+$", "examples": ["1.0"]},
+    "source": {
+      "description": "Where the message came from.",
+      "type": "string",
+      "enum": ["binance", "okx", "coinbase", "kraken", "eth_rpc"]
+    },
+    "channel": {
+      "description": "Logical stream inside the source.",
+      "type": "string",
+      "enum": ["trade", "depth", "transfer_log", "new_head"]
+    },
+    "native_symbol": {
+      "description": "Symbol exactly as the source writes it (BTCUSDT, BTC-USD, BTC/USD, BTC-USDT). Null for on-chain messages.",
+      "type": ["string", "null"]
+    },
+    "ingest_ts_us": {
+      "description": "Wall-clock time the collector received the message, epoch microseconds UTC.",
+      "type": "integer",
+      "minimum": 1500000000000000
+    },
+    "collector_id": {"description": "Pod / process name of the collector.", "type": "string", "maxLength": 128},
+    "conn_id": {"description": "Unique id of the WebSocket connection (changes on every reconnect). Used to reason about gaps.", "type": "string", "maxLength": 64},
+    "seq": {"description": "Per-connection counter starting at 0. Gap in seq inside one conn_id = collector-side loss.", "type": "integer", "minimum": 0},
+    "replay_run_id": {"description": "Set only when the message was re-published from archive.", "type": ["string", "null"], "maxLength": 64},
+    "payload": {
+      "description": "Original message as received (parsed JSON object, or the raw string if it was not valid JSON).",
+      "type": ["object", "string"]
+    }
+  }
+}

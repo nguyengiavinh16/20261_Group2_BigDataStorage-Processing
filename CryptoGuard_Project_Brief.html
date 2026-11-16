@@ -1,0 +1,863 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CryptoGuard Project Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f7f5; --surface:#ffffff; --surface-2:#f0f0ec; --text:#1d1d1b; --muted:#5f5f5a; --line:#dcdcd6;
+  --accent:#2f5bd3; --accent-soft:#e6ecfb;
+  --c-src:#e9f0fb; --c-src-b:#7d9fd8;
+  --c-queue:#fdf3dc; --c-queue-b:#d3a53c;
+  --c-store:#e5f3e8; --c-store-b:#6aa977;
+  --c-comp:#f1e9fa; --c-comp-b:#9a7cc9;
+  --c-out:#fde9e4; --c-out-b:#d8846d;
+  --good:#2e8b57; --warn:#b7791f; --bad:#c0392b;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#151515; --surface:#1e1e1d; --surface-2:#262624; --text:#ecece8; --muted:#a3a39c; --line:#363633;
+    --accent:#7fa2ff; --accent-soft:#232c45;
+    --c-src:#1d2a40; --c-src-b:#5a7fc0; --c-queue:#3a2f17; --c-queue-b:#b88d2e;
+    --c-store:#1c3322; --c-store-b:#4f9160; --c-comp:#2d2340; --c-comp-b:#8a6cc0;
+    --c-out:#3c241e; --c-out-b:#c47460; --good:#5cc48a; --warn:#e0a84a; --bad:#ec6f5f;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#151515; --surface:#1e1e1d; --surface-2:#262624; --text:#ecece8; --muted:#a3a39c; --line:#363633;
+  --accent:#7fa2ff; --accent-soft:#232c45;
+  --c-src:#1d2a40; --c-src-b:#5a7fc0; --c-queue:#3a2f17; --c-queue-b:#b88d2e;
+  --c-store:#1c3322; --c-store-b:#4f9160; --c-comp:#2d2340; --c-comp-b:#8a6cc0;
+  --c-out:#3c241e; --c-out-b:#c47460; --good:#5cc48a; --warn:#e0a84a; --bad:#ec6f5f;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15.5px;line-height:1.65}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+header.top{padding:48px 0 24px}
+.eyebrow{font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-size:clamp(26px,4vw,38px);line-height:1.2;margin:8px 0 12px;letter-spacing:-.01em}
+h2{font-size:clamp(22px,3vw,28px);line-height:1.25;margin:0 0 6px;letter-spacing:-.01em}
+h2 .sn{color:var(--accent);margin-right:6px}
+h3{font-size:18px;margin:28px 0 10px}
+h4{font-size:15px;margin:16px 0 6px}
+p{margin:0 0 10px}
+.lead{color:var(--muted);max-width:820px;font-size:16.5px}
+.sub{color:var(--muted);margin:0 0 16px}
+code,.mono{font-family:var(--mono);font-size:.86em;background:var(--surface-2);padding:1px 5px;border-radius:4px;word-break:break-word}
+pre{font-family:var(--mono);font-size:12.3px;line-height:1.5;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;margin:8px 0 10px;white-space:pre}
+a{color:var(--accent)}
+nav.toc{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+nav.toc .wrap{display:flex;gap:6px;overflow-x:auto;padding-top:10px;padding-bottom:10px;scrollbar-width:none}
+nav.toc a{white-space:nowrap;text-decoration:none;color:var(--text);font-size:13.5px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface)}
+nav.toc a:hover{border-color:var(--accent);color:var(--accent)}
+section{padding:40px 0;border-bottom:1px solid var(--line)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.card h4:first-child{margin-top:0}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:900px){.grid3,.grid2{grid-template-columns:1fr}.grid4{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.grid4{grid-template-columns:1fr}}
+ul.tight{margin:6px 0 10px;padding-left:20px}
+ul.tight li{margin:4px 0}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:8px 0}
+table{border-collapse:collapse;width:100%;font-size:13.8px;min-width:720px}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{background:var(--surface-2);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+tr:last-child td{border-bottom:none}
+.tldr{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:10px;align-items:stretch;margin-top:18px}
+.tldr .card{padding:14px 16px;font-size:14px}
+.tldr .card b{display:block;margin-bottom:4px}
+.tldr .arr{align-self:center;color:var(--muted);font-size:20px}
+@media (max-width:820px){.tldr{grid-template-columns:1fr}.tldr .arr{transform:rotate(90deg);justify-self:center}}
+.k{display:inline-block;font-size:11.5px;font-weight:600;padding:1px 8px;border-radius:999px;white-space:nowrap;border:1px solid}
+.k-stream{background:var(--c-queue);border-color:var(--c-queue-b)}
+.k-batch{background:var(--c-store);border-color:var(--c-store-b)}
+.k-label{background:var(--c-out);border-color:var(--c-out-b)}
+.k-ctx{background:var(--c-comp);border-color:var(--c-comp-b)}
+.k-must{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.k-opt{background:var(--surface-2);border-color:var(--line);color:var(--muted)}
+.fraud{border-left:4px solid var(--c-out-b)}
+.fraud .sig{font-size:13.5px;background:var(--surface-2);border-radius:8px;padding:8px 10px;margin-top:8px}
+.src{margin-bottom:14px}
+.src-head{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px}
+.src-head h4{margin:0}
+.src dl{display:grid;grid-template-columns:130px 1fr;gap:4px 14px;margin:8px 0 0;font-size:14px}
+.src dt{color:var(--muted);font-weight:600}
+.src dd{margin:0}
+@media (max-width:600px){.src dl{grid-template-columns:1fr}.src dt{margin-top:6px}}
+details{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:8px 0}
+details summary{cursor:pointer;font-weight:600;font-size:14px}
+/* flow */
+.flow{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin:10px 0 6px}
+.lane{display:grid;grid-template-columns:118px 1fr;gap:12px;align-items:start;padding:12px 0;border-bottom:1px dashed var(--line)}
+.lane:last-of-type{border-bottom:none}
+@media (max-width:700px){.lane{grid-template-columns:1fr}}
+.lane-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding-top:8px}
+.steps{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px 4px}
+.node{border-radius:8px;padding:7px 10px;font-size:12.8px;line-height:1.35;border:1.5px solid;max-width:210px}
+.node b{display:block;font-size:13px}
+.node small{color:var(--muted);font-size:11.5px}
+.n-src{background:var(--c-src);border-color:var(--c-src-b)}
+.n-queue{background:var(--c-queue);border-color:var(--c-queue-b)}
+.n-store{background:var(--c-store);border-color:var(--c-store-b)}
+.n-comp{background:var(--c-comp);border-color:var(--c-comp-b)}
+.n-out{background:var(--c-out);border-color:var(--c-out-b)}
+.arr{align-self:center;color:var(--muted);font-size:16px;padding:0 2px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted);margin-top:8px}
+.legend span::before{content:"";display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px;border:1.5px solid}
+.lg-src::before{background:var(--c-src);border-color:var(--c-src-b)!important}
+.lg-queue::before{background:var(--c-queue);border-color:var(--c-queue-b)!important}
+.lg-store::before{background:var(--c-store);border-color:var(--c-store-b)!important}
+.lg-comp::before{background:var(--c-comp);border-color:var(--c-comp-b)!important}
+.lg-out::before{background:var(--c-out);border-color:var(--c-out-b)!important}
+/* numbered steps */
+ol.walk{list-style:none;counter-reset:w;padding:0;margin:10px 0}
+ol.walk>li{counter-increment:w;position:relative;padding:12px 14px 12px 54px;background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:8px}
+ol.walk>li::before{content:counter(w);position:absolute;left:14px;top:12px;width:28px;height:28px;border-radius:8px;background:var(--accent);color:var(--bg);display:grid;place-items:center;font-weight:700;font-size:14px}
+ol.walk>li b.t{display:block;margin-bottom:2px}
+ol.walk>li .who{font-size:12px;color:var(--muted)}
+.timeline{border-left:2px solid var(--line);margin:10px 0 10px 8px;padding-left:18px}
+.timeline div{position:relative;margin:0 0 10px;font-size:14px}
+.timeline div::before{content:"";position:absolute;left:-24px;top:7px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.timeline .ts{font-family:var(--mono);font-size:12px;color:var(--muted);margin-right:6px}
+.callout{background:var(--accent-soft);border-radius:10px;padding:12px 16px;font-size:14px;margin:12px 0}
+.callout.warn{background:color-mix(in srgb,var(--warn) 14%,var(--surface))}
+.callout.good{background:color-mix(in srgb,var(--good) 13%,var(--surface))}
+.role{border-top:4px solid var(--accent)}
+.role .rn{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.05em}
+.role h4{margin:4px 0 8px}
+.role .lbl{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:10px}
+.role ul{font-size:14px}
+.phase{display:grid;grid-template-columns:150px 1fr;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+.phase:last-child{border-bottom:none}
+.phase .pn{font-weight:700}
+.phase .pn small{display:block;color:var(--muted);font-weight:400;font-size:12.5px}
+@media (max-width:640px){.phase{grid-template-columns:1fr;gap:4px}}
+.gloss{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 22px;font-size:14px}
+@media (max-width:700px){.gloss{grid-template-columns:1fr}}
+.gloss div{padding:6px 0;border-bottom:1px dashed var(--line)}
+.gloss b{font-family:var(--mono);font-size:13px}
+footer{padding:28px 0 48px;color:var(--muted);font-size:13px}
+.theme-btn{position:fixed;right:14px;bottom:14px;z-index:6;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:7px 12px;font:inherit;font-size:12.5px;cursor:pointer}
+@media print{nav.toc,.theme-btn{display:none}details{display:block}}
+</style>
+</head>
+<body>
+
+<header class="top wrap">
+  <div class="eyebrow">Big Data project · Project brief cho team 5 người · 16/11/2026</div>
+  <h1>CryptoGuard: hệ thống giám sát thao túng thị trường &amp; rửa tiền crypto</h1>
+  <p class="lead">Tài liệu này để cả nhóm có chung một bức tranh: bài toán là gì, vì sao nó là bài toán Big Data, dữ liệu lấy từ đâu và có nghĩa gì, dữ liệu chạy qua hệ thống như thế nào, cuối cùng nhóm phải đưa ra những output gì. Phần cuối nói rõ ai cần học gì và làm phần nào. Người mới nên đọc theo thứ tự; người đã nắm bối cảnh có thể nhảy thẳng tới mục 4 (luồng dữ liệu) và mục 9 (phân công).</p>
+
+  <div class="tldr">
+    <div class="card"><b>Đầu vào</b>Giao dịch real-time từ 4 sàn crypto, lịch sử giao dịch nhiều tháng, toàn bộ giao dịch trên blockchain Ethereum, danh sách ví bị trừng phạt, các vụ pump-and-dump đã biết, tin tức.</div>
+    <div class="arr">→</div>
+    <div class="card"><b>Xử lý</b>Chuẩn hóa dữ liệu bẩn từ nhiều sàn, tính chỉ số theo cửa sổ thời gian, phát hiện mẫu bất thường trên luồng, phân tích graph dòng tiền, train model. Tất cả chạy trên Kubernetes.</div>
+    <div class="arr">→</div>
+    <div class="card"><b>Đầu ra</b>Cảnh báo real-time có điểm rủi ro và lý do, điểm rủi ro cho từng ví, graph điều tra, dashboard, báo cáo đánh giá độ chính xác trên các vụ có thật.</div>
+  </div>
+</header>
+
+<nav class="toc"><div class="wrap">
+  <a href="#bg">1 · Bối cảnh</a>
+  <a href="#scope">2 · Mục tiêu</a>
+  <a href="#data">3 · Dữ liệu</a>
+  <a href="#flow">4 · Luồng dữ liệu</a>
+  <a href="#detect">5 · Logic phát hiện</a>
+  <a href="#output">6 · Output</a>
+  <a href="#eval">7 · Đánh giá</a>
+  <a href="#learn">8 · Cần tìm hiểu</a>
+  <a href="#team">9 · Phân công</a>
+  <a href="#plan">10 · Lộ trình</a>
+  <a href="#risk">11 · Rủi ro</a>
+  <a href="#gloss">12 · Thuật ngữ</a>
+</div></nav>
+
+<main class="wrap">
+
+<!-- ================= 1. BACKGROUND ================= -->
+<section id="bg">
+  <h2><span class="sn">1</span>Bối cảnh bài toán</h2>
+  <p class="sub">Nhóm không cần biết trade crypto. Chỉ cần hiểu khoảng 5 khái niệm dưới đây.</p>
+
+  <h3>1.1 Thị trường crypto vận hành ra sao (bản tối giản)</h3>
+  <div class="grid2">
+    <div class="card">
+      <h4>Off-chain: giao dịch trên sàn tập trung (CEX)</h4>
+      <ul class="tight">
+        <li>Binance, Coinbase, Kraken, OKX là các <b>sàn tập trung</b>. Người dùng nạp tiền vào sàn rồi mua bán với nhau trên đó.</li>
+        <li>Mỗi cặp giao dịch (ví dụ <code>BTC/USDT</code>) có một <b>order book</b>, tức danh sách lệnh chờ mua (bid) và chờ bán (ask).</li>
+        <li>Khi một lệnh mua khớp với một lệnh bán, sàn sinh ra một <b>trade</b> gồm giá, khối lượng và thời điểm. Sàn phát trade đó công khai qua WebSocket.</li>
+        <li>Bên đặt lệnh chờ sẵn gọi là <b>maker</b>. Bên khớp vào lệnh đó gọi là <b>taker</b>.</li>
+        <li>Giao dịch trên sàn <b>không</b> được ghi lên blockchain. Chỉ khi nạp hoặc rút tiền thì mới có giao dịch on-chain.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>On-chain: giao dịch trên blockchain</h4>
+      <ul class="tight">
+        <li>Blockchain (Ethereum, Bitcoin) là một sổ cái công khai. Ai cũng đọc được toàn bộ lịch sử giao dịch.</li>
+        <li>Mỗi người dùng có một hoặc nhiều <b>ví</b>, định danh bằng địa chỉ dạng <code>0xabc…</code>. Địa chỉ không gắn với danh tính thật (ẩn danh giả).</li>
+        <li>Một giao dịch chuyển ETH hoặc token (USDT, USDC… theo chuẩn ERC-20) từ địa chỉ này sang địa chỉ khác. Mỗi khoảng 12 giây có một block mới gom nhiều giao dịch.</li>
+        <li>Mỗi sàn có các <b>ví nạp tiền</b> riêng. Khi tiền chảy vào những ví này, có thể hiểu là "tiền đang được đưa lên sàn".</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><b>Ý tưởng cốt lõi của đề tài:</b> phần lớn hệ thống chỉ nhìn một phía, hoặc sàn hoặc blockchain. CryptoGuard <b>nối hai phía lại</b>: "dòng tiền từ ví đáng ngờ chảy vào sàn X" rồi "15 phút sau, coin Y trên sàn X bị pump". Việc nối hai phía này là điểm sáng tạo chính và cũng là lý do bài toán cần Big Data.</div>
+
+  <h3>1.2 Bốn hành vi gian lận nhóm sẽ phát hiện</h3>
+  <div class="grid2">
+    <div class="card fraud">
+      <h4>① Pump-and-dump</h4>
+      <p>Một nhóm, thường tổ chức qua Telegram, hẹn giờ cùng mua một coin nhỏ ít thanh khoản để đẩy giá tăng vọt. Người ngoài thấy giá tăng thì mua theo. Nhóm tổ chức bán ra ở đỉnh, giá sập, người đến sau chịu lỗ.</p>
+      <div class="sig"><b>Dấu hiệu trong dữ liệu:</b> volume trong 1 phút cao gấp hàng chục lần mức bình thường, giá tăng 20–200% trong vài phút rồi rơi, phần lớn lệnh mua là lệnh taker, thường không có tin tức thật đi kèm.</div>
+    </div>
+    <div class="card fraud">
+      <h4>② Wash trading (giao dịch tự khớp)</h4>
+      <p>Một bên tự mua và tự bán với chính mình, hoặc với tài khoản do mình kiểm soát, để tạo cảm giác coin được giao dịch sôi động. Mục đích là lừa nhà đầu tư, hoặc giúp sàn đẹp số liệu khi xếp hạng.</p>
+      <div class="sig"><b>Dấu hiệu:</b> volume lớn nhưng giá gần như không đổi, khối lượng lệnh lặp lại đúng một con số, mua và bán xen kẽ đều đặn, volume trên một sàn lệch hẳn so với các sàn khác cho cùng coin.</div>
+    </div>
+    <div class="card fraud">
+      <h4>③ Spoofing / layering</h4>
+      <p>Đặt các lệnh mua hoặc bán rất lớn trên order book để tạo ảo giác cung hoặc cầu, rồi hủy trước khi chúng được khớp. Mục đích là kéo giá về hướng có lợi cho mình.</p>
+      <div class="sig"><b>Dấu hiệu:</b> trong dữ liệu depth (order book), một mức giá đột ngột có khối lượng khổng lồ rồi biến mất sau vài giây mà không có trade nào khớp ở đó. Phần này cần dữ liệu order book nên được xếp vào phạm vi <i>nâng cao</i>.</div>
+    </div>
+    <div class="card fraud">
+      <h4>④ Rửa tiền on-chain</h4>
+      <p>Tiền từ hack, lừa đảo hoặc từ ví bị trừng phạt được chuyển qua nhiều lớp ví trung gian, mixer hoặc chia nhỏ (peel chain) để cắt dấu vết, cuối cùng nạp vào sàn để đổi ra tiền thật.</p>
+      <div class="sig"><b>Dấu hiệu:</b> ví nằm cách ví bẩn đã biết vài bước chuyển, một ví nhận tiền từ rất nhiều nguồn rồi chuyển đi ngay (fan-in/fan-out), ví mới tạo có giá trị lớn đi qua, tiền chảy dần về ví nạp của sàn.</div>
+    </div>
+  </div>
+
+  <h3>1.3 Ai cần một hệ thống như vậy?</h3>
+  <div class="grid3">
+    <div class="card"><h4>Bộ phận giám sát của sàn</h4>Họ bị luật bắt buộc phải giám sát thao túng thị trường (market surveillance) và chống rửa tiền (AML/KYT). Họ cần cảnh báo nhanh, có lý do rõ ràng, ít báo nhầm.</div>
+    <div class="card"><h4>Cơ quan quản lý &amp; điều tra</h4>Họ cần truy vết dòng tiền và tìm ra mối liên hệ giữa ví bẩn với sàn và với các đợt thao túng.</div>
+    <div class="card"><h4>Nhà đầu tư / bên thứ ba</h4>Họ cần biết coin nào đang bị pump và sàn nào có volume ảo, để tránh mua đỉnh.</div>
+  </div>
+
+  <h3>1.4 Vì sao đây là bài toán Big Data thật</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Chữ V</th><th>Trong dự án này</th></tr></thead>
+    <tbody>
+      <tr><td><b>Volume</b></td><td>Lịch sử trades của hàng chục cặp × nhiều tháng đã lên hàng trăm GB. Blockchain Ethereum có hàng tỷ giao dịch, và chỉ 3–6 tháng gần nhất đã là hàng chục đến hàng trăm GB Parquet.</td></tr>
+      <tr><td><b>Velocity</b></td><td>Luồng WebSocket từ 4 sàn đổ về liên tục, từ hàng trăm đến hàng nghìn sự kiện mỗi giây. Thêm một block Ethereum mới khoảng mỗi 12 giây. Pump-and-dump chỉ kéo dài vài phút nên phải phát hiện gần như ngay lập tức.</td></tr>
+      <tr><td><b>Variety</b></td><td>JSON streaming theo 4 schema khác nhau, CSV nén zip, Parquet, XML lồng nhau (OFAC), JSON từ GitHub, văn bản tin tức. Cả dữ liệu dạng bảng và dạng graph.</td></tr>
+      <tr><td><b>Veracity</b></td><td>Lệch đồng hồ, trùng và mất bản ghi, sự kiện đến sai thứ tự, blockchain bị reorg, nhãn thưa và mâu thuẫn, đơn vị thời gian và đơn vị token không nhất quán (chi tiết ở mục 3.6).</td></tr>
+      <tr><td><b>Value</b></td><td>Cảnh báo kịp thời giúp ngăn thiệt hại thực tế, và kết quả đánh giá được trên các vụ pump có thật.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ================= 2. SCOPE ================= -->
+<section id="scope">
+  <h2><span class="sn">2</span>Mục tiêu &amp; phạm vi</h2>
+  <p class="sub">Chia thành hai tầng. <b>MVP</b> là phần bắt buộc phải chạy được trước. <b>Nâng cao</b> làm khi còn thời gian.</p>
+  <div class="grid2">
+    <div class="card">
+      <h4><span class="k k-must">MVP</span> phải có</h4>
+      <ul class="tight">
+        <li>Cụm K8s trên 3–4 VM chạy được Kafka, MinIO, Spark, Flink, Airflow, MongoDB và giám sát</li>
+        <li>Collector cho ít nhất <b>2 sàn</b> (Binance + 1 sàn khác), 20–50 cặp</li>
+        <li>Chuẩn hóa về một schema chung, có xử lý trùng lặp, DLQ và watermark</li>
+        <li>Phát hiện <b>pump-and-dump</b> real-time bằng rule (mục 5.1)</li>
+        <li>Batch: lịch sử Binance và ETH on-chain 1–3 tháng, ghi vào Bronze, Silver, Gold</li>
+        <li>Graph: điểm rủi ro ví dựa trên khoảng cách tới ví OFAC/darklist</li>
+        <li>Replay các vụ pump có thật để đo độ chính xác</li>
+        <li>FastAPI + dashboard hiển thị cảnh báo</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4><span class="k k-opt">Nâng cao</span> nên có nếu kịp</h4>
+      <ul class="tight">
+        <li>Mở rộng lên 4 sàn, phát hiện wash trading và độ lệch giữa các sàn</li>
+        <li>Spoofing từ dữ liệu order book (depth)</li>
+        <li>Model ML (Isolation Forest / XGBoost) thay thế hoặc bổ sung cho rule</li>
+        <li>Nối on-chain với off-chain: tiền bẩn vào sàn trước pump</li>
+        <li>Tin tức GDELT để giảm báo nhầm</li>
+        <li>Neo4j để xem graph điều tra</li>
+        <li>Demo chịu lỗi: kill broker hoặc pod khi đang chạy</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout warn"><b>Ngoài phạm vi:</b> không tự giao dịch hay đưa khuyến nghị đầu tư, không kết luận pháp lý ("ví này là tội phạm"). Hệ thống chỉ đưa ra <i>điểm rủi ro kèm bằng chứng</i> để con người xem xét. Không dùng dữ liệu cá nhân hay KYC; mọi dữ liệu đều công khai.</div>
+</section>
+
+<!-- ================= 3. DATA ================= -->
+<section id="data">
+  <h2><span class="sn">3</span>Dữ liệu thu thập &amp; giải thích từng nguồn</h2>
+  <p class="sub">Có 10 nguồn, chia thành 5 nhóm. Mỗi nguồn được mô tả theo các ý: là gì, vì sao cần, lấy bằng cách nào, bản ghi trông ra sao, và bẫy cần tránh. Toàn bộ endpoint đã được kiểm tra truy cập được ngày 16/11/2026.</p>
+
+  <h3>3.1 Nhóm A: Giao dịch real-time trên sàn</h3>
+
+  <div class="card src">
+    <div class="src-head"><h4>A1 · Binance WebSocket</h4><span class="k k-stream">Streaming</span><span class="k k-must">MVP</span></div>
+    <dl>
+      <dt>Là gì</dt><dd>Luồng mọi trade (và nếu cần thì cả order book) của sàn lớn nhất thế giới, được đẩy về ngay khi xảy ra.</dd>
+      <dt>Vì sao cần</dt><dd>Đây là nguồn chính để phát hiện pump và wash trading theo thời gian thực.</dd>
+      <dt>Cách lấy</dt><dd><code>wss://stream.binance.com:9443/stream?streams=btcusdt@trade/ethusdt@trade/…</code>. Không cần API key. Có thể gộp nhiều stream trong một kết nối.</dd>
+      <dt>Bẫy</dt><dd>Kết nối bị ngắt sau 24 giờ nên phải tự reconnect. Phải trả lời ping. Binance chặn IP Mỹ, nên nếu VM chạy trên cloud region Mỹ thì dùng <code>data-stream.binance.vision</code>. Trường <code>m</code> = true nghĩa là <i>người mua là maker</i>, tức lệnh đó là lệnh <b>bán</b> chủ động.</dd>
+    </dl>
+<pre>{"e":"trade","E":1731740400123,"s":"PEPEUSDT","t":512334901,
+ "p":"0.00002011","q":"5000000","T":1731740400121,"m":false,"M":true}
+// E = thời điểm sàn gửi event, T = thời điểm khớp lệnh (ms), p = giá, q = khối lượng</pre>
+  </div>
+
+  <div class="card src">
+    <div class="src-head"><h4>A2 · Coinbase · Kraken · OKX WebSocket</h4><span class="k k-stream">Streaming</span><span class="k k-must">MVP: 1 sàn</span><span class="k k-opt">Nâng cao: cả 3</span></div>
+    <dl>
+      <dt>Là gì</dt><dd>Luồng trade của các sàn lớn khác cho cùng các coin.</dd>
+      <dt>Vì sao cần</dt><dd>Để so sánh chéo. Pump hoặc volume ảo thường chỉ xuất hiện trên một sàn. Nếu cùng một coin mà volume trên sàn A gấp 50 lần sàn B trong khi giá không đổi thì đó là dấu hiệu đáng ngờ. Đây cũng là nguồn tạo ra độ "Variety" cho dự án.</dd>
+      <dt>Cách lấy</dt><dd>Coinbase: <code>wss://ws-feed.exchange.coinbase.com</code>, kênh <code>matches</code>. Kraken: <code>wss://ws.kraken.com/v2</code>, kênh <code>trade</code>. OKX: <code>wss://ws.okx.com:8443/ws/v5/public</code>, kênh <code>trades</code>. Đều không cần key.</dd>
+      <dt>Bẫy</dt><dd>Mỗi sàn đặt tên cặp, định dạng thời gian và <b>ý nghĩa trường "side"</b> khác nhau (xem bảng dưới). Nếu map sai, toàn bộ chỉ số áp lực mua/bán sẽ bị đảo ngược.</dd>
+    </dl>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Sàn</th><th>Tên cặp</th><th>Thời gian</th><th>Giá / KL</th><th>"Chiều" của trade</th></tr></thead>
+      <tbody>
+        <tr><td>Binance</td><td><code>BTCUSDT</code></td><td>epoch ms (số)</td><td>chuỗi <code>p</code>, <code>q</code></td><td><code>m</code>: true nếu người mua là maker, tức taker đang <b>bán</b></td></tr>
+        <tr><td>Coinbase</td><td><code>BTC-USD</code></td><td>ISO-8601 có micro giây</td><td>chuỗi <code>price</code>, <code>size</code></td><td><code>side</code> là chiều của lệnh <b>maker</b> (ngược với taker)</td></tr>
+        <tr><td>Kraken v2</td><td><code>BTC/USD</code></td><td>ISO-8601</td><td>số <code>price</code>, <code>qty</code></td><td><code>side</code> là chiều của <b>taker</b></td></tr>
+        <tr><td>OKX</td><td><code>BTC-USDT</code></td><td>epoch ms dạng <b>chuỗi</b></td><td>chuỗi <code>px</code>, <code>sz</code></td><td><code>side</code> là chiều của <b>taker</b></td></tr>
+      </tbody>
+    </table></div>
+    <p style="font-size:13.5px;color:var(--muted);margin-top:6px">Phải đọc lại tài liệu chính thức của từng sàn trước khi code mapping. Bảng này là điểm khởi đầu, không thay thế tài liệu gốc.</p>
+  </div>
+
+  <div class="card src">
+    <div class="src-head"><h4>A3 · Ethereum public RPC (WebSocket)</h4><span class="k k-stream">Streaming</span><span class="k k-opt">Nâng cao</span></div>
+    <dl>
+      <dt>Là gì</dt><dd>Kết nối thẳng tới một node Ethereum công khai để nhận block mới và các event chuyển token theo thời gian thực.</dd>
+      <dt>Vì sao cần</dt><dd>Để thấy dòng tiền on-chain gần real-time, ví dụ tiền từ ví bẩn vừa chuyển vào ví nạp của sàn.</dd>
+      <dt>Cách lấy</dt><dd><code>wss://ethereum-rpc.publicnode.com</code>, dùng <code>eth_subscribe</code> với <code>newHeads</code> hoặc <code>logs</code> (lọc theo event Transfer của USDT/USDC).</dd>
+      <dt>Bẫy</dt><dd>Node public có rate limit nên chỉ nên theo dõi một tập địa chỉ hoặc contract quan trọng. Khi <b>chain reorg</b> xảy ra, một block đã nhận có thể bị thay thế, nên chỉ coi giao dịch là chắc chắn sau khoảng 12 block xác nhận.</dd>
+    </dl>
+  </div>
+
+  <h3>3.2 Nhóm B: Lịch sử giao dịch trên sàn</h3>
+  <div class="card src">
+    <div class="src-head"><h4>B1 · Binance Public Data (data.binance.vision)</h4><span class="k k-batch">Batch</span><span class="k k-must">MVP</span></div>
+    <dl>
+      <dt>Là gì</dt><dd>Kho lưu toàn bộ lịch sử trades, aggTrades, klines (nến) và bookTicker của Binance, chia file zip CSV theo ngày hoặc tháng, kèm file <code>.CHECKSUM</code>.</dd>
+      <dt>Vì sao cần</dt><dd>(1) Tạo baseline "bình thường" cho từng coin. (2) <b>Replay lại các thời điểm có pump thật</b> để kiểm chứng hệ thống, vì không thể chờ pump thật xảy ra lúc demo. (3) Dữ liệu train model. (4) Đây là nguồn tạo phần "Volume" chính.</dd>
+      <dt>Cách lấy</dt><dd><code>https://data.binance.vision/data/spot/daily/trades/&lt;SYMBOL&gt;/&lt;SYMBOL&gt;-trades-YYYY-MM-DD.zip</code>. Tải bằng Airflow theo ngày, kiểm tra checksum.</dd>
+      <dt>Bẫy</dt><dd>File CSV <b>không có header</b>. Với dữ liệu spot từ 01/01/2025, timestamp chuyển từ mili giây sang <b>micro giây</b>, nên trộn dữ liệu cũ và mới sẽ sai nếu không chuẩn hóa (cần xác minh lại thông báo của Binance). Một số ngày bị thiếu file.</dd>
+    </dl>
+<pre>trade_id,  price,       qty,      quote_qty,  time,              is_buyer_maker, is_best_match
+512334901, 0.00002011,  5000000,  100.55,     1731740400121000,  False,          True</pre>
+  </div>
+
+  <h3>3.3 Nhóm C: Dữ liệu blockchain lịch sử</h3>
+  <div class="card src">
+    <div class="src-head"><h4>C1 · AWS Public Blockchain Data (Ethereum, Bitcoin)</h4><span class="k k-batch">Batch</span><span class="k k-must">MVP</span></div>
+    <dl>
+      <dt>Là gì</dt><dd>AWS công khai miễn phí toàn bộ dữ liệu Ethereum và Bitcoin dạng Parquet, chia partition theo ngày. Với ETH có 6 bảng: <code>blocks</code>, <code>transactions</code>, <code>logs</code>, <code>token_transfers</code>, <code>traces</code>, <code>contracts</code>.</dd>
+      <dt>Vì sao cần</dt><dd>Để xây <b>graph dòng tiền</b> (ví nào chuyển cho ví nào, bao nhiêu, lúc nào). Bảng <code>token_transfers</code> chứa chuyển USDT/USDC, là đường đi chính của tiền rửa.</dd>
+      <dt>Cách lấy</dt><dd><code>aws s3 sync s3://aws-public-blockchain/v1.0/eth/token_transfers/date=2026-10-01/ … --no-sign-request</code>. Không cần tài khoản AWS. Bucket nằm ở region <code>us-east-2</code>.</dd>
+      <dt>Bẫy</dt><dd>Giá trị token là số nguyên thô, phải chia cho <code>10^decimals</code> (USDT/USDC là 6, phần lớn token khác là 18). Có token giả mạo tên USDT. Ví của sàn gom tiền của hàng triệu người nên tạo ra các node "siêu kết nối" làm méo graph. Chỉ nên lấy 1–3 tháng ở MVP.</dd>
+    </dl>
+<pre>token_address: 0xdac17f958d2ee523a2206206994597c13d831ec7   (USDT)
+from_address:  0x7f3a…   to_address: 0x28c6…  (ví nạp Binance)
+value:         25000000000   → 25,000 USDT (chia 10^6)
+block_number:  21384011   block_timestamp: 2026-10-01 08:14:23   transaction_hash: 0x9be1…</pre>
+    <p style="font-size:13.5px;color:var(--muted)">Tên cột ở trên chỉ để minh họa. Cần đọc schema Parquet thực tế bằng <code>pyarrow</code> hoặc Spark <code>printSchema()</code> trước khi thiết kế bảng.</p>
+  </div>
+
+  <h3>3.4 Nhóm D: Nhãn (ground truth): "cái gì là gian lận"</h3>
+  <p>Không có nhãn thì không biết hệ thống đúng hay sai. Nhãn trong bài toán này <b>thưa, không đầy đủ và đôi khi mâu thuẫn nhau</b>. Đó chính là thực tế của fraud detection.</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Nguồn</th><th>Gắn nhãn cho</th><th>Cách lấy</th><th>Ý nghĩa &amp; bẫy</th></tr></thead>
+    <tbody>
+      <tr><td><b>D1 · OFAC SDN list</b> <span class="k k-must">MVP</span></td><td>Ví crypto bị Bộ Tài chính Mỹ trừng phạt</td><td>XML/CSV tải từ sanctionslistservice.ofac.treas.gov</td><td>Địa chỉ ví nằm trong trường "Digital Currency Address – ETH/XBT/USDT…" của XML lồng nhiều cấp. Danh sách <b>thay đổi theo thời gian</b>: ví dụ Tornado Cash bị đưa vào năm 2022 rồi được gỡ năm 2025. Vì vậy nhãn phải có hiệu lực theo thời gian (valid_from, valid_to).</td></tr>
+      <tr><td><b>D2 · ethereum-lists darklist</b> <span class="k k-must">MVP</span></td><td>Ví phishing hoặc scam do cộng đồng báo cáo</td><td>github.com/MyEtherWallet/ethereum-lists (JSON)</td><td>Độ tin cậy thấp hơn OFAC và trùng một phần với nó, nên phải dedup và gán trọng số theo nguồn.</td></tr>
+      <tr><td><b>D3 · OpenSanctions</b> <span class="k k-opt">Nâng cao</span></td><td>Gộp nhiều danh sách trừng phạt quốc tế, có ví crypto</td><td>opensanctions.org, bulk JSON (miễn phí cho mục đích phi thương mại)</td><td>Mở rộng độ phủ ra ngoài Mỹ.</td></tr>
+      <tr><td><b>D4 · Pump-and-dump dataset</b> <span class="k k-must">MVP</span></td><td>Các vụ pump đã xảy ra: coin, sàn, thời điểm công bố</td><td>github.com/SystemsLab-Sapienza/pump-and-dump-dataset</td><td>Đây là <b>ground truth quan trọng nhất</b> cho phần phát hiện pump. Các vụ trong dataset là quá khứ, nên đánh giá bằng cách replay dữ liệu B1 vào đúng những ngày đó. Cần kiểm tra coin hoặc sàn đó còn dữ liệu trên Binance không.</td></tr>
+      <tr><td><b>D5 · Elliptic dataset</b> <span class="k k-opt">Nâng cao</span></td><td>Khoảng 200 nghìn giao dịch Bitcoin gắn nhãn illicit/licit</td><td>Kaggle (cần tài khoản free)</td><td>Benchmark nổi tiếng để kiểm chứng thuật toán graph trước khi áp dụng lên ETH. Chỉ khoảng 2% là illicit, phần lớn không có nhãn.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>3.5 Nhóm E: Ngữ cảnh</h3>
+  <div class="card src">
+    <div class="src-head"><h4>E1 · GDELT 2.0: tin tức toàn cầu</h4><span class="k k-ctx">Văn bản</span><span class="k k-opt">Nâng cao</span></div>
+    <dl>
+      <dt>Là gì</dt><dd>Dự án theo dõi tin tức toàn cầu, cập nhật mỗi 15 phút: bài báo nào nhắc tới chủ đề, tổ chức hay địa điểm nào, với sắc thái ra sao.</dd>
+      <dt>Vì sao cần</dt><dd>Để <b>giảm báo nhầm</b>. Nếu coin tăng mạnh vì có tin thật (ví dụ được niêm yết, hợp tác lớn) thì không phải pump. Nếu không có tin gì mà giá tăng 100% thì đáng ngờ hơn nhiều.</dd>
+      <dt>Cách lấy</dt><dd>Đọc <code>http://data.gdeltproject.org/gdeltv2/lastupdate.txt</code> để lấy link file mới nhất, rồi lọc theo từ khóa tên coin.</dd>
+      <dt>Bẫy</dt><dd>Rất nhiễu: URL trùng lặp, đa ngôn ngữ, tên coin trùng với từ thông thường (ví dụ "SUI", "ONE", "PEPE").</dd>
+    </dl>
+  </div>
+  <div class="card src">
+    <div class="src-head"><h4>E2 · Bảng tham chiếu do nhóm tự xây</h4><span class="k k-ctx">Reference</span><span class="k k-must">MVP</span></div>
+    <ul class="tight">
+      <li><b>symbol_map:</b> ánh xạ <code>BTCUSDT</code>, <code>BTC-USD</code>, <code>BTC/USD</code>, <code>XBT/USD</code> và <code>BTC-USDT</code> về một mã chung (base, quote).</li>
+      <li><b>token_registry:</b> địa chỉ contract, ký hiệu và số decimals của các token theo dõi.</li>
+      <li><b>exchange_wallets:</b> các ví nóng/ví nạp đã được công khai gắn nhãn của các sàn, dùng để nhận diện tiền vào sàn. Có thể tổng hợp từ nhãn công khai trên các block explorer.</li>
+      <li><b>minute_price:</b> giá USD theo phút của từng token, tính từ klines B1. Dùng để quy đổi mọi giao dịch on-chain ra USD.</li>
+    </ul>
+  </div>
+
+  <h3>3.6 Bản đồ "dữ liệu xấu": nhóm phải xử lý những gì</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Vấn đề</th><th>Xuất hiện ở</th><th>Cách xử lý dự kiến</th></tr></thead>
+    <tbody>
+      <tr><td>Trùng bản ghi khi reconnect</td><td>A1, A2</td><td>Dedup theo <code>(exchange, trade_id)</code> với state có TTL trong Flink</td></tr>
+      <tr><td>Mất bản ghi (gap)</td><td>A1, A2</td><td>Theo dõi <code>trade_id</code>/<code>sequence</code> tăng liên tục. Khi có gap thì ghi log và đánh dấu cửa sổ "dữ liệu không đầy đủ"</td></tr>
+      <tr><td>Sự kiện đến sai thứ tự, đồng hồ lệch</td><td>A1–A3</td><td>Xử lý theo event-time, đặt watermark khoảng 5 giây, đẩy bản ghi đến muộn sang side output</td></tr>
+      <tr><td>Schema và ngữ nghĩa khác nhau</td><td>A1, A2</td><td>Mỗi sàn có một adapter riêng, ghi ra một canonical schema chung (Avro + Schema Registry)</td></tr>
+      <tr><td>Đơn vị thời gian đổi (ms → µs)</td><td>B1</td><td>Phát hiện theo độ dài con số và chuẩn hóa về µs UTC</td></tr>
+      <tr><td>Số nguyên token chưa chia decimals</td><td>C1, A3</td><td>Join với <code>token_registry</code></td></tr>
+      <tr><td>Chain reorg</td><td>A3</td><td>Chờ đủ số block xác nhận, phát sự kiện "retract" để hủy bản ghi bị thay thế</td></tr>
+      <tr><td>Node "siêu kết nối" (ví sàn)</td><td>C1</td><td>Gắn nhãn ví sàn và dừng lan truyền taint tại đó</td></tr>
+      <tr><td>Nhãn thưa, mâu thuẫn, có thời hạn</td><td>D1–D5</td><td>Bảng nhãn hợp nhất có cột nguồn, độ tin cậy, valid_from và valid_to</td></tr>
+      <tr><td>Bản ghi hỏng hoặc sai schema</td><td>Tất cả</td><td>Đưa vào DLQ hoặc bảng quarantine kèm lý do, có dashboard data quality</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ================= 4. FLOW ================= -->
+<section id="flow">
+  <h2><span class="sn">4</span>Luồng dữ liệu hoạt động như thế nào</h2>
+  <p class="sub">Hệ thống có 3 luồng chạy song song: <b>Hot path</b> xử lý real-time trong vài giây, <b>Cold path</b> xử lý batch theo giờ hoặc ngày, và <b>vòng phản hồi</b> đưa kết quả batch quay lại hot path.</p>
+
+  <div class="flow">
+    <div class="lane">
+      <div class="lane-label">Hot path<br>(giây)</div>
+      <div class="steps">
+        <div class="node n-src"><b>Sàn WS ×4 + ETH RPC</b></div><span class="arr">→</span>
+        <div class="node n-comp"><b>Collectors</b><small>mỗi sàn 1 Deployment K8s</small></div><span class="arr">→</span>
+        <div class="node n-queue"><b>Kafka raw.*</b><small>giữ nguyên JSON gốc</small></div><span class="arr">→</span>
+        <div class="node n-comp"><b>Flink Normalizer</b><small>map, dedup, watermark</small></div><span class="arr">→</span>
+        <div class="node n-queue"><b>Kafka canonical.trades</b></div><span class="arr">→</span>
+        <div class="node n-comp"><b>Flink Feature + Detector</b><small>cửa sổ 1m/5m, rule, model</small></div><span class="arr">→</span>
+        <div class="node n-queue"><b>Kafka alerts</b></div><span class="arr">→</span>
+        <div class="node n-out"><b>MongoDB · FastAPI · Dashboard</b></div>
+      </div>
+    </div>
+    <div class="lane">
+      <div class="lane-label">Cold path<br>(giờ / ngày)</div>
+      <div class="steps">
+        <div class="node n-src"><b>binance.vision · AWS S3 · OFAC · darklist · P&amp;D · GDELT</b></div><span class="arr">→</span>
+        <div class="node n-comp"><b>Airflow DAGs</b></div><span class="arr">→</span>
+        <div class="node n-store"><b>Bronze</b><small>MinIO, file gốc</small></div><span class="arr">→</span>
+        <div class="node n-comp"><b>Spark ETL</b></div><span class="arr">→</span>
+        <div class="node n-store"><b>Silver</b><small>Iceberg, sạch, chuẩn hóa</small></div><span class="arr">→</span>
+        <div class="node n-comp"><b>Spark features + GraphFrames</b></div><span class="arr">→</span>
+        <div class="node n-store"><b>Gold</b><small>features, graph, risk</small></div>
+      </div>
+    </div>
+    <div class="lane">
+      <div class="lane-label">Vòng phản hồi</div>
+      <div class="steps">
+        <div class="node n-queue"><b>Kafka Connect S3 sink</b><small>lưu hot path vào Bronze</small></div><span class="arr">→</span>
+        <div class="node n-comp"><b>Train model (MLflow)</b></div><span class="arr">→</span>
+        <div class="node n-store"><b>Model registry · wallet_risk</b></div><span class="arr">→</span>
+        <div class="node n-comp"><b>Detector nạp model mới &amp; danh sách ví rủi ro (Redis)</b></div><span class="arr">·</span>
+        <div class="node n-out"><b>Trino + Superset · Neo4j</b></div>
+      </div>
+    </div>
+    <div class="legend"><span class="lg-src">Nguồn</span><span class="lg-queue">Kafka topic</span><span class="lg-store">Lưu trữ</span><span class="lg-comp">Tính toán</span><span class="lg-out">Output</span></div>
+  </div>
+
+  <h3>4.1 Từng bước, ai phụ trách</h3>
+  <ol class="walk">
+    <li><b class="t">Thu thập real-time (Collectors)</b>Mỗi sàn có một service Python nhỏ (asyncio + websockets) chạy dạng Deployment trên K8s. Service mở kết nối, subscribe danh sách cặp, nhận JSON và <b>gắn thêm</b> <code>ingest_ts</code> và <code>source</code>, rồi gửi nguyên văn vào Kafka topic <code>raw.trades.&lt;sàn&gt;</code>. Nó tự reconnect khi rớt mạng và đẩy metric (msg/s, số lần reconnect) lên Prometheus. <span class="who">→ Người 2</span></li>
+    <li><b class="t">Hàng đợi (Kafka)</b>Kafka làm "bộ đệm" giữa nguồn và xử lý. Nếu Flink chết thì dữ liệu vẫn nằm trong Kafka, và khi Flink chạy lại sẽ đọc tiếp từ chỗ cũ. Partition key là symbol, để mọi trade của một coin đi vào cùng partition và giữ đúng thứ tự. <span class="who">→ Người 1 (vận hành), Người 2 (thiết kế topic)</span></li>
+    <li><b class="t">Chuẩn hóa (Flink Normalizer)</b>Đọc <code>raw.*</code>, dùng adapter của từng sàn chuyển về <b>canonical trade</b> (schema bên dưới), loại bản ghi trùng, gán event-time và watermark. Bản ghi lỗi đi vào <code>dlq.trades</code> kèm lý do. <span class="who">→ Người 2</span></li>
+    <li><b class="t">Tính feature &amp; phát hiện (Flink Detector)</b>Với mỗi coin, tính theo cửa sổ 1 và 5 phút: volume, số trade, % thay đổi giá, tỷ lệ mua chủ động và z-score so với baseline. Sau đó áp rule hoặc model (mục 5). Khi vượt ngưỡng, phát một <b>alert</b> có điểm rủi ro và danh sách lý do vào topic <code>alerts</code>. <span class="who">→ Người 3</span></li>
+    <li><b class="t">Thu thập batch (Airflow)</b>Các DAG chạy hằng ngày: tải trades/klines từ binance.vision, đồng bộ token_transfers từ AWS S3, tải lại OFAC và darklist. Mỗi bước có kiểm tra checksum, đếm số dòng và chạy incremental (không tải lại thứ đã có). Mọi file gốc được lưu vào <b>Bronze</b> trên MinIO. <span class="who">→ Người 4</span></li>
+    <li><b class="t">ETL &amp; Lakehouse (Spark + Iceberg)</b>Bronze → Silver: parse, ép kiểu, chuẩn hóa thời gian và decimals, dedup, quy đổi USD bằng as-of join với <code>minute_price</code>. Silver → Gold: tạo bảng feature theo symbol-phút, bảng cạnh của graph (ví → ví, tổng USD, số lần, thời điểm đầu/cuối), bảng nhãn hợp nhất. <span class="who">→ Người 4</span></li>
+    <li><b class="t">Phân tích graph</b>GraphFrames trên Spark lan truyền "taint" từ các ví bẩn (OFAC, darklist) ra tối đa k bước, có trọng số theo USD và giảm dần theo số bước. Kết hợp thêm PageRank và chỉ số fan-in/fan-out. Kết quả là bảng <code>wallet_risk</code>, được đẩy sang Redis để Detector tra cứu real-time. <span class="who">→ Người 4 (+ Người 5 hỗ trợ feature)</span></li>
+    <li><b class="t">Train model &amp; vòng phản hồi</b>Dùng Gold features cùng nhãn D4 (pump) để train và chọn ngưỡng, log vào MLflow và đăng ký phiên bản. Detector nạp phiên bản mới mà không phải dừng hệ thống. Toàn bộ hot path cũng được Kafka Connect lưu xuống Bronze để có thể <b>replay</b> lại bất cứ lúc nào. <span class="who">→ Người 5</span></li>
+    <li><b class="t">Phục vụ &amp; hiển thị</b>Alert được ghi vào MongoDB (truy vấn theo thời gian, coin, mức độ). FastAPI cung cấp REST và WebSocket. Dashboard hiển thị feed cảnh báo, biểu đồ coin và trang điều tra ví. Trino + Superset dùng cho phân tích ad-hoc trên Iceberg. Grafana hiển thị sức khỏe hệ thống. <span class="who">→ Người 5 (+ Người 1 cho Grafana)</span></li>
+  </ol>
+
+  <h3>4.2 Canonical trade: "ngôn ngữ chung" của hệ thống</h3>
+  <p>Đây là bản nâng cấp từ <code>transaction_event.v1</code> ở W1. Sau bước chuẩn hóa, mọi sàn đều trông như nhau:</p>
+<pre>{
+  "event_id":      "binance:PEPEUSDT:512334901",   // khóa dedup
+  "exchange":      "binance",
+  "symbol":        "PEPE-USDT",                     // mã chung sau symbol_map
+  "base": "PEPE",  "quote": "USDT",
+  "price":         0.00002011,
+  "qty":           5000000,
+  "quote_qty_usd": 100.55,
+  "taker_side":    "buy",                           // đã chuẩn hóa ngữ nghĩa
+  "event_ts":      "2026-11-16T07:00:00.121Z",     // thời điểm khớp, UTC
+  "ingest_ts":     "2026-11-16T07:00:00.190Z",     // thời điểm hệ thống nhận
+  "schema_version": 2
+}</pre>
+
+  <h3>4.3 Hành trình của một sự kiện (ví dụ một vụ pump)</h3>
+  <div class="timeline">
+    <div><span class="ts">06:59:30</span>Một nhóm Telegram nạp USDT vào sàn. C1/A3 ghi nhận 3 ví mới cùng chuyển tổng cộng 180 nghìn USDT vào ví nạp Binance, và 1 trong 3 ví nằm cách một ví darklist 2 bước.</div>
+    <div><span class="ts">07:00:00.121</span>Trade đầu tiên của đợt pump được khớp trên Binance (cặp ABC/USDT).</div>
+    <div><span class="ts">07:00:00.190</span>Collector nhận, gắn ingest_ts và ghi vào <code>raw.trades.binance</code> (độ trễ khoảng 70 ms).</div>
+    <div><span class="ts">07:00:00.4</span>Normalizer chuyển sang canonical và ghi vào <code>canonical.trades</code>.</div>
+    <div><span class="ts">07:01:05</span>Cửa sổ 1 phút đóng (thêm 5 giây watermark). Volume gấp 38 lần baseline, giá +64%, 91% là lệnh mua taker, không có tin GDELT nào. Coin này cũng không tăng tương ứng trên Coinbase/OKX.</div>
+    <div><span class="ts">07:01:05.3</span>Detector phát alert: <b>risk 0.93 · PUMP_SUSPECTED</b>. Lý do kèm theo: volume_z=14.2, price_change=+64%, no_news, cross_venue_divergence, funding_from_risky_wallets.</div>
+    <div><span class="ts">07:01:06</span>Alert xuất hiện trên dashboard qua WebSocket. Người xem bấm vào để mở trang điều tra coin và graph các ví đã nạp tiền.</div>
+    <div><span class="ts">07:06:00</span>Giá sập 70%. Detector phát thêm alert <b>DUMP_PHASE</b> và gộp vào cùng một <i>case</i>.</div>
+    <div><span class="ts">Hôm sau</span>Batch đánh giá lại: case được lưu cùng toàn bộ trade và ví liên quan, dùng làm dữ liệu train và báo cáo.</div>
+  </div>
+  <p style="font-size:13.5px;color:var(--muted)">Các con số trong ví dụ là giả định để minh họa luồng. Ngưỡng thật sẽ do nhóm hiệu chỉnh bằng dữ liệu.</p>
+
+  <h3>4.4 Các tầng lưu trữ</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Tầng</th><th>Công nghệ</th><th>Chứa gì</th><th>Dùng để</th></tr></thead>
+    <tbody>
+      <tr><td><b>Kafka</b></td><td>Strimzi, retention khoảng 3–7 ngày</td><td>raw.*, canonical.trades, features.*, alerts, dlq.*</td><td>Đệm và truyền dữ liệu real-time</td></tr>
+      <tr><td><b>Bronze</b></td><td>MinIO (S3)</td><td>File gốc nguyên vẹn: zip CSV, Parquet AWS, XML OFAC, JSON từ Kafka</td><td>Có thể xử lý lại từ đầu bất cứ lúc nào (bất biến)</td></tr>
+      <tr><td><b>Silver</b></td><td>Iceberg trên MinIO</td><td><code>trades</code>, <code>token_transfers_usd</code>, <code>labels</code>, <code>minute_price</code></td><td>Dữ liệu sạch, đã chuẩn hóa, có partition theo ngày</td></tr>
+      <tr><td><b>Gold</b></td><td>Iceberg</td><td><code>symbol_minute_features</code>, <code>wallet_edges</code>, <code>wallet_risk</code>, <code>pump_cases</code></td><td>Phục vụ train, dashboard và đánh giá</td></tr>
+      <tr><td><b>Serving</b></td><td>MongoDB, Redis, Neo4j</td><td>Alert và case (MongoDB), feature online và ví rủi ro (Redis), subgraph điều tra (Neo4j)</td><td>Truy vấn nhanh cho API và UI</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>4.5 Danh sách Kafka topic dự kiến</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Topic</th><th>Key</th><th>Ghi bởi</th><th>Đọc bởi</th></tr></thead>
+    <tbody>
+      <tr><td><code>raw.trades.{binance,coinbase,kraken,okx}</code></td><td>symbol gốc</td><td>Collectors</td><td>Normalizer, S3 sink</td></tr>
+      <tr><td><code>raw.depth.binance</code> (nâng cao)</td><td>symbol</td><td>Collector</td><td>Spoofing detector</td></tr>
+      <tr><td><code>raw.eth.transfers</code></td><td>token_address</td><td>ETH collector</td><td>Normalizer on-chain</td></tr>
+      <tr><td><code>canonical.trades</code></td><td>symbol chung</td><td>Normalizer</td><td>Detector, S3 sink</td></tr>
+      <tr><td><code>features.symbol_1m</code></td><td>symbol</td><td>Detector</td><td>Redis sink, dashboard</td></tr>
+      <tr><td><code>alerts</code></td><td>symbol / case_id</td><td>Detector</td><td>MongoDB sink, FastAPI</td></tr>
+      <tr><td><code>dlq.*</code></td><td>nguồn</td><td>Mọi job</td><td>Data quality dashboard</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ================= 5. DETECTION ================= -->
+<section id="detect">
+  <h2><span class="sn">5</span>Logic phát hiện</h2>
+  <p class="sub">Bắt đầu bằng rule đơn giản, dễ giải thích. Sau đó dùng ML để giảm báo nhầm. Graph là lớp bổ sung bằng chứng.</p>
+
+  <div class="grid3">
+    <div class="card">
+      <h4>5.1 Rule pump-and-dump (MVP)</h4>
+      <p style="font-size:14px">Alert khi <b>đồng thời</b> thỏa các điều kiện trong cửa sổ 1–5 phút:</p>
+      <ul class="tight" style="font-size:14px">
+        <li><code>volume_z</code> lớn hơn 5 (so với baseline 7 ngày cùng giờ)</li>
+        <li>giá tăng hơn 15%</li>
+        <li>tỷ lệ mua taker lớn hơn 75%</li>
+        <li>coin thuộc nhóm vốn hóa nhỏ hoặc thanh khoản thấp</li>
+      </ul>
+      <p style="font-size:13.5px;color:var(--muted)">Các ngưỡng này chỉ là điểm khởi đầu và sẽ được hiệu chỉnh trên dữ liệu replay. Điểm cộng thêm: không có tin GDELT, lệch giữa các sàn, có tiền từ ví rủi ro.</p>
+    </div>
+    <div class="card">
+      <h4>5.2 Wash trading (nâng cao)</h4>
+      <ul class="tight" style="font-size:14px">
+        <li>Tỷ lệ volume so với biến động giá cao bất thường</li>
+        <li>Khối lượng lệnh lặp lại (entropy của <code>qty</code> thấp)</li>
+        <li>Mua và bán xen kẽ đều đặn, khoảng cách thời gian giữa các lệnh như máy</li>
+        <li>Volume trên một sàn lệch hẳn so với các sàn còn lại</li>
+      </ul>
+      <p style="font-size:13.5px;color:var(--muted)">Lưu ý: dữ liệu public không có ID tài khoản, nên chỉ phát hiện được ở mức <i>thống kê</i>.</p>
+    </div>
+    <div class="card">
+      <h4>5.3 Điểm rủi ro ví (graph)</h4>
+      <ul class="tight" style="font-size:14px">
+        <li><b>Taint:</b> ví bẩn có điểm 1.0. Mỗi bước chuyển, điểm nhân với tỷ lệ USD đến từ nguồn bẩn và nhân thêm hệ số suy giảm (ví dụ 0.5)</li>
+        <li>Dừng lan truyền khi gặp ví sàn</li>
+        <li>Thêm feature: tuổi ví, fan-in/fan-out, tốc độ chuyển tiếp, PageRank</li>
+        <li>Kiểm chứng thuật toán trên Elliptic trước</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><b>Lớp ML (nâng cao):</b> Isolation Forest không cần nhãn, dùng làm "máy dò bất thường" chung. XGBoost được train trên các phút có nhãn pump (D4) và các phút bình thường. Mỗi alert phải kèm <b>lý do</b> (top feature hoặc SHAP). Một alert không có lý do thì vô dụng với người điều tra.</div>
+</section>
+
+<!-- ================= 6. OUTPUT ================= -->
+<section id="output">
+  <h2><span class="sn">6</span>Expected outputs &amp; ý nghĩa</h2>
+  <p class="sub">Mỗi output phải trả lời được câu hỏi: ai dùng, dùng để làm gì, và làm sao biết nó tốt.</p>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Output</th><th>Trông như thế nào</th><th>Ai dùng / ý nghĩa</th><th>Cách đo "đạt"</th></tr></thead>
+    <tbody>
+      <tr><td><b>O1 · Feed cảnh báo real-time</b> <span class="k k-must">MVP</span></td><td>Danh sách alert mới nhất gồm coin, sàn, loại, điểm rủi ro, lý do và thời gian. Tự cập nhật qua WebSocket.</td><td>Người giám sát của sàn. Họ biết <b>ngay trong vài chục giây</b> là coin nào đang bị thao túng, để tạm dừng giao dịch hoặc cảnh báo người dùng.</td><td>Độ trễ từ trade tới alert (p95) dưới 10 giây. Phát hiện được phần lớn các vụ pump khi replay.</td></tr>
+      <tr><td><b>O2 · Case điều tra</b> <span class="k k-must">MVP</span></td><td>Gom nhiều alert liên quan (pump rồi dump) thành một case, có biểu đồ giá/volume quanh thời điểm đó và bảng feature.</td><td>Người điều tra xem lại toàn bộ diễn biến, bằng chứng và quyết định có xử lý hay không. Biến "tín hiệu" thành "hồ sơ".</td><td>Case có đủ dữ liệu trước và sau sự kiện, mở được trong dưới 2 giây.</td></tr>
+      <tr><td><b>O3 · Điểm rủi ro ví</b> <span class="k k-must">MVP</span></td><td>API <code>GET /wallets/{address}/risk</code> trả về điểm, đường đi tới ví bẩn gần nhất và danh sách ví liên quan.</td><td>Bộ phận AML của sàn kiểm tra một khoản nạp có đến từ nguồn bẩn hay không. Đây là nghiệp vụ KYT (Know Your Transaction).</td><td>Trên Elliptic: AUC hoặc precision tốt hơn baseline đơn giản. Ví OFAC luôn có điểm tối đa.</td></tr>
+      <tr><td><b>O4 · Graph điều tra</b> <span class="k k-opt">Nâng cao</span></td><td>Hình mạng ví quanh một case: ví nguồn, ví trung gian, ví nạp sàn, độ dày cạnh theo USD.</td><td>Trực quan hóa đường đi của tiền, dễ trình bày với người không chuyên.</td><td>Hiển thị được subgraph 2–3 bước trong vài giây.</td></tr>
+      <tr><td><b>O5 · Dashboard thị trường</b> <span class="k k-must">MVP</span></td><td>Superset/Grafana hiển thị top coin bất thường hôm nay, heatmap volume_z theo coin và giờ, so sánh volume giữa các sàn.</td><td>Cái nhìn toàn cảnh: thị trường hôm nay có "nóng" không, sàn nào có volume đáng ngờ.</td><td>Số liệu khớp khi đối chiếu với truy vấn trực tiếp trên Iceberg.</td></tr>
+      <tr><td><b>O6 · Báo cáo đánh giá mô hình</b> <span class="k k-must">MVP</span></td><td>Bảng precision, recall, độ trễ phát hiện trên các vụ pump có thật, kèm so sánh rule và ML.</td><td><b>Bằng chứng cho giảng viên</b> rằng hệ thống thực sự hoạt động, không chỉ dựng được hạ tầng.</td><td>Xem mục 7.</td></tr>
+      <tr><td><b>O7 · Data quality report</b> <span class="k k-must">MVP</span></td><td>Theo từng nguồn và từng ngày: số bản ghi, % trùng, % lỗi schema, số gap, độ trễ đến, kích thước DLQ.</td><td>Chứng minh nhóm <b>xử lý được dữ liệu bẩn</b>, là một tiêu chí chấm quan trọng.</td><td>Mọi nguồn đều có số liệu, và có cảnh báo khi vượt ngưỡng.</td></tr>
+      <tr><td><b>O8 · Dashboard hệ thống</b> <span class="k k-must">MVP</span></td><td>Grafana: msg/s, consumer lag, độ trễ end-to-end, CPU/RAM theo pod, thời gian chạy Spark job.</td><td>Chứng minh hệ thống <b>chịu tải và mở rộng</b> được trên K8s.</td><td>Có số liệu khi tăng số cặp và số sàn, có demo pod chết rồi tự phục hồi.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ================= 7. EVAL ================= -->
+<section id="eval">
+  <h2><span class="sn">7</span>Làm sao biết hệ thống hoạt động tốt</h2>
+  <div class="grid2">
+    <div class="card">
+      <h4>Đánh giá phát hiện (dùng replay)</h4>
+      <ol style="padding-left:20px;font-size:14.5px;margin:6px 0">
+        <li>Lấy danh sách vụ pump từ D4 mà coin còn dữ liệu trên binance.vision.</li>
+        <li>Tải trades của những ngày đó, cùng một số ngày "bình thường" làm đối chứng.</li>
+        <li>Replay vào Kafka đúng thứ tự thời gian (có thể tua nhanh x10 hoặc x100).</li>
+        <li>Đo các chỉ số:
+          <ul class="tight">
+            <li><b>Recall:</b> % vụ pump bị bắt</li>
+            <li><b>Precision@k:</b> trong k alert điểm cao nhất, bao nhiêu alert là thật</li>
+            <li><b>Detection delay:</b> phát hiện sau bao nhiêu giây kể từ khi pump bắt đầu</li>
+            <li><b>Số alert sai mỗi ngày</b> trên dữ liệu bình thường</li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+    <div class="card">
+      <h4>Đánh giá hệ thống</h4>
+      <ul class="tight" style="font-size:14.5px">
+        <li><b>Throughput:</b> số msg/s tối đa mà Normalizer và Detector chịu được (stress test bằng replay x100)</li>
+        <li><b>Latency:</b> event_ts → alert, đo p50/p95/p99</li>
+        <li><b>Khả năng mở rộng:</b> tăng parallelism của Flink và số partition rồi đo lại</li>
+        <li><b>Chịu lỗi:</b> kill 1 Kafka broker, kill TaskManager của Flink, kiểm tra không mất dữ liệu và xử lý tiếp từ checkpoint</li>
+        <li><b>Quy mô batch:</b> thời gian Spark xử lý 1 tháng dữ liệu on-chain với 2, 4 và 6 executor</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout good"><b>Điều thuyết phục giảng viên nhất:</b> một bảng kết quả trên các vụ pump có thật, đặt cạnh biểu đồ Grafana chứng minh hệ thống chịu tải và tự phục hồi, cùng một báo cáo data quality cho thấy dữ liệu bẩn đến đâu và đã xử lý ra sao.</div>
+</section>
+
+<!-- ================= 8. LEARN ================= -->
+<section id="learn">
+  <h2><span class="sn">8</span>Những gì cả nhóm cần tìm hiểu thêm</h2>
+  <p class="sub">Mục "Cả nhóm" ai cũng nên đọc trong tuần đầu. Các mục còn lại học theo vai trò (xem mục 9).</p>
+
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Chủ đề</th><th>Cần hiểu đến mức nào</th><th>Ai</th><th>Gợi ý tài liệu</th></tr></thead>
+    <tbody>
+      <tr><td colspan="4" style="background:var(--surface-2);font-weight:700">Nghiệp vụ</td></tr>
+      <tr><td>Order book, trade, maker/taker, cặp giao dịch</td><td>Giải thích được cho người khác</td><td>Cả nhóm</td><td>Tài liệu Binance Academy, Binance Spot API docs (phần WebSocket streams)</td></tr>
+      <tr><td>Pump-and-dump, wash trading, spoofing</td><td>Biết dấu hiệu trong dữ liệu</td><td>Cả nhóm</td><td>Bài báo của La Morgia et al. về pump-and-dump (đi kèm dataset D4); các nghiên cứu về wash trading trên sàn crypto</td></tr>
+      <tr><td>Ethereum: địa chỉ, giao dịch, ERC-20, event Transfer, decimals, reorg</td><td>Đọc được một giao dịch trên Etherscan</td><td>Cả nhóm (sâu: Người 4)</td><td>ethereum.org/developers/docs</td></tr>
+      <tr><td>AML / KYT, taint analysis, OFAC</td><td>Hiểu khái niệm</td><td>Người 4, 5</td><td>Trang OFAC FAQ về digital currency; bài báo đi kèm Elliptic dataset (Weber et al. 2019)</td></tr>
+      <tr><td colspan="4" style="background:var(--surface-2);font-weight:700">Hạ tầng</td></tr>
+      <tr><td>Kubernetes cơ bản: Pod, Deployment, StatefulSet, Service, PVC, Namespace, Helm</td><td>Tự deploy được một app</td><td>Cả nhóm (sâu: Người 1)</td><td>kubernetes.io/docs/tutorials</td></tr>
+      <tr><td>Dựng cluster trên VM: kubeadm hoặc k3s, CNI, MetalLB, Longhorn</td><td>Dựng lại được từ đầu</td><td>Người 1</td><td>kubeadm docs, k3s docs, longhorn.io</td></tr>
+      <tr><td>Operator: Strimzi, Flink K8s Operator, Spark Operator</td><td>Viết được file CR</td><td>Người 1 (+ 2, 3, 4)</td><td>strimzi.io/docs, nightlies.apache.org/flink/flink-kubernetes-operator-docs-stable, github.com/kubeflow/spark-operator</td></tr>
+      <tr><td>Prometheus + Grafana, cách expose metric từ app</td><td>Thêm được metric mới</td><td>Người 1, 2</td><td>kube-prometheus-stack</td></tr>
+      <tr><td colspan="4" style="background:var(--surface-2);font-weight:700">Xử lý dữ liệu</td></tr>
+      <tr><td>Kafka: partition, consumer group, offset, retention, Schema Registry/Avro</td><td>Thiết kế được topic</td><td>Người 2, 3</td><td>kafka.apache.org/documentation</td></tr>
+      <tr><td>Flink: event-time, watermark, window, keyed state, checkpoint, CEP</td><td>Viết được job stateful</td><td>Người 3 (+ 2)</td><td>Flink docs: "Timely Stream Processing", "Windows", "FlinkCEP" (có thể dùng PyFlink hoặc Flink SQL)</td></tr>
+      <tr><td>Spark: DataFrame, partitioning, join lớn, skew, chạy trên K8s</td><td>Tối ưu được job</td><td>Người 4 (+ 5)</td><td>spark.apache.org/docs, phần "Running on Kubernetes"</td></tr>
+      <tr><td>Iceberg: table format, partition, MERGE, time travel, catalog</td><td>Tạo và ghi được bảng</td><td>Người 4</td><td>iceberg.apache.org/docs</td></tr>
+      <tr><td>Graph trên Spark: GraphFrames, Pregel, PageRank, connected components</td><td>Cài đặt được thuật toán taint</td><td>Người 4</td><td>graphframes.github.io</td></tr>
+      <tr><td>Airflow: DAG, KubernetesPodOperator, sensor, backfill</td><td>Viết được pipeline incremental</td><td>Người 4</td><td>airflow.apache.org/docs</td></tr>
+      <tr><td colspan="4" style="background:var(--surface-2);font-weight:700">ML &amp; Serving</td></tr>
+      <tr><td>Anomaly detection trên chuỗi thời gian, Isolation Forest, xử lý mất cân bằng lớp</td><td>Train và đánh giá được</td><td>Người 5</td><td>scikit-learn docs</td></tr>
+      <tr><td>MLflow: tracking, model registry</td><td>Đăng ký và nạp được model</td><td>Người 5</td><td>mlflow.org/docs</td></tr>
+      <tr><td>FastAPI + WebSocket, MongoDB index, Redis</td><td>Tái dùng từ W1</td><td>Người 5</td><td>Tài liệu W1 hiện có của nhóm</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ================= 9. TEAM ================= -->
+<section id="team">
+  <h2><span class="sn">9</span>Phân công cho 5 người</h2>
+  <p class="sub">Mỗi người sở hữu một mảng chính, nhưng mảng nào cũng có người dự phòng để tránh "chỉ một người biết". Ranh giới giữa các mảng được giữ bằng <b>data contract</b>: schema topic và schema bảng được chốt từ sớm.</p>
+
+  <div class="grid3">
+    <div class="card role">
+      <div class="rn">Người 1</div>
+      <h4>Platform &amp; Infra Lead</h4>
+      <div class="lbl">Làm gì</div>
+      <ul class="tight">
+        <li>Tạo VM, dựng cluster K8s, mạng, storage</li>
+        <li>Cài operator và Helm: Strimzi, MinIO, Flink/Spark Operator, Airflow, MongoDB, Redis, MLflow</li>
+        <li>Image registry, CI build image, Helm values trong repo</li>
+        <li>Monitoring (Prometheus/Grafana/Loki), demo chịu lỗi</li>
+      </ul>
+      <div class="lbl">Bàn giao</div>
+      <ul class="tight"><li>Cluster chạy ổn định, tài liệu dựng lại từ đầu, dashboard hệ thống (O8)</li></ul>
+      <div class="lbl">Dự phòng</div><ul class="tight"><li>Người 2</li></ul>
+    </div>
+    <div class="card role">
+      <div class="rn">Người 2</div>
+      <h4>Ingestion &amp; Stream Normalization</h4>
+      <div class="lbl">Làm gì</div>
+      <ul class="tight">
+        <li>Collector cho các sàn và cho ETH RPC: reconnect, metric, phát hiện gap</li>
+        <li>Thiết kế Kafka topic, canonical schema v2, Schema Registry</li>
+        <li>Flink Normalizer: adapter từng sàn, dedup, watermark, DLQ</li>
+        <li>Kafka Connect S3 sink, công cụ <b>replay</b> từ Bronze vào Kafka</li>
+      </ul>
+      <div class="lbl">Bàn giao</div>
+      <ul class="tight"><li><code>canonical.trades</code> sạch và ổn định, công cụ replay, phần streaming của data quality (O7)</li></ul>
+      <div class="lbl">Dự phòng</div><ul class="tight"><li>Người 3</li></ul>
+    </div>
+    <div class="card role">
+      <div class="rn">Người 3</div>
+      <h4>Real-time Detection</h4>
+      <div class="lbl">Làm gì</div>
+      <ul class="tight">
+        <li>Flink job tính feature theo cửa sổ và baseline</li>
+        <li>Rule pump-and-dump (MVP), wash trading và lệch giữa các sàn (nâng cao), spoofing (nếu kịp)</li>
+        <li>Tra cứu <code>wallet_risk</code> từ Redis để làm giàu alert</li>
+        <li>Gộp alert thành case, nạp model từ MLflow</li>
+      </ul>
+      <div class="lbl">Bàn giao</div>
+      <ul class="tight"><li>Topic <code>alerts</code> có điểm rủi ro và lý do, số đo latency và throughput</li></ul>
+      <div class="lbl">Dự phòng</div><ul class="tight"><li>Người 2, 5</li></ul>
+    </div>
+    <div class="card role">
+      <div class="rn">Người 4</div>
+      <h4>Batch, Lakehouse &amp; Graph</h4>
+      <div class="lbl">Làm gì</div>
+      <ul class="tight">
+        <li>Airflow DAG cho binance.vision, AWS S3, OFAC, darklist, D4, GDELT</li>
+        <li>Spark ETL Bronze → Silver → Gold trên Iceberg, bảng nhãn hợp nhất</li>
+        <li>Bảng tham chiếu: symbol_map, token_registry, exchange_wallets, minute_price</li>
+        <li>GraphFrames: taint và PageRank, xuất <code>wallet_risk</code></li>
+      </ul>
+      <div class="lbl">Bàn giao</div>
+      <ul class="tight"><li>Lakehouse đầy đủ, bảng <code>wallet_risk</code> (O3), phần batch của data quality (O7)</li></ul>
+      <div class="lbl">Dự phòng</div><ul class="tight"><li>Người 5</li></ul>
+    </div>
+    <div class="card role">
+      <div class="rn">Người 5</div>
+      <h4>ML, Serving &amp; Evaluation</h4>
+      <div class="lbl">Làm gì</div>
+      <ul class="tight">
+        <li>Chuẩn bị tập nhãn pump để replay, framework đánh giá (mục 7)</li>
+        <li>Train Isolation Forest/XGBoost, MLflow, chọn ngưỡng</li>
+        <li>FastAPI (REST + WebSocket), MongoDB và Redis serving</li>
+        <li>Dashboard cảnh báo, trang case, trang ví, Superset</li>
+      </ul>
+      <div class="lbl">Bàn giao</div>
+      <ul class="tight"><li>O1, O2, O4, O5, O6: báo cáo đánh giá cuối cùng</li></ul>
+      <div class="lbl">Dự phòng</div><ul class="tight"><li>Người 3, 4</li></ul>
+    </div>
+    <div class="card" style="border-style:dashed">
+      <h4>Việc chung của cả nhóm</h4>
+      <ul class="tight">
+        <li>Tuần đầu: mỗi người làm một "spike" để thử nguồn dữ liệu của mảng mình</li>
+        <li>Chốt <b>data contract</b> (canonical schema, schema Gold) trước khi code song song</li>
+        <li>Họp sync ngắn 2 lần/tuần, demo nội bộ cuối mỗi giai đoạn</li>
+        <li>Viết báo cáo và slide: mỗi người viết phần của mình, Người 5 tổng hợp</li>
+        <li>Một repo chung: <code>infra/</code>, <code>ingest/</code>, <code>streaming/</code>, <code>batch/</code>, <code>ml/</code>, <code>serving/</code>, <code>docs/</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Phụ thuộc giữa các mảng</h3>
+  <div class="flow">
+    <div class="steps">
+      <div class="node n-comp"><b>Người 1</b><small>cluster, Kafka, MinIO</small></div><span class="arr">→</span>
+      <div class="node n-comp"><b>Người 2</b><small>canonical.trades, replay</small></div><span class="arr">→</span>
+      <div class="node n-comp"><b>Người 3</b><small>alerts</small></div><span class="arr">→</span>
+      <div class="node n-out"><b>Người 5</b><small>API, UI, đánh giá</small></div>
+    </div>
+    <div class="steps" style="margin-top:10px">
+      <div class="node n-comp"><b>Người 1</b></div><span class="arr">→</span>
+      <div class="node n-comp"><b>Người 4</b><small>Gold, wallet_risk, nhãn</small></div><span class="arr">→</span>
+      <div class="node n-comp"><b>Người 3</b><small>làm giàu alert</small></div><span class="arr">·</span>
+      <div class="node n-out"><b>Người 5</b><small>train model</small></div>
+    </div>
+  </div>
+  <div class="callout"><b>Mẹo để không ai phải chờ ai:</b> trong lúc chờ Người 1 dựng xong cluster, mọi người phát triển trên máy local bằng kind/minikube hoặc Kafka đơn giản. Người 3 dùng file trades mẫu từ binance.vision để viết detector trước khi Normalizer xong. Người 5 dựng API trên dữ liệu alert giả theo đúng schema đã chốt.</div>
+</section>
+
+<!-- ================= 10. PLAN ================= -->
+<section id="plan">
+  <h2><span class="sn">10</span>Lộ trình theo giai đoạn</h2>
+  <p class="sub">Thời lượng mỗi giai đoạn chỉ là đề xuất, nhóm tự căn lại theo deadline của môn học.</p>
+  <div class="card">
+    <div class="phase"><div class="pn">P0 · Khởi động<small>khoảng 1 tuần</small></div><div>Cả nhóm đọc tài liệu này và các mục "Cả nhóm" ở phần 8. Mỗi người chạy spike: kết nối WS 1 giờ, tải 1 ngày dữ liệu binance.vision và 1 ngày token_transfers, parse OFAC, đọc dataset D4. Chốt canonical schema v2 và danh sách topic. Người 1 tạo VM.</div></div>
+    <div class="phase"><div class="pn">P1 · Nền tảng<small>khoảng 1–2 tuần</small></div><div>Cluster K8s chạy được Strimzi, MinIO, Flink/Spark Operator, Airflow, MongoDB, Grafana. Collector Binance và một sàn khác ghi vào Kafka. Airflow tải lịch sử vào Bronze. <b>Mốc:</b> thấy dữ liệu chạy trên Grafana.</div></div>
+    <div class="phase"><div class="pn">P2 · Luồng end-to-end MVP<small>khoảng 2 tuần</small></div><div>Normalizer → canonical, Detector có rule pump, alert vào MongoDB, FastAPI và dashboard đơn giản. Spark tạo Silver/Gold cho trades. Công cụ replay hoạt động. <b>Mốc:</b> replay 1 vụ pump thật và thấy alert hiện lên dashboard.</div></div>
+    <div class="phase"><div class="pn">P3 · On-chain &amp; graph<small>khoảng 2 tuần</small></div><div>Silver token_transfers quy ra USD, bảng nhãn hợp nhất, taint/PageRank, <code>wallet_risk</code> đẩy vào Redis, API tra cứu ví. Kiểm chứng trên Elliptic. <b>Mốc:</b> tra một ví và thấy đường đi tới ví OFAC.</div></div>
+    <div class="phase"><div class="pn">P4 · Nâng cao &amp; đánh giá<small>khoảng 2 tuần</small></div><div>Thêm sàn, wash trading, lệch giữa các sàn, model ML, GDELT. Chạy đánh giá đầy đủ (mục 7), stress test và demo chịu lỗi. <b>Mốc:</b> có bảng kết quả O6.</div></div>
+    <div class="phase"><div class="pn">P5 · Hoàn thiện<small>khoảng 1 tuần</small></div><div>Hoàn chỉnh dashboard, báo cáo data quality, tài liệu kiến trúc, slide, video demo dự phòng. Tập dượt demo live.</div></div>
+  </div>
+</section>
+
+<!-- ================= 11. RISK ================= -->
+<section id="risk">
+  <h2><span class="sn">11</span>Rủi ro &amp; cách giảm</h2>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Rủi ro</th><th>Ảnh hưởng</th><th>Cách giảm</th></tr></thead>
+    <tbody>
+      <tr><td>VM không đủ RAM để chạy toàn bộ stack</td><td>Cluster chậm hoặc pod bị OOM</td><td>Đặt requests/limits, không chạy batch và streaming nặng cùng lúc, giảm replica khi phát triển. Cân nhắc dùng credit cloud sinh viên.</td></tr>
+      <tr><td>Không có pump thật lúc demo</td><td>Demo "trống"</td><td>Demo bằng <b>replay</b> một vụ có thật (đây vốn là kế hoạch chính), luồng live chỉ để chứng minh hệ thống đang chạy thật.</td></tr>
+      <tr><td>Coin trong dataset pump không có trên Binance</td><td>Thiếu ground truth</td><td>Lọc vụ ngay ở P0. Nếu quá ít, bổ sung nhãn bán tự động (rule mạnh kèm kiểm tra thủ công) và ghi rõ hạn chế trong báo cáo.</td></tr>
+      <tr><td>RPC public bị rate limit</td><td>Mất dữ liệu on-chain real-time</td><td>Hot path on-chain chỉ theo dõi một tập contract hoặc ví nhỏ. Phần graph chính chạy batch từ AWS S3.</td></tr>
+      <tr><td>Bị sàn chặn IP hoặc đổi API</td><td>Collector chết</td><td>Có metric và alert khi msg/s về 0. Adapter tách riêng từng sàn nên sửa một chỗ. Có thể chuyển sang endpoint dự phòng.</td></tr>
+      <tr><td>Graph quá lớn</td><td>Spark job chạy rất lâu</td><td>Giới hạn khung thời gian, chỉ xét USDT/USDC/ETH, cắt tại ví sàn, giới hạn k bước.</td></tr>
+      <tr><td>Phụ thuộc vào một người</td><td>Một người nghỉ thì cả mảng dừng</td><td>Phân người dự phòng, code review chéo, tài liệu ngắn cho mỗi mảng.</td></tr>
+      <tr><td>Phạm vi quá rộng</td><td>Không kịp làm xong MVP</td><td>Ưu tiên tuyệt đối MVP ở mục 2. Phần nâng cao chỉ bắt đầu khi P2 đã xong.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Câu hỏi cần chốt sớm</h3>
+  <div class="grid2">
+    <div class="card"><h4>Với giảng viên</h4><ul class="tight">
+      <li>Có bắt buộc dùng HDFS không, hay MinIO (S3) + Iceberg được chấp nhận?</li>
+      <li>VM chạy local trên máy thành viên hay được cấp hạ tầng/cloud?</li>
+      <li>Demo bằng replay dữ liệu lịch sử có được chấp nhận như "streaming" không? (Luồng live vẫn chạy song song.)</li>
+      <li>Có yêu cầu về dung lượng dữ liệu tối thiểu không?</li>
+    </ul></div>
+    <div class="card"><h4>Trong nhóm</h4><ul class="tight">
+      <li>kubeadm hay k3s?</li>
+      <li>Flink (mạnh hơn cho stateful/CEP) hay giữ Spark Structured Streaming như W1 (ít phải học mới)?</li>
+      <li>PyFlink/Flink SQL hay Java/Scala?</li>
+      <li>Chọn bao nhiêu cặp và cặp nào (nên có cả coin lớn lẫn coin nhỏ dễ bị pump)?</li>
+      <li>Khung thời gian dữ liệu lịch sử: 1, 3 hay 6 tháng?</li>
+    </ul></div>
+  </div>
+</section>
+
+<!-- ================= 12. GLOSSARY ================= -->
+<section id="gloss" style="border-bottom:none">
+  <h2><span class="sn">12</span>Thuật ngữ nhanh</h2>
+  <div class="gloss">
+    <div><b>CEX</b>: sàn tập trung (Binance, Coinbase…)</div>
+    <div><b>Order book</b>: danh sách lệnh chờ mua và chờ bán của một cặp</div>
+    <div><b>Maker / Taker</b>: bên đặt lệnh chờ / bên khớp vào lệnh đó</div>
+    <div><b>Pair / Symbol</b>: cặp giao dịch, ví dụ BTC/USDT</div>
+    <div><b>Stablecoin</b>: token neo giá USD (USDT, USDC)</div>
+    <div><b>ERC-20</b>: chuẩn token trên Ethereum</div>
+    <div><b>Decimals</b>: số chữ số thập phân của token</div>
+    <div><b>Block / Reorg</b>: khối giao dịch / việc chuỗi bị thay thế một vài block cuối</div>
+    <div><b>Taint</b>: mức độ "nhiễm bẩn" lan truyền từ ví bẩn qua các giao dịch</div>
+    <div><b>Peel chain</b>: chuỗi ví mỗi bước tách ra một phần nhỏ để che dấu vết</div>
+    <div><b>OFAC SDN</b>: danh sách cá nhân và tổ chức bị Mỹ trừng phạt</div>
+    <div><b>AML / KYT</b>: chống rửa tiền / kiểm tra nguồn gốc giao dịch</div>
+    <div><b>Event-time</b>: thời điểm sự kiện xảy ra (khác với thời điểm hệ thống nhận được)</div>
+    <div><b>Watermark</b>: mốc báo "đã đủ dữ liệu tới thời điểm T" để đóng cửa sổ</div>
+    <div><b>DLQ</b>: dead-letter queue, nơi chứa bản ghi lỗi</div>
+    <div><b>Bronze / Silver / Gold</b>: dữ liệu thô / đã làm sạch / sẵn sàng phân tích</div>
+    <div><b>Iceberg</b>: định dạng bảng trên object storage, hỗ trợ ACID và time travel</div>
+    <div><b>Operator (K8s)</b>: "người vận hành tự động" cho một hệ thống như Kafka hay Flink</div>
+    <div><b>Replay</b>: phát lại dữ liệu lịch sử vào Kafka như thể đang real-time</div>
+    <div><b>z-score</b>: khoảng cách so với giá trị trung bình, tính theo số độ lệch chuẩn</div>
+  </div>
+</section>
+
+</main>
+
+<footer class="wrap">CryptoGuard project brief · Các endpoint dữ liệu được kiểm tra truy cập ngày 16/11/2026 · Ngưỡng, quy mô dữ liệu và ví dụ số liệu là giả định ban đầu, cần đo lại ở giai đoạn P0.</footer>
+
+<button class="theme-btn" id="themeBtn" type="button">◐ Giao diện</button>
+<script>
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themeBtn');
+  try{var t=localStorage.getItem('brief-theme'); if(t) root.setAttribute('data-theme',t);}catch(e){}
+  btn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    if(!cur){cur=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+    var next=cur==='dark'?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{localStorage.setItem('brief-theme',next);}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

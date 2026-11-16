@@ -1,0 +1,6 @@
+# Dev tooling + shared library. Component runtime deps live in each component's requirements.txt.
+-e libs/common
+pytest>=8
+ruff>=0.6
+nbstripout>=0.7
+confluent-kafka>=2.4   # seed_samples.py, local consumers

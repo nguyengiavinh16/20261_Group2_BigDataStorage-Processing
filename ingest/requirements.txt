@@ -1,0 +1,4 @@
+websockets>=12
+confluent-kafka>=2.4
+prometheus-client>=0.20
+boto3>=1.34          # Bronze reads/writes via S3 API (MinIO / GCS interoperability)

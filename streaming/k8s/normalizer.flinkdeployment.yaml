@@ -1,0 +1,38 @@
+# Template (ING-06). Requires `make up-stream` and `make image-streaming`.
+# Detector: copy this file → detector.flinkdeployment.yaml, change name and args to ["-pym", "detector.job", "--mode", "live"].
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkDeployment
+metadata:
+  name: cg-normalizer
+  namespace: cg-stream
+  labels: {app.kubernetes.io/part-of: cryptoguard}
+spec:
+  image: cg-streaming:dev
+  imagePullPolicy: IfNotPresent
+  flinkVersion: v1_20
+  serviceAccount: flink
+  flinkConfiguration:
+    taskmanager.numberOfTaskSlots: "2"
+    # Local: checkpoints on the pod filesystem are lost on restart. INF-06 decides S3 (MinIO) checkpoints
+    # (needs the flink-s3-fs plugin enabled via ENABLE_BUILT_IN_PLUGINS).
+    state.checkpoints.dir: file:///flink-data/checkpoints
+    execution.checkpointing.interval: 30s
+    metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
+    metrics.reporter.prom.port: "9249"
+  podTemplate:
+    spec:
+      containers:
+        - name: flink-main-container
+          env:
+            - {name: CG_PROFILE, value: local}
+            - {name: CG_KAFKA__BOOTSTRAP_SERVERS, value: cg-kafka-kafka-bootstrap.cg-kafka:9092}
+  jobManager:
+    resource: {memory: "1024m", cpu: 0.5}
+  taskManager:
+    resource: {memory: "1536m", cpu: 0.5}
+  job:
+    jarURI: local:///opt/flink/opt/flink-python-1.20.0.jar   # VERIFY exact file name in the image
+    entryClass: org.apache.flink.client.python.PythonDriver
+    args: ["-pym", "normalizer.job"]
+    parallelism: 1
+    upgradeMode: stateless

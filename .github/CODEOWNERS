@@ -1,0 +1,20 @@
+# Replace the role placeholders with GitHub usernames once the repo is created (INF-01).
+# Format: <path> <owner> [<owner>...]. The last matching rule wins.
+# R1 = Platform & Infra, R2 = Ingestion & Normalization, R3 = Real-time Detection,
+# R4 = Batch, Lakehouse & Graph, R5 = ML, Serving & Evaluation.
+#
+# *                       <R1-github-user>
+# /infra/                 <R1-github-user>
+# /.github/               <R1-github-user>
+# /Makefile               <R1-github-user>
+# /ingest/                <R2-github-user>
+# /streaming/normalizer/  <R2-github-user>
+# /streaming/detector/    <R3-github-user>
+# /batch/                 <R4-github-user>
+# /contracts/reference/   <R4-github-user>
+# /ml/                    <R5-github-user>
+# /serving/               <R5-github-user>
+# /libs/common/           <R3-github-user> <R4-github-user>
+# /libs/common/src/cryptoguard_common/features.py  <R3-github-user> <R4-github-user> <R5-github-user>
+# /contracts/             <R2-github-user> <R3-github-user> <R4-github-user> <R5-github-user>
+# /docs/decisions/        <R1-github-user> <R2-github-user> <R3-github-user> <R4-github-user> <R5-github-user>

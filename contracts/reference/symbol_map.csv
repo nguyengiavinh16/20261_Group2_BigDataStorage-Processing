@@ -1,0 +1,9 @@
+exchange,native_symbol,symbol,base,quote,active
+binance,BTCUSDT,BTC-USDT,BTC,USDT,true
+binance,ETHUSDT,ETH-USDT,ETH,USDT,true
+okx,BTC-USDT,BTC-USDT,BTC,USDT,true
+okx,ETH-USDT,ETH-USDT,ETH,USDT,true
+coinbase,BTC-USD,BTC-USD,BTC,USD,true
+coinbase,ETH-USD,ETH-USD,ETH,USD,true
+kraken,BTC/USD,BTC-USD,BTC,USD,true
+kraken,ETH/USD,ETH-USD,ETH,USD,true

@@ -1,0 +1,61 @@
+# Strimzi Kafka, KRaft, 1 dual-role node (local only). Cloud overlay (INF-22): 3 nodes, RF=3, min ISR=2.
+# `version` is omitted on purpose → the installed Strimzi operator uses its default Kafka version.
+# Host access (WSL2/laptop): bootstrap localhost:32100. In-cluster: cg-kafka-kafka-bootstrap.cg-kafka:9092
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
+metadata:
+  name: dual
+  namespace: cg-kafka
+  labels:
+    strimzi.io/cluster: cg-kafka
+spec:
+  replicas: 1
+  roles: [controller, broker]
+  storage:
+    type: jbod
+    volumes:
+      - id: 0
+        type: persistent-claim
+        size: 20Gi
+        deleteClaim: true
+        kraftMetadata: shared
+  resources:
+    requests: {memory: 1Gi, cpu: 250m}
+    limits: {memory: 2Gi}
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: cg-kafka
+  namespace: cg-kafka
+spec:
+  kafka:
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: external
+        port: 9094
+        type: nodeport
+        tls: false
+        configuration:
+          bootstrap:
+            nodePort: 32100
+          brokers:
+            - broker: 0
+              nodePort: 32000
+              advertisedHost: localhost
+              advertisedPort: 32000
+    config:
+      auto.create.topics.enable: false
+      offsets.topic.replication.factor: 1
+      transaction.state.log.replication.factor: 1
+      transaction.state.log.min.isr: 1
+      default.replication.factor: 1
+      min.insync.replicas: 1
+      log.retention.hours: 72
+    # INF-08: add metricsConfig (JMX Prometheus exporter) once monitoring is up.
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}

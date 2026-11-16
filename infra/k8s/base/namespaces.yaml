@@ -1,0 +1,28 @@
+# One namespace per layer (same layout locally and on GCP).
+apiVersion: v1
+kind: Namespace
+metadata: {name: cg-ingest, labels: {app.kubernetes.io/part-of: cryptoguard}}
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: cg-kafka, labels: {app.kubernetes.io/part-of: cryptoguard}}
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: cg-stream, labels: {app.kubernetes.io/part-of: cryptoguard}}
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: cg-batch, labels: {app.kubernetes.io/part-of: cryptoguard}}
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: cg-storage, labels: {app.kubernetes.io/part-of: cryptoguard}}
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: cg-serving, labels: {app.kubernetes.io/part-of: cryptoguard}}
+---
+apiVersion: v1
+kind: Namespace
+metadata: {name: cg-monitoring, labels: {app.kubernetes.io/part-of: cryptoguard}}

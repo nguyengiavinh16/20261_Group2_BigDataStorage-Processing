@@ -1,0 +1,58 @@
+# Postgres for: Iceberg JDBC catalog (ADR-0005), MLflow backend, Airflow metadata.
+apiVersion: v1
+kind: Secret
+metadata: {name: cg-postgres, namespace: cg-storage}
+type: Opaque
+stringData:
+  POSTGRES_USER: cg
+  POSTGRES_PASSWORD: cg-change-me   # local only
+  POSTGRES_DB: cg
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: cg-postgres-init, namespace: cg-storage}
+data:
+  01-databases.sql: |
+    CREATE DATABASE iceberg_catalog;
+    CREATE DATABASE mlflow;
+    CREATE DATABASE airflow;
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: {name: cg-postgres-data, namespace: cg-storage}
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: {requests: {storage: 5Gi}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: cg-postgres, namespace: cg-storage, labels: {app: cg-postgres, app.kubernetes.io/part-of: cryptoguard}}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector: {matchLabels: {app: cg-postgres}}
+  template:
+    metadata: {labels: {app: cg-postgres, app.kubernetes.io/part-of: cryptoguard}}
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          envFrom: [{secretRef: {name: cg-postgres}}]
+          env: [{name: PGDATA, value: /var/lib/postgresql/data/pgdata}]
+          ports: [{containerPort: 5432}]
+          readinessProbe: {exec: {command: ["pg_isready", "-U", "cg"]}, periodSeconds: 10}
+          resources: {requests: {memory: 256Mi, cpu: 100m}, limits: {memory: 1Gi}}
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/postgresql/data}
+            - {name: init, mountPath: /docker-entrypoint-initdb.d}
+      volumes:
+        - {name: data, persistentVolumeClaim: {claimName: cg-postgres-data}}
+        - {name: init, configMap: {name: cg-postgres-init}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: cg-postgres, namespace: cg-storage}
+spec:
+  type: NodePort
+  selector: {app: cg-postgres}
+  ports: [{port: 5432, targetPort: 5432, nodePort: 30432}]

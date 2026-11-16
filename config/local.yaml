@@ -1,0 +1,23 @@
+# Local profile: one laptop, kind cluster, small data. Keep downloads tiny.
+profile: local
+
+kafka:
+  partitions_default: 3
+  replication_factor: 1
+
+data_budget:
+  max_days_history: 7          # e.g. a few days around 1-3 known pump events + a few normal days
+  max_symbols: 10
+  eth_days: 1                  # AWS token_transfers: 1 day, tracked tokens only
+
+symbols:
+  watchlist: [BTC-USDT, ETH-USDT]
+
+flink:
+  parallelism: 1
+  checkpoint_interval_seconds: 30
+
+spark:
+  executor_instances: 1
+  executor_memory: 2g
+  driver_memory: 1g

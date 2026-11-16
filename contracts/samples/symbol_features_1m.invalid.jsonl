@@ -1,0 +1,1 @@
+{"schema_version":"1.0","symbol":"ABC-USDT","exchange":"binance","window_seconds":90,"window_start_ts_us":1,"window_end_ts_us":2,"trade_count":1,"volume_base":1,"volume_usd":1,"open":1,"high":1,"low":1,"close":1,"vwap":1,"price_change_pct":0,"taker_buy_ratio":1.5,"is_complete":true,"computed_at_ts_us":3}

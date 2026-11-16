@@ -1,0 +1,3 @@
+{"schema_version":"1.0","source":"bybit","channel":"trade","native_symbol":"BTCUSDT","ingest_ts_us":1794812400190000,"collector_id":"c","conn_id":"x","seq":0,"payload":{}}
+{"schema_version":"1.0","source":"binance","channel":"trade","native_symbol":"BTCUSDT","ingest_ts_us":1794812400190,"collector_id":"c","conn_id":"x","seq":0,"payload":{}}
+{"schema_version":"1.0","source":"binance","channel":"trade","native_symbol":"BTCUSDT","ingest_ts_us":1794812400190000,"collector_id":"c","conn_id":"x","payload":{}}
