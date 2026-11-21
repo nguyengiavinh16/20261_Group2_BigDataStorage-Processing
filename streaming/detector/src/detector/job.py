@@ -5,9 +5,7 @@ import json
 import os
 
 from cryptoguard_common.config import load_config
-from cryptoguard_common.timeutil import now_us
 from detector.baseline import BaselineSettings, ScoredFeature
-from detector.features import features_for_window
 from detector.outputs import attach_kafka_outputs, kafka_outputs
 from detector.source import MODES, kafka_source_options, kafka_trade_source
 
@@ -21,6 +19,7 @@ def _accepted_preview(record) -> str:
             "topic": record.source.source_topic,
             "partition": record.source.source_partition,
             "offset": record.source.source_offset,
+            "replay_run_id": record.trade.get("replay_run_id"),
             "status": "accepted",
         }
     )
@@ -107,19 +106,38 @@ def main(argv: list[str] | None = None) -> None:
         redis_url = config["redis"]["url"]
         if not isinstance(redis_url, str) or not redis_url.strip():
             raise ValueError("redis.url must be a non-empty string")
+        metrics_port = detector.get("metrics_port")
+        if metrics_port is not None and (
+            type(metrics_port) is not int or not 1 <= metrics_port < 65535
+        ):
+            raise ValueError("detector.metrics_port must be an integer between 1 and 65534")
     except (KeyError, TypeError, ValueError) as exc:
         parser.error(str(exc))
 
-    from pyflink.common import Types
+    from pyflink.common import Configuration, Types
     from pyflink.datastream import StreamExecutionEnvironment
     from pyflink.table import StreamTableEnvironment
 
     from detector.baseline_stream import enrich_features
     from detector.case_stream import case_alerts
     from detector.input_stream import prepare_trades
-    from detector.windows import WINDOW_SECONDS, assign_trade_watermarks, window_trades
+    from detector.windows import (
+        WINDOW_SECONDS,
+        BuildWindowFeatures,
+        assign_trade_watermarks,
+        window_trades,
+    )
 
-    env = StreamExecutionEnvironment.get_execution_environment()
+    flink_config = Configuration()
+    if metrics_port is not None:
+        reporter = "metrics.reporter.prom"
+        flink_config.set_string(
+            f"{reporter}.factory.class",
+            "org.apache.flink.metrics.prometheus.PrometheusReporterFactory",
+        )
+        flink_config.set_string(f"{reporter}.port", f"{metrics_port}-{metrics_port + 1}")
+        flink_config.set_boolean(f"{reporter}.filterLabelValueCharacters", False)
+    env = StreamExecutionEnvironment.get_execution_environment(flink_config)
     env.set_parallelism(config["flink"]["parallelism"])
     if not args.preview:
         env.enable_checkpointing(checkpoint_interval * 1000)
@@ -133,8 +151,9 @@ def main(argv: list[str] | None = None) -> None:
     timestamped = assign_trade_watermarks(trades, watermark_seconds, idle_timeout_seconds)
     windows, late_dlq = window_trades(timestamped, allowed_lateness_seconds)
     errors = dlq.union(late_dlq)
-    features = windows.flat_map(
-        lambda window: features_for_window(window, computed_at_ts_us=now_us())
+    # Keep metric increments in record processing, outside the Python window timer.
+    features = (
+        windows.flat_map(BuildWindowFeatures()).name("Build window features").disable_chaining()
     )
     scored = enrich_features(features, redis_url, baseline)
     alerts = case_alerts(

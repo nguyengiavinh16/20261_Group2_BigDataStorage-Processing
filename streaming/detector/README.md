@@ -214,3 +214,76 @@ CG_DETECTOR_TEST_KAFKA=localhost:32100 \
 CG_DETECTOR_TEST_REDIS_URL=redis://localhost:30379/0 \
 pytest -q -m integration streaming/detector/tests/test_outputs.py
 ```
+
+## M10 · Metrics and diagnostics
+
+| Metric suffix | Meaning |
+|---|---|
+| `cg_detector_windows_total{exchange}` | First observation of each populated window per run, symbol and exchange, including `ALL`. Late feature corrections keep the same window count. |
+| `cg_detector_alerts_total{alert_type,severity}` | Alerts built by the detector in live or replay. |
+| `cg_detector_late_events_total` | Source trades sent to DLQ after window expiry. One trade counts once before the venue and ALL feature branches. |
+| `cg_detector_baseline_missing_total` | Scored feature snapshots without a usable Redis or EMA baseline. |
+| `cg_detector_redis_errors_total` | Failed Redis baseline requests, including timeouts. |
+| `cg_detector_latency_ms` | Live window-end to alert latency in whole milliseconds. |
+
+Flink adds its metric scope prefix and its job and task labels. The latency
+histogram uses cumulative `_bucket{le}`, `_count` and `_sum` counters.
+PyFlink 1.20 exposes these components as gauge samples through the Flink
+reporter. They increase during each task attempt. A negative live sample
+appears in the alert diagnostic and is excluded from the histogram.
+
+Set `CG_DETECTOR__METRICS_PORT=9249` for a local mini-cluster with
+the Prometheus reporter JAR on the JVM classpath. The reporter can bind
+to port 9249 or 9250. With a PyFlink wheel, set `FLINK_HOME` to the
+installed `pyflink` directory and point `FLINK_LIB_DIR` at a directory
+containing the standard Flink library JARs and the reporter JAR from
+`plugins/metrics-prometheus/`.
+
+```bash
+CG_DETECTOR__METRICS_PORT=9249 python -m detector.job --mode live
+# Run in a second shell
+curl -fsS http://127.0.0.1:9249/metrics | grep cg_detector_
+curl -fsS http://127.0.0.1:9250/metrics | grep cg_detector_
+```
+
+For R1's deployment reporter, set
+`metrics.reporter.prom.filterLabelValueCharacters: "false"` to preserve
+the `le="+Inf"` label. Compute window-end-to-alert p95 in milliseconds
+using the bucket series.
+
+```promql
+histogram_quantile(0.95, sum by (le) (
+  rate({__name__=~".*_cg_detector_latency_ms_bucket",job_name="cg-detector-live"}[5m])
+))
+```
+
+The JSON diagnostics `alert_detected`, `trade_rejected` and
+`redis_baseline_error` include the replay run ID when known. Rejections
+also include the Kafka topic, partition and offset. Run IDs and offsets
+are log fields. Compare late-event totals for O7 against `LATE_EVENT`
+records written to the live detector DLQ.
+
+### Local load check
+
+A local Kafka, Flink 1.20.5 and Redis run used one Flink subtask,
+a five-second watermark and two-second checkpoints. The synthetic
+burst contained 569 trades across nine symbols. It produced 16
+schema-valid alerts and 18 first window observations across Binance
+and ALL. The latest trade used as the latency reference was two seconds
+before the window end for each alert.
+
+| Latency | p50 (ms) | p95 (ms) | p99 (ms) |
+|---|---:|---:|---:|
+| Window end to alert | 8875.26 | 8898.48 | 8898.48 |
+| Latest trade event to alert | 10875.26 | 10898.48 | 10898.48 |
+
+Percentiles use nearest rank over the 16 alert payloads. The observed
+burst input rate was 370.3 messages/s from producer start until the
+input counter reached 569. The peak sampled Flink backpressure was
+0 ms/s. Kafka consumer-group lag returned to 0 records after checkpoint.
+
+The cold symbol added two baseline misses. A Redis pause produced two
+timeout errors. A late correction produced two feature revisions and
+left the window and alert totals at 18 and 16. One expired source
+trade added one late count and one live DLQ record at partition 0,
+offset 571.

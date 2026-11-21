@@ -5,6 +5,8 @@ from pyflink.datastream import OutputTag
 from pyflink.datastream.functions import KeyedProcessFunction, ProcessFunction
 from pyflink.datastream.state import StateTtlConfig, ValueStateDescriptor
 
+from cryptoguard_common.log import get_logger
+from detector.metrics import log_rejection
 from detector.validation import (
     SourceRecord,
     TradeInputError,
@@ -24,6 +26,7 @@ class ValidateTrades(ProcessFunction):
         metrics = runtime_context.get_metrics_group()
         self.received = metrics.counter("cg_detector_input_records_total")
         self.invalid = metrics.counter("cg_detector_invalid_records_total")
+        self.logger = get_logger(__name__)
 
     def process_element(self, row, ctx):
         self.received.inc()
@@ -38,7 +41,9 @@ class ValidateTrades(ProcessFunction):
             trade = validate_trade(record, self.mode)
         except TradeInputError as exc:
             self.invalid.inc()
-            yield INPUT_DLQ, input_dlq_record(record, exc, step="validation")
+            dlq = input_dlq_record(record, exc, step="validation")
+            log_rejection(self.logger, dlq)
+            yield INPUT_DLQ, dlq
         else:
             yield trade
 
@@ -60,6 +65,7 @@ class DeduplicateTrades(KeyedProcessFunction):
         metrics = runtime_context.get_metrics_group()
         self.accepted = metrics.counter("cg_detector_accepted_records_total")
         self.duplicates = metrics.counter("cg_detector_duplicate_records_total")
+        self.logger = get_logger(__name__)
 
     def process_element(self, record, ctx):
         if self.seen.value():
@@ -67,7 +73,9 @@ class DeduplicateTrades(KeyedProcessFunction):
             error = TradeInputError(
                 "DUPLICATE", "Event ID already seen within the deduplication TTL"
             )
-            yield INPUT_DLQ, input_dlq_record(record.source, error, step="deduplication")
+            dlq = input_dlq_record(record.source, error, step="deduplication")
+            log_rejection(self.logger, dlq, record.trade.get("replay_run_id"))
+            yield INPUT_DLQ, dlq
         else:
             self.seen.update(True)
             self.accepted.inc()

@@ -1,14 +1,17 @@
 """PyFlink managed case state and Alert v1 stream."""
 
+import logging
+
 from pyflink.common import Time, Types
 from pyflink.datastream.functions import KeyedProcessFunction
 from pyflink.datastream.state import StateTtlConfig, ValueStateDescriptor
 
+from cryptoguard_common.log import get_logger, log_kv
 from cryptoguard_common.timeutil import US_PER_SECOND, floor_to_window
 from detector.baseline import ScoredFeature
 from detector.cases import CaseProgress, advance_case, build_alert
 from detector.features import feature_key
-from detector.windows import US_PER_MILLISECOND
+from detector.metrics import US_PER_MILLISECOND, LatencyHistogram, live_alert_latency_ms
 
 MIN_CASE_STATE_TTL_SECONDS = 24 * 60 * 60
 
@@ -43,6 +46,10 @@ class DetectCases(KeyedProcessFunction):
         descriptor = ValueStateDescriptor("detector-case-progress", Types.PICKLED_BYTE_ARRAY())
         descriptor.enable_time_to_live(ttl)
         self.progress = runtime_context.get_state(descriptor)
+        self.metrics = runtime_context.get_metrics_group()
+        self.alert_counters = {}
+        self.latency = None
+        self.logger = get_logger(__name__)
 
     def _cleanup_at_ms(self, progress: CaseProgress) -> int:
         last_start_us = progress.window_start_ts_us
@@ -67,7 +74,37 @@ class DetectCases(KeyedProcessFunction):
                 timers.register_event_time_timer(cleanup)
             self.progress.update((current, cleanup))
         if hit is not None:
-            yield build_alert(hit, scored.feature, current.case.case_id)
+            alert = build_alert(hit, scored.feature, current.case.case_id)
+            self._observe_alert(alert)
+            yield alert
+
+    def _observe_alert(self, alert: dict) -> None:
+        alert_type, severity = labels = alert["alert_type"], alert["severity"]
+        if labels not in self.alert_counters:
+            group = self.metrics.add_group("alert_type", alert_type).add_group("severity", severity)
+            self.alert_counters[labels] = group.counter("cg_detector_alerts_total")
+        self.alert_counters[labels].inc()
+
+        latency_ms = live_alert_latency_ms(alert)
+        if latency_ms is not None:
+            if self.latency is None:
+                self.latency = LatencyHistogram(self.metrics)
+            self.latency.observe(latency_ms)
+        log_kv(
+            self.logger,
+            logging.INFO,
+            "alert_detected",
+            alert_id=alert["alert_id"],
+            case_id=alert["case_id"],
+            alert_type=alert_type,
+            severity=severity,
+            symbol=alert["symbol"],
+            exchange=alert["exchange"],
+            replay_run_id=alert["replay_run_id"],
+            window_end_ts_us=alert["window_end_ts_us"],
+            detected_at_ts_us=alert["detected_at_ts_us"],
+            latency_ms=latency_ms,
+        )
 
     def on_timer(self, timestamp, ctx):
         stored = self.progress.value()

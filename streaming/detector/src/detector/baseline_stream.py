@@ -1,5 +1,7 @@
 """PyFlink adapter for Redis lookup and keyed EMA state."""
 
+import logging
+
 from pyflink.common import Types
 from pyflink.datastream.functions import KeyedProcessFunction
 from pyflink.datastream.state import ValueStateDescriptor
@@ -8,6 +10,7 @@ from redis.backoff import NoBackoff
 from redis.exceptions import RedisError
 from redis.retry import Retry
 
+from cryptoguard_common.log import get_logger, log_kv
 from detector.baseline import BaselineSettings, RedisBaselineReader, score_feature
 from detector.features import feature_key
 
@@ -34,6 +37,7 @@ class ScoreBaseline(KeyedProcessFunction):
         metrics = runtime_context.get_metrics_group()
         self.missing = metrics.counter("cg_detector_baseline_missing_total")
         self.errors = metrics.counter("cg_detector_redis_errors_total")
+        self.logger = get_logger(__name__)
 
     def close(self):
         self.client.close()
@@ -42,6 +46,15 @@ class ScoreBaseline(KeyedProcessFunction):
         lookup = self.reader.lookup(feature)
         if lookup.status == "redis_error":
             self.errors.inc()
+            log_kv(
+                self.logger,
+                logging.WARNING,
+                "redis_baseline_error",
+                symbol=feature["symbol"],
+                exchange=feature["exchange"],
+                replay_run_id=feature.get("replay_run_id"),
+                window_start_ts_us=feature["window_start_ts_us"],
+            )
         scored, state = score_feature(feature, lookup, self.ema.value(), self.settings)
         self.ema.update(state)
         if scored.baseline_source is None:

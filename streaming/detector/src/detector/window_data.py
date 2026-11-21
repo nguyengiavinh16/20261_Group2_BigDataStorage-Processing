@@ -11,6 +11,7 @@ class TradeWindow:
     window_end_ts_us: int
     trades: tuple[dict, ...]
     late_exchanges: tuple[str, ...]
+    new_exchanges: tuple[str, ...] = ()
 
     @property
     def is_complete(self) -> bool:
