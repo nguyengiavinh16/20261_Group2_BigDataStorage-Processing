@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CryptoGuard - R3 Real-Time Detection Report</title>
+  <style>
+    @page { size: A4; margin: 15mm 17mm; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #19243a; background: #edf1f6; font: 9.5pt/1.35 'Segoe UI', Arial, sans-serif; }
+    .page { display: flex; flex-direction: column; width: 210mm; min-height: 297mm; margin: 8mm auto; padding: 15mm 17mm; background: white; box-shadow: 0 3px 20px #17243a18; }
+    .eyebrow { color: #a62536; font-size: 8pt; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+    h1 { font-size: 20pt; line-height: 1.15; letter-spacing: -.4pt; margin: 2mm 0 1mm; }
+    h2 { font-size: 11pt; margin: 3mm 0 1.5mm; padding-bottom: 1mm; border-bottom: 1px solid #d7dfea; break-after: avoid; }
+    .subtitle { color: #54647c; font-size: 10pt; margin: 0 0 3mm; }
+    p { margin: 1.4mm 0; }
+    .note { color: #52627b; font-size: 8.5pt; }
+    .callout { margin: 2mm 0; padding: 2mm 3mm; border-left: 3px solid #a62536; background: #fff5f5; }
+    table { width: 100%; border-collapse: collapse; margin: 2mm 0; font-size: 9pt; font-variant-numeric: tabular-nums; }
+    th, td { border-bottom: 1px solid #dce3ed; padding: 1.2mm 2mm; text-align: left; vertical-align: top; }
+    thead th { background: #edf2f8; color: #263b58; }
+    tbody th { font-weight: 600; }
+    .num { text-align: right; white-space: nowrap; }
+    .stage { width: 39mm; }
+    .status { width: 40mm; }
+    .alert-name { width: 32mm; }
+    .alert-code { white-space: nowrap; }
+    code { font: .94em Consolas, 'Courier New', monospace; background: #eff2f7; padding: 0 .6mm; border-radius: 2px; overflow-wrap: anywhere; }
+    a { color: #304e74; text-underline-offset: 2px; }
+    .footer { display: flex; justify-content: space-between; gap: 3mm; margin-top: auto; padding-top: 2.5mm; border-top: 1px solid #dce3ed; color: #64728a; font-size: 8pt; }
+    @media screen and (max-width: 800px) {
+      .page { width: 100%; min-height: auto; margin: 0 auto 3mm; padding: 7mm 5mm; }
+      .footer { margin-top: 4mm; }
+    }
+    @media print {
+      body { background: white; print-color-adjust: exact; }
+      .page { width: auto; min-height: 266mm; padding: 0; margin: 0; box-shadow: none; break-after: page; }
+      .page:last-child { break-after: auto; }
+      .screen-only { display: none; }
+      tr, .callout, .footer { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <section class="page" aria-labelledby="report-title">
+    <header>
+      <div class="eyebrow">CryptoGuard · Big Data Project · R3</div>
+      <h1 id="report-title">Real-Time Detection Report</h1>
+      <p class="subtitle">Streaming MVP, historical replay and handoff · 21 November 2026</p>
+    </header>
+
+    <p class="callout">The local detector replayed a labeled GVT/BTC pump through Kafka, PyFlink and Redis. Both runs produced 1,962 feature records and four alerts from 11,340 trades. The MVP code is committed through M12 (<code>355ae7d</code>). Cluster recovery and team integration checks remain open.</p>
+
+    <h2>1. Implementation</h2>
+    <table>
+      <thead><tr><th class="stage" scope="col">Module</th><th scope="col">Behavior</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">M01-M03 · Input</th><td>Test fixtures cover the offline flow. The job reads live or scoped replay Kafka input, validates canonical trades and deduplicates trade IDs.</td></tr>
+        <tr><th scope="row">M04-M06 · Features</th><td>Event-time tumbling windows compute 60-second features by venue and for <code>ALL</code>. Redis baselines supply volume z-scores, with an EMA fallback when available.</td></tr>
+        <tr><th scope="row">M07-M09 · Alerts</th><td>Versioned pump and dump rules attach risk and reasons. Keyed state links both phases under one case per venue. Kafka carries features, alerts and live dead-letter records.</td></tr>
+        <tr><th scope="row">M10-M12 · Operations</th><td>Prometheus metrics expose latency, late events and baseline issues. Separate live and replay manifests configure checkpoints. The HTML demo presents measured Kafka output and run evidence.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>2. Historical replay</h2>
+    <p>Binance Vision spot archives supplied 8,068 trades for the labeled day (17 September 2020 UTC) and 3,272 for the control day (16 September). A separate day (15 September, 1,783 trades) supplied the Redis calibration windows. The runner checks archive SHA-256 and uses the previous closed BTC/USDT minute as the USD conversion proxy.</p>
+    <table>
+      <thead><tr><th scope="col">Producer mode and run ID</th><th scope="col" class="num">Publish (s)</th><th scope="col" class="num">Flink (s)</th><th scope="col" class="num">Trades</th><th scope="col" class="num">Features</th><th scope="col" class="num">Alerts</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">7,200× · <code>m12-gvt-b2b0ac8ed97c</code></th><td class="num">23.811</td><td class="num">37.311</td><td class="num">11,340</td><td class="num">1,962</td><td class="num">4</td></tr>
+        <tr><th scope="row">Unpaced · <code>m12-gvt-ee9d67c16111</code></th><td class="num">0.764</td><td class="num">37.675</td><td class="num">11,340</td><td class="num">1,962</td><td class="num">4</td></tr>
+      </tbody>
+    </table>
+    <p class="note">Each bounded Flink job starts after Kafka publication. The reader checked output schemas and Kafka keys. Feature and alert business fields matched across both runs.</p>
+
+    <table>
+      <thead><tr><th scope="col" class="alert-name">Binance alert</th><th scope="col" class="num">Window (UTC)</th><th scope="col" class="num">Risk</th><th scope="col">Rule evidence</th></tr></thead>
+      <tbody>
+        <tr><th scope="row"><code class="alert-code">PUMP_SUSPECTED</code></th><td class="num">17:59-18:00</td><td class="num">92.55%</td><td>526 trades, volume z-score 233.761, price up 27.476%, taker-buy share 81.84%.</td></tr>
+        <tr><th scope="row"><code>DUMP_PHASE</code></th><td class="num">18:00-18:01</td><td class="num">90.89%</td><td>Price fell 16.355%, passing the 10% drop threshold while the pump case was open.</td></tr>
+      </tbody>
+    </table>
+    <p>Both alerts share a Binance case ID. The <code>ALL</code> output includes the same phases under its own case ID. The pump window starts at the 17:59 UTC label, satisfying the ±30-minute replay check.</p>
+    <p class="note">In the unpaced run, the Binance alerts were read from <code>replay.alerts.v1</code>, partition 0, offsets 2 and 3.</p>
+    <p class="note">Evidence and reproduction. <span class="screen-only"><a href="../demo/replay-local.html">Local HTML demo</a> · </span><a href="https://github.com/nguyengiavinh16/20261_Group2_BigDataStorage-Processing/blob/355ae7d5fbbc6b0635fece10a8491e4df674534a/streaming/detector/README.md">Detector runbook</a> · <a href="https://github.com/SystemsLab-Sapienza/pump-and-dump-dataset/blob/master/pump_telegram.csv#L596">La Morgia research labels</a> · <a href="https://github.com/binance/binance-public-data">Binance Vision archives</a></p>
+
+    <footer class="footer"><span>CryptoGuard · R3 Real-Time Detection</span><span>1 / 2</span></footer>
+  </section>
+
+  <section class="page" aria-labelledby="results-title">
+    <header>
+      <div class="eyebrow">CryptoGuard · R3 Streaming MVP</div>
+      <h1 id="results-title">Evaluation and Handoff</h1>
+      <p class="subtitle">Measured results and remaining acceptance checks</p>
+    </header>
+
+    <h2>3. Detection quality (O6 smoke evaluation)</h2>
+    <table>
+      <thead><tr><th scope="col">Metric</th><th scope="col" class="num">Result</th><th scope="col">Scope</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Recall</th><td class="num">1/1 (100%)</td><td>One labeled Binance pump, selected to exercise the current rules.</td></tr>
+        <tr><th scope="row">Precision@5</th><td class="num">1/1 (100%)</td><td>One eligible ranked pump alert. The <code>ALL</code> mirror is excluded.</td></tr>
+        <tr><th scope="row">Median detection delay</th><td class="num">60 s</td><td>Event time from the label to the end of the matching window.</td></tr>
+        <tr><th scope="row">False pump alerts</th><td class="num">0 per day</td><td>Zero unmatched pump alerts in two replay days. The control day had zero pump alerts.</td></tr>
+      </tbody>
+    </table>
+    <p class="note">The evaluation matches alerts from 10 minutes before to 30 minutes after the label. The sample covers one pair and one labeled event. A wider evaluation and a model comparison are pending.</p>
+
+    <h2>4. Local detector performance (O1 and O8)</h2>
+    <p>A synthetic live burst sent 569 trades across nine symbols into local Kafka and Flink 1.20.5 with Redis, one subtask and a five-second watermark. It produced 16 schema-valid alerts. The observed burst input rate was <strong>370.3 messages/s</strong>, peak sampled backpressure was 0 ms/s and consumer lag returned to zero after checkpointing.</p>
+    <table>
+      <thead><tr><th scope="col">Latency basis</th><th scope="col" class="num">p50 (ms)</th><th scope="col" class="num">p95 (ms)</th><th scope="col" class="num">p99 (ms)</th><th scope="col">10 s target</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Window end to alert</th><td class="num">8,875.26</td><td class="num">8,898.48</td><td class="num">8,898.48</td><td>Met (R3)</td></tr>
+        <tr><th scope="row">Latest trade to alert</th><td class="num">10,875.26</td><td class="num">10,898.48</td><td class="num">10,898.48</td><td>Missed (O1)</td></tr>
+      </tbody>
+    </table>
+    <p class="note">Nearest-rank percentiles over 16 alerts. The latest trade preceded window close by two seconds. This run measures detector behavior under one burst. Maximum sustainable throughput and Kubernetes fault tolerance remain unmeasured.</p>
+
+    <h2>5. Remaining work</h2>
+    <table>
+      <thead><tr><th class="status" scope="col">Acceptance item</th><th scope="col">Next check</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">M11 · kind recovery</th><td>With R1, run both deployments on kind, confirm state isolation, restart a TaskManager and verify checkpoint recovery, offsets and case continuity.</td></tr>
+        <tr><th scope="row">O1 · Live latency</th><td>Measure trade-to-alert latency on the integrated live feed with R2 and R1. Retest p95 against the 10-second target.</td></tr>
+        <tr><th scope="row">DET-02/04 · Batch parity</th><td>With R4, compare batch and stream feature keys and values on identical trades, using the required error tolerance below 10<sup>−9</sup>.</td></tr>
+        <tr><th scope="row">P2 · Serving and dashboard</th><td>Give R5 replay run IDs and Kafka offsets. R5 verifies that alerts and case evidence reach MongoDB, the API and the dashboard.</td></tr>
+        <tr><th scope="row">O6 · Wider evaluation</th><td>With R4 and R5, evaluate more labeled pumps and control days. Report recall, precision@k, delay and false alerts, then compare with the model.</td></tr>
+      </tbody>
+    </table>
+    <p class="note"><strong>Verification.</strong> The local lint and test run passed, with 150 tests plus 7 detector integration tests. The historical replay and independent Kafka readback were also executed. The branch remains pending PR and CI review.</p>
+    <p class="note"><strong>Later R3 phases.</strong> P3 adds the on-chain inflow signal (DET-08). P4 covers cross-venue divergence, wash-trading heuristics, model integration, optional spoofing detection and cloud load testing (DET-09 to DET-13). <a href="https://github.com/nguyengiavinh16/20261_Group2_BigDataStorage-Processing/blob/355ae7d5fbbc6b0635fece10a8491e4df674534a/team/03-realtime-detection.md">R3 task board</a> · <a href="https://github.com/nguyengiavinh16/20261_Group2_BigDataStorage-Processing/blob/355ae7d5fbbc6b0635fece10a8491e4df674534a/docs/brief/CryptoGuard_Project_Brief.html#eval">Project brief</a></p>
+
+    <footer class="footer"><span>CryptoGuard · R3 Real-Time Detection</span><span>2 / 2</span></footer>
+  </section>
+</body>
+</html>
