@@ -407,3 +407,67 @@ alerts matched the original Binance and ALL case IDs.
 Kind acceptance requires building the detector image, applying both
 deployments with the R1 MinIO credentials and running the TaskManager
 replacement check above.
+
+## M12 · Historical replay demo
+
+The demo replays actual GVT/BTC spot trades from Binance Vision against
+the La Morgia et al. pump labels. The dataset lists 17:59 and 18:00 UTC
+on 2020-09-17 for the same pair. The demo treats them as one event and
+uses the earliest timestamp. The event was selected to exercise the
+existing rules. Its recall and precision describe this smoke run.
+
+| UTC date | Use |
+|---|---|
+| 2020-09-15 | Calibrate a Redis baseline for each hour from populated 1-minute windows. |
+| 2020-09-16 | Replay one complete control day without a GVT/BTC label in the source dataset. |
+| 2020-09-17 | Replay the full labeled event day. |
+
+The runner checks the Binance archive SHA-256 files. For each GVT/BTC
+trade it converts BTC quote volume using the previously closed BTCUSDT
+one-minute candle as the USD proxy. Calibration uses only 2020-09-15.
+GVT-BTC mapping is scoped to the demo. The runner leaves existing Redis
+baselines in place and reports a conflict if their values differ.
+
+Use a disposable local Kafka and Redis with the three replay topics
+from the registry, the Flink connector JAR, and the dev Python
+dependencies. Run from the repository root on Linux or WSL.
+
+```bash
+export PYTHONPATH="streaming/detector/src:ml/src:${PYTHONPATH:-}"
+export CG_FLINK_JARS=file:///absolute/path/flink-sql-connector-kafka-3.3.0-1.20.jar
+python -m detector.demo
+# For a local page with a button that runs the pipeline
+python -m detector.demo --serve 8746
+```
+
+Open `streaming/detector/demo/replay-local.html` to inspect the latest
+actual result and play the two timelines offline. With `--serve`,
+open `http://127.0.0.1:8746/` and click **Chạy detector**. The server
+uses the same runner and loads the new report when both jobs finish.
+The output HTML and archive cache are local artifacts.
+
+Each run records its run ID, Kafka offset ranges, producer duration and
+Flink duration. The first producer is paced at 3600× by default and the
+second publishes without pacing. The bounded detector reads the selected
+run from Kafka after production completes. The runner reads all new
+output from Kafka, checks contract schemas and keys and compares the
+business fields across both runs. The HTML shows the streaming stages
+with the measured input, feature and alert counts, and displays Binance
+and ALL alerts with Kafka coordinates for both timelines.
+
+R5 evaluation helpers score the Binance alerts to avoid counting the
+ALL mirror twice. The report records recall, precision@5, the number
+of available ranked alerts, median event-time delay and unmatched pump
+alerts per day across the two replay days. The smoke window is ±30
+minutes. The R5 scoring window uses 10 minutes before and 30 minutes
+after the label. The resulting Kafka evidence is the handoff for the
+R5 serving sink and dashboard.
+
+In the verified local runs, each mode read 11,340 trades and emitted
+1,962 features and four alerts. Binance and ALL each carried one pump
+and one dump in the same case. The selected pump window began at
+17:59 UTC, the event-time detection delay was 60 seconds, and the
+control day produced zero pump alerts. Both runs matched on business
+fields.
+
+[Research labels](https://github.com/SystemsLab-Sapienza/pump-and-dump-dataset/blob/master/pump_telegram.csv) · [Binance Vision archives](https://github.com/binance/binance-public-data)
