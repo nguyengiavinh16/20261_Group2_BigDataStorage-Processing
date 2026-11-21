@@ -59,3 +59,47 @@ and `cg_detector_duplicate_records_total`.
 pytest -q streaming/detector/tests/test_validation.py
 pytest -q -m integration streaming/detector/tests/test_validation.py
 ```
+
+## M04 · Event-time windows
+
+After M03, Flink assigns event time from `event_ts_us`. Flink receives whole
+milliseconds and the trades retain their original microseconds. Windows
+are 60-second UTC intervals `[start, end)` keyed by replay run and symbol.
+Each snapshot contains the input trades for M05 to compute venue and ALL
+features. A bounded replay flushes its final window at end of input.
+The watermark tracks the whole Flink input. Use a replay input scoped to one
+run when evaluating runs with different event-time ranges.
+
+The detector profile controls `watermark_seconds` and
+`allowed_lateness_seconds`. An idle watermark subtask stops blocking
+active subtasks after 10 seconds by default. Override this with
+`CG_DETECTOR__WATERMARK_IDLE_TIMEOUT_SECONDS`.
+
+Flink emits an initial snapshot when the watermark reaches the window
+boundary. A trade accepted during allowed lateness triggers an updated
+snapshot with its exchange in `late_exchanges` and `is_complete=false`.
+These snapshots are provisional. A trade arriving after the grace period
+produces one `LATE_EVENT` in the DLQ side stream and increments
+`cg_detector_late_events_total`. It can be traced to its original window
+using its trade timestamp. Gap detection and how to publish feature
+corrections are integration decisions for the subsequent modules.
+
+The job preview includes one `status=window` line for each emitted
+snapshot, alongside the accepted and rejected record lines.
+
+## M05 · Venue and ALL features
+
+Each window snapshot produces one `symbol_features_1m.v1` record for each
+exchange with trades and one for `ALL`, using the shared
+`cryptoguard_common.features.window_features()` helper. ALL uses the raw
+trades across venues. For equal event timestamps and trade IDs, the detector
+orders ties by exchange and event ID. R4 should use the same tie order for
+batch parity.
+
+An exchange with an accepted late trade and the corresponding ALL row have
+`is_complete=false`. A later snapshot for the same window uses the same
+run, symbol, exchange and window timestamps. Kafka correction handling is
+part of M09. Baseline fields are null until M06.
+
+The job prints `status=feature` with a nested feature record in live and
+replay previews.

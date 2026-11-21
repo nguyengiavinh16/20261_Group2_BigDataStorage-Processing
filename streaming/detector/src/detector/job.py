@@ -1,8 +1,8 @@
-"""Detector Kafka input, validation and deduplication for DET-04 and DET-07.
+"""Detector Kafka input, event-time windows and features for DET-04 and DET-07.
 
-The current entry point previews accepted and rejected source coordinates.
+The current entry point previews source coordinates, window snapshots and feature records.
 
-See team/03-realtime-detection.md for the subsequent feature, rule, case and sink stages.
+See team/03-realtime-detection.md for the subsequent baseline, rule, case and sink stages.
 """
 
 import argparse
@@ -10,9 +10,12 @@ import json
 import os
 
 from cryptoguard_common.config import load_config
+from cryptoguard_common.timeutil import now_us
+from detector.features import features_for_window
 from detector.source import MODES, kafka_source_options, kafka_trade_source
 
 DEFAULT_DEDUP_TTL_SECONDS = 600
+DEFAULT_WATERMARK_IDLE_TIMEOUT_SECONDS = 10
 
 
 def _accepted_preview(record) -> str:
@@ -38,6 +41,25 @@ def _rejected_preview(record: dict) -> str:
     )
 
 
+def _window_preview(window) -> str:
+    return json.dumps(
+        {
+            "status": "window",
+            "symbol": window.symbol,
+            "replay_run_id": window.replay_run_id,
+            "window_start_ts_us": window.window_start_ts_us,
+            "window_end_ts_us": window.window_end_ts_us,
+            "trade_count": len(window.trades),
+            "is_complete": window.is_complete,
+            "late_exchanges": window.late_exchanges,
+        }
+    )
+
+
+def _feature_preview(feature: dict) -> str:
+    return json.dumps({"status": "feature", "feature": feature})
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Read the CryptoGuard detector Kafka source")
     parser.add_argument("--mode", choices=MODES, default="live")
@@ -45,9 +67,20 @@ def main(argv: list[str] | None = None) -> None:
     config = load_config()
     try:
         options = kafka_source_options(config, args.mode)
-        ttl_seconds = config["detector"].get("dedup_ttl_seconds", DEFAULT_DEDUP_TTL_SECONDS)
+        detector = config["detector"]
+        ttl_seconds = detector.get("dedup_ttl_seconds", DEFAULT_DEDUP_TTL_SECONDS)
         if type(ttl_seconds) is not int or ttl_seconds <= 0:
             raise ValueError("detector.dedup_ttl_seconds must be a positive integer")
+        watermark_seconds = detector["watermark_seconds"]
+        allowed_lateness_seconds = detector["allowed_lateness_seconds"]
+        idle_timeout_seconds = detector.get(
+            "watermark_idle_timeout_seconds", DEFAULT_WATERMARK_IDLE_TIMEOUT_SECONDS
+        )
+        if type(idle_timeout_seconds) is not int or idle_timeout_seconds <= 0:
+            raise ValueError("detector.watermark_idle_timeout_seconds must be a positive integer")
+        for name in ("watermark_seconds", "allowed_lateness_seconds"):
+            if type(detector[name]) is not int or detector[name] < 0:
+                raise ValueError(f"detector.{name} must be a non-negative integer")
     except (KeyError, ValueError) as exc:
         parser.error(str(exc))
 
@@ -56,6 +89,7 @@ def main(argv: list[str] | None = None) -> None:
     from pyflink.table import StreamTableEnvironment
 
     from detector.input_stream import prepare_trades
+    from detector.windows import assign_trade_watermarks, window_trades
 
     env = StreamExecutionEnvironment.get_execution_environment()
     env.set_parallelism(config["flink"]["parallelism"])
@@ -66,9 +100,17 @@ def main(argv: list[str] | None = None) -> None:
     table_env = StreamTableEnvironment.create(env)
     records = kafka_trade_source(table_env, options)
     trades, dlq = prepare_trades(records, args.mode, ttl_seconds)
+    timestamped = assign_trade_watermarks(trades, watermark_seconds, idle_timeout_seconds)
+    windows, late_dlq = window_trades(timestamped, allowed_lateness_seconds)
     accepted = trades.map(_accepted_preview, output_type=Types.STRING())
-    rejected = dlq.map(_rejected_preview, output_type=Types.STRING())
-    accepted.union(rejected).print()
+    rejected = dlq.union(late_dlq).map(_rejected_preview, output_type=Types.STRING())
+    snapshots = windows.map(_window_preview, output_type=Types.STRING())
+    features = windows.flat_map(
+        lambda window: features_for_window(window, computed_at_ts_us=now_us())
+    )
+    accepted.union(
+        rejected, snapshots, features.map(_feature_preview, output_type=Types.STRING())
+    ).print()
     env.execute(f"cg-detector-{args.mode}-input")
 
 
