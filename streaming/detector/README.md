@@ -12,8 +12,9 @@ stage can inspect malformed input and retain its source position.
 | `live` | `canonical.trades.v1` | `cg-detector-live` | Start at committed offsets, falling back to the earliest available offsets. Continue tailing. |
 | `replay` | `replay.canonical.trades.v1` | `cg-detector-replay` | Start at the earliest available offsets and finish at the end offsets captured at startup. Leave the replay group's offsets untouched. |
 
-For bounded replay, finish producing data before launching the job. Automatic
-Kafka offset commits are disabled for the preview. The live preview stops on Ctrl+C.
+For bounded replay, finish producing data before launching the job. Use
+`--preview` to print the pipeline output without publishing or committing
+Kafka source offsets. The live preview stops on Ctrl+C.
 
 Use the project development environment with the dependencies in
 `streaming/requirements.txt`, a compatible Java runtime and a local Kafka
@@ -23,7 +24,7 @@ connector file URI. The streaming image already carries the connector.
 ```bash
 export CG_FLINK_JARS=file:///absolute/path/to/flink-sql-connector-kafka-3.3.0-1.20.jar
 export PYTHONPATH=streaming/detector/src
-python -m detector.job --mode replay
+python -m detector.job --mode replay --preview
 ```
 
 The integration test writes fixture records to the replay topic. Point it at a
@@ -162,10 +163,54 @@ The detector emits the first alert per window and key. A revision of
 the latest window can trigger its first alert. Older windows and windows
 that already alerted still produce features on revision.
 
-Live and replay print `status=alert` with a nested `alert.v1` record.
-This replaces the M07 pump preview. Kafka alert publishing is part of M09.
+In preview mode, live and replay print `status=alert` with a nested
+`alert.v1` record.
 
 ```bash
 pytest -q streaming/detector/tests/test_cases.py
 pytest -q -m integration streaming/detector/tests/test_cases.py
+```
+
+## M09 · Kafka outputs
+
+Publishing is the default for `python -m detector.job --mode live` and
+`python -m detector.job --mode replay`. Create the topics from the
+project registry before starting the job.
+
+| Payload | Live topic | Replay topic | Kafka key |
+|---|---|---|---|
+| `symbol_features_1m.v1` | `features.symbol_1m.v1` | `replay.features.symbol_1m.v1` | `symbol` |
+| `alert.v1` | `alerts.v1` | `replay.alerts.v1` | `case_id` |
+| `dlq_record.v1` | `dlq.detector.v1` | Local rejection log | `source_topic` |
+
+Live DLQ includes input validation, duplicate and expired-window errors.
+It preserves the original topic, partition, offset and bounded raw payload
+preview. Replay rejection lines include the input coordinates and error
+type. A replay DLQ topic requires coordination with R2 and R4.
+
+Flink publishes with at-least-once delivery and checkpoints every
+`flink.checkpoint_interval_seconds`. Live can commit Kafka source offsets on
+completed checkpoints. Replay leaves its group offsets untouched. A
+restart can publish a record again when the broker accepted it after
+the last completed checkpoint. Durable checkpoint storage and deployment
+recovery are part of M11.
+
+The local recovery check restored a checkpoint taken after the pump and
+then replayed the dump that Kafka had already received. The consumer saw
+one pump and two deliveries of the dump, with the same case and window and
+different alert UUIDs.
+
+Kafka values contain the full contract payload. Feature corrections are
+appended with the same window identity `(run ID, symbol, exchange, window start)`.
+For comparing alerts across attempts, use `(run ID, case ID, alert type, window start)`
+because rebuilding an alert generates a new UUID. R5 needs to apply the
+feature update and alert deduplication policy when storing these records.
+
+Run the replay integration test against disposable Kafka and Redis
+instances with the replay input and output topics created:
+
+```bash
+CG_DETECTOR_TEST_KAFKA=localhost:32100 \
+CG_DETECTOR_TEST_REDIS_URL=redis://localhost:30379/0 \
+pytest -q -m integration streaming/detector/tests/test_outputs.py
 ```

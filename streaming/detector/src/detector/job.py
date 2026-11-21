@@ -1,7 +1,4 @@
-"""Detector Kafka input, event-time windows, scored features and alerts.
-
-The current entry point previews source coordinates, windows, scored features and alerts.
-"""
+"""Read trades and publish detector features, alerts and live DLQ records."""
 
 import argparse
 import json
@@ -11,6 +8,7 @@ from cryptoguard_common.config import load_config
 from cryptoguard_common.timeutil import now_us
 from detector.baseline import BaselineSettings, ScoredFeature
 from detector.features import features_for_window
+from detector.outputs import attach_kafka_outputs, kafka_outputs
 from detector.source import MODES, kafka_source_options, kafka_trade_source
 
 DEFAULT_DEDUP_TTL_SECONDS = 600
@@ -71,12 +69,22 @@ def _alert_preview(alert: dict) -> str:
 
 
 def main(argv: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(description="Read the CryptoGuard detector Kafka source")
+    parser = argparse.ArgumentParser(description="Run the CryptoGuard detector")
     parser.add_argument("--mode", choices=MODES, default="live")
+    parser.add_argument(
+        "--preview", action="store_true", help="Print pipeline output without writing to Kafka"
+    )
     args = parser.parse_args(argv)
     config = load_config()
     try:
         options = kafka_source_options(config, args.mode)
+        if args.preview:
+            options["properties.commit.offsets.on.checkpoint"] = "false"
+        else:
+            outputs = kafka_outputs(config, args.mode)
+            checkpoint_interval = config["flink"]["checkpoint_interval_seconds"]
+            if type(checkpoint_interval) is not int or checkpoint_interval <= 0:
+                raise ValueError("flink.checkpoint_interval_seconds must be a positive integer")
         detector = config["detector"]
         ttl_seconds = detector.get("dedup_ttl_seconds", DEFAULT_DEDUP_TTL_SECONDS)
         if type(ttl_seconds) is not int or ttl_seconds <= 0:
@@ -113,6 +121,8 @@ def main(argv: list[str] | None = None) -> None:
 
     env = StreamExecutionEnvironment.get_execution_environment()
     env.set_parallelism(config["flink"]["parallelism"])
+    if not args.preview:
+        env.enable_checkpointing(checkpoint_interval * 1000)
     jars = [uri.strip() for uri in os.getenv("CG_FLINK_JARS", "").split(";") if uri.strip()]
     if jars:
         env.add_jars(*jars)
@@ -122,9 +132,7 @@ def main(argv: list[str] | None = None) -> None:
     trades, dlq = prepare_trades(records, args.mode, ttl_seconds)
     timestamped = assign_trade_watermarks(trades, watermark_seconds, idle_timeout_seconds)
     windows, late_dlq = window_trades(timestamped, allowed_lateness_seconds)
-    accepted = trades.map(_accepted_preview, output_type=Types.STRING())
-    rejected = dlq.union(late_dlq).map(_rejected_preview, output_type=Types.STRING())
-    snapshots = windows.map(_window_preview, output_type=Types.STRING())
+    errors = dlq.union(late_dlq)
     features = windows.flat_map(
         lambda window: features_for_window(window, computed_at_ts_us=now_us())
     )
@@ -137,13 +145,23 @@ def main(argv: list[str] | None = None) -> None:
         window_seconds=WINDOW_SECONDS,
         allowed_lateness_seconds=allowed_lateness_seconds,
     )
-    accepted.union(
-        rejected,
-        snapshots,
-        scored.map(_feature_preview, output_type=Types.STRING()),
-        alerts.map(_alert_preview, output_type=Types.STRING()),
-    ).print()
-    env.execute(f"cg-detector-{args.mode}-input")
+    if args.preview:
+        trades.map(_accepted_preview, output_type=Types.STRING()).union(
+            errors.map(_rejected_preview, output_type=Types.STRING()),
+            windows.map(_window_preview, output_type=Types.STRING()),
+            scored.map(_feature_preview, output_type=Types.STRING()),
+            alerts.map(_alert_preview, output_type=Types.STRING()),
+        ).print()
+    else:
+        if args.mode == "replay":
+            errors.map(_rejected_preview, output_type=Types.STRING()).print().set_parallelism(1)
+        attach_kafka_outputs(
+            table_env,
+            {"features": scored.map(lambda row: row.feature), "alerts": alerts, "dlq": errors},
+            outputs,
+            config["kafka"],
+        )
+    env.execute(f"cg-detector-{args.mode}")
 
 
 if __name__ == "__main__":
