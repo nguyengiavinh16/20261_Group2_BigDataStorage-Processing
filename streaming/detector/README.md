@@ -131,3 +131,16 @@ has `volume_z=null`. The associated counters are
 Override the defaults through `CG_DETECTOR__BASELINE__<NAME>` using
 `MAX_AGE_DAYS`, `MIN_WINDOWS`, `CACHE_SECONDS`, `CACHE_MAX_ENTRIES`,
 `SOCKET_TIMEOUT_SECONDS`, `EMA_ALPHA` or `EMA_MIN_WINDOWS`.
+
+## M07 · Pump and dump rules
+
+`evaluate_scored_feature()` requires a usable M06 baseline and a volume
+z-score before it evaluates the rules in `detector.pump_rule` and
+`detector.dump_rule`. A dump also requires an open pump case. Hits carry
+the configured rule version, risk, reasons and baseline source. A hit
+from an incomplete window includes `INCOMPLETE_WINDOW`. When an alert
+is built, the baseline source is recorded in `evidence.baseline_source`.
+
+The live and replay job previews pump hits as `status=rule_hit`. M08
+supplies the keyed case state for dump decisions and alert construction.
+Rule calibration against real cases uses the DET-01 replay dataset.

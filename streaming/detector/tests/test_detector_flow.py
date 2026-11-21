@@ -11,8 +11,9 @@ from cryptoguard_common.config import load_config
 from cryptoguard_common.contracts import validate
 from cryptoguard_common.features import volume_zscore, window_features
 from cryptoguard_common.timeutil import US_PER_SECOND, floor_to_window, iso_to_us
+from detector.baseline import ScoredFeature
 from detector.cases import CaseTracker, build_alert
-from detector.rules import evaluate_dump, evaluate_pump
+from detector.rules import evaluate_scored_feature
 
 FIXTURES = Path(__file__).with_name("fixtures")
 WINDOW_SECONDS = 60
@@ -64,12 +65,17 @@ def _run_offline(trades):
         validate(feature, "symbol_features_1m.v1")
         features.append(feature)
 
-        if feature["volume_z"] is None:
-            continue
-        hit = evaluate_pump(feature, config["pump_rule"])
-        if hit is None:
-            open_case = tracker.open_pump_case(symbol, exchange, start_us)
-            hit = evaluate_dump(feature, config["dump_rule"], pump_case_open=open_case)
+        scored = (
+            ScoredFeature(feature, "redis", "hit")
+            if mean is not None
+            else ScoredFeature(feature, None, "missing")
+        )
+        hit = evaluate_scored_feature(
+            scored,
+            config["pump_rule"],
+            config["dump_rule"],
+            pump_case_open=tracker.open_pump_case(symbol, exchange, start_us),
+        )
         if hit is not None:
             case_id = tracker.assign(
                 symbol, exchange, start_us, feature["window_end_ts_us"], hit.alert_type
@@ -133,7 +139,7 @@ def test_pump_dump_offline(variant):
                 "taker_buy_ratio",
                 "is_complete",
             )
-        }
+        } | {"baseline_source": "redis"}
     assert len({alert["case_id"] for alert in alerts}) == 2
     assert len({alert["alert_id"] for alert in alerts}) == 4
 

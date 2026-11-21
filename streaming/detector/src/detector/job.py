@@ -1,8 +1,8 @@
 """Detector Kafka input, event-time windows and scored features.
 
-The current entry point previews source coordinates, window snapshots and feature records.
+The current entry point previews source coordinates, windows, scored features and pump hits.
 
-See team/03-realtime-detection.md for the subsequent rule, case and sink stages.
+See team/03-realtime-detection.md for the subsequent case and sink stages.
 """
 
 import argparse
@@ -10,9 +10,11 @@ import json
 import os
 
 from cryptoguard_common.config import load_config
+from cryptoguard_common.features import severity
 from cryptoguard_common.timeutil import now_us
 from detector.baseline import BaselineSettings, ScoredFeature
 from detector.features import features_for_window
+from detector.rules import evaluate_scored_feature
 from detector.source import MODES, kafka_source_options, kafka_trade_source
 
 DEFAULT_DEDUP_TTL_SECONDS = 600
@@ -68,6 +70,29 @@ def _feature_preview(scored: ScoredFeature) -> str:
     )
 
 
+def _pump_hit_preview(scored: ScoredFeature, pump_rule: dict, dump_rule: dict):
+    # M08 supplies the keyed pump-case state needed to authorize a dump hit.
+    hit = evaluate_scored_feature(scored, pump_rule, dump_rule, pump_case_open=False)
+    if hit is not None:
+        feature = scored.feature
+        yield json.dumps(
+            {
+                "status": "rule_hit",
+                "symbol": feature["symbol"],
+                "exchange": feature["exchange"],
+                "window_start_ts_us": feature["window_start_ts_us"],
+                "window_end_ts_us": feature["window_end_ts_us"],
+                "replay_run_id": feature["replay_run_id"],
+                "alert_type": hit.alert_type,
+                "risk_score": hit.risk_score,
+                "severity": severity(hit.risk_score),
+                "reasons": hit.reasons,
+                "rule_version": hit.rule_version,
+                "baseline_source": hit.baseline_source,
+            }
+        )
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Read the CryptoGuard detector Kafka source")
     parser.add_argument("--mode", choices=MODES, default="live")
@@ -90,6 +115,7 @@ def main(argv: list[str] | None = None) -> None:
             if type(detector[name]) is not int or detector[name] < 0:
                 raise ValueError(f"detector.{name} must be a non-negative integer")
         baseline = BaselineSettings(**detector.get("baseline", {}))
+        pump_rule, dump_rule = detector["pump_rule"], detector["dump_rule"]
         redis_url = config["redis"]["url"]
         if not isinstance(redis_url, str) or not redis_url.strip():
             raise ValueError("redis.url must be a non-empty string")
@@ -122,8 +148,11 @@ def main(argv: list[str] | None = None) -> None:
         lambda window: features_for_window(window, computed_at_ts_us=now_us())
     )
     scored = enrich_features(features, redis_url, baseline)
+    hits = scored.flat_map(
+        lambda row: _pump_hit_preview(row, pump_rule, dump_rule), output_type=Types.STRING()
+    )
     accepted.union(
-        rejected, snapshots, scored.map(_feature_preview, output_type=Types.STRING())
+        rejected, snapshots, scored.map(_feature_preview, output_type=Types.STRING()), hits
     ).print()
     env.execute(f"cg-detector-{args.mode}-input")
 

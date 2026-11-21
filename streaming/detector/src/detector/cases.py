@@ -57,6 +57,23 @@ def build_alert(
     detected_at_ts_us: int | None = None,
 ) -> dict:
     """RuleHit + features → Alert v1 dict (validated by the caller's tests)."""
+    evidence = {
+        k: features.get(k)
+        for k in (
+            "trade_count",
+            "volume_usd",
+            "baseline_volume_usd",
+            "volume_z",
+            "open",
+            "close",
+            "price_change_pct",
+            "taker_buy_ratio",
+            "is_complete",
+        )
+    }
+    if hit.baseline_source is not None:
+        evidence["baseline_source"] = hit.baseline_source
+
     return {
         "schema_version": "1.0",
         "alert_id": str(uuid.uuid4()),
@@ -70,20 +87,7 @@ def build_alert(
         "risk_score": hit.risk_score,
         "severity": severity(hit.risk_score),
         "reasons": hit.reasons,
-        "evidence": {
-            k: features.get(k)
-            for k in (
-                "trade_count",
-                "volume_usd",
-                "baseline_volume_usd",
-                "volume_z",
-                "open",
-                "close",
-                "price_change_pct",
-                "taker_buy_ratio",
-                "is_complete",
-            )
-        },
+        "evidence": evidence,
         "rule_version": hit.rule_version,
         "model_version": model_version,
         "replay_run_id": features.get("replay_run_id"),
