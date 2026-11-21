@@ -9,10 +9,7 @@ from redis.exceptions import RedisError
 from redis.retry import Retry
 
 from detector.baseline import BaselineSettings, RedisBaselineReader, score_feature
-
-
-def _baseline_state_key(feature: dict) -> tuple[str, str, str]:
-    return feature.get("replay_run_id") or "", feature["symbol"], feature["exchange"]
+from detector.features import feature_key
 
 
 class ScoreBaseline(KeyedProcessFunction):
@@ -54,6 +51,6 @@ class ScoreBaseline(KeyedProcessFunction):
 
 def enrich_features(features, redis_url: str, settings: BaselineSettings):
     key_type = Types.TUPLE([Types.STRING(), Types.STRING(), Types.STRING()])
-    return features.key_by(_baseline_state_key, key_type=key_type).process(
+    return features.key_by(feature_key, key_type=key_type).process(
         ScoreBaseline(redis_url, settings)
     )

@@ -141,6 +141,31 @@ the configured rule version, risk, reasons and baseline source. A hit
 from an incomplete window includes `INCOMPLETE_WINDOW`. When an alert
 is built, the baseline source is recorded in `evidence.baseline_source`.
 
-The live and replay job previews pump hits as `status=rule_hit`. M08
-supplies the keyed case state for dump decisions and alert construction.
 Rule calibration against real cases uses the DET-01 replay dataset.
+
+## M08 · Pump and dump cases
+
+Flink keeps case state per replay run, symbol and exchange. Live input
+has no run ID. Venue alerts and `ALL` alerts have separate cases. The
+first pump window supplies the ID `<symbol>:<exchange>:<first_window_start_ts_us>`.
+A dump joins an open case when its window starts at most
+`detector.case_merge_minutes` after the end of the last alert window.
+Each alert extends that interval. A pump beyond the interval starts a new case.
+
+The case timer uses event time and keeps state through the end and
+allowed lateness of the last eligible window. State also has a fallback
+processing-time TTL of at least 24 hours since its last update.
+The managed state and event-time timers can be snapshotted with the
+Flink job. Deployment and durable checkpoint storage are part of M11.
+
+The detector emits the first alert per window and key. A revision of
+the latest window can trigger its first alert. Older windows and windows
+that already alerted still produce features on revision.
+
+Live and replay print `status=alert` with a nested `alert.v1` record.
+This replaces the M07 pump preview. Kafka alert publishing is part of M09.
+
+```bash
+pytest -q streaming/detector/tests/test_cases.py
+pytest -q -m integration streaming/detector/tests/test_cases.py
+```

@@ -7,6 +7,10 @@ from cryptoguard_common.timeutil import US_PER_SECOND
 from detector.window_data import TradeWindow
 
 
+def feature_key(feature: dict) -> tuple[str, str, str]:
+    return feature.get("replay_run_id") or "", feature["symbol"], feature["exchange"]
+
+
 def features_for_window(window: TradeWindow, *, computed_at_ts_us: int) -> list[dict]:
     """Return a feature per active exchange and an ALL feature from the raw trades."""
     # The shared helper sorts by (event time, trade ID). Its stable sort uses this
