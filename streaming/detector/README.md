@@ -99,7 +99,35 @@ batch parity.
 An exchange with an accepted late trade and the corresponding ALL row have
 `is_complete=false`. A later snapshot for the same window uses the same
 run, symbol, exchange and window timestamps. Kafka correction handling is
-part of M09. Baseline fields are null until M06.
+part of M09. M06 fills in baseline fields after feature construction.
 
 The job prints `status=feature` with a nested feature record in live and
 replay previews.
+
+## M06 · Redis baseline and EMA
+
+The detector reads `baseline:<symbol>:<exchange>:<hour>` using the UTC hour
+of the window start. It scores volume with the shared `volume_zscore()` helper.
+Redis snapshots must contain a finite positive mean, a finite non-negative
+standard deviation, at least two windows and a date no more than three days
+before the feature window. Replay requires a snapshot from a prior UTC date
+because `as_of_date` has day precision. Set `CG_REDIS__URL` to a Redis instance
+containing the historical snapshot when replaying old data.
+
+Each worker caches up to 512 keys for 60 seconds, separated by replay run.
+Redis connection and read timeouts default to 0.25 seconds. If Redis has no
+usable snapshot, a Flink keyed EMA uses the previous windows for that
+run, symbol and exchange. EMA uses alpha 0.2 and warms up on five windows
+with known USD volume. A revision of the latest window replaces its sample
+without counting it twice. An older revision can use Redis, while its EMA
+score stays null to avoid incorporating later windows.
+
+Feature records keep the existing JSON schema. The preview adds
+`baseline_source` and `redis_status` alongside the record. M07 can use the
+source when building alert evidence. Without a usable baseline the output
+has `volume_z=null`. The associated counters are
+`cg_detector_baseline_missing_total` and `cg_detector_redis_errors_total`.
+
+Override the defaults through `CG_DETECTOR__BASELINE__<NAME>` using
+`MAX_AGE_DAYS`, `MIN_WINDOWS`, `CACHE_SECONDS`, `CACHE_MAX_ENTRIES`,
+`SOCKET_TIMEOUT_SECONDS`, `EMA_ALPHA` or `EMA_MIN_WINDOWS`.

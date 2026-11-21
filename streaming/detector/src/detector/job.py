@@ -1,8 +1,8 @@
-"""Detector Kafka input, event-time windows and features for DET-04 and DET-07.
+"""Detector Kafka input, event-time windows and scored features.
 
 The current entry point previews source coordinates, window snapshots and feature records.
 
-See team/03-realtime-detection.md for the subsequent baseline, rule, case and sink stages.
+See team/03-realtime-detection.md for the subsequent rule, case and sink stages.
 """
 
 import argparse
@@ -11,6 +11,7 @@ import os
 
 from cryptoguard_common.config import load_config
 from cryptoguard_common.timeutil import now_us
+from detector.baseline import BaselineSettings, ScoredFeature
 from detector.features import features_for_window
 from detector.source import MODES, kafka_source_options, kafka_trade_source
 
@@ -56,8 +57,15 @@ def _window_preview(window) -> str:
     )
 
 
-def _feature_preview(feature: dict) -> str:
-    return json.dumps({"status": "feature", "feature": feature})
+def _feature_preview(scored: ScoredFeature) -> str:
+    return json.dumps(
+        {
+            "status": "feature",
+            "feature": scored.feature,
+            "baseline_source": scored.baseline_source,
+            "redis_status": scored.redis_status,
+        }
+    )
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -81,13 +89,18 @@ def main(argv: list[str] | None = None) -> None:
         for name in ("watermark_seconds", "allowed_lateness_seconds"):
             if type(detector[name]) is not int or detector[name] < 0:
                 raise ValueError(f"detector.{name} must be a non-negative integer")
-    except (KeyError, ValueError) as exc:
+        baseline = BaselineSettings(**detector.get("baseline", {}))
+        redis_url = config["redis"]["url"]
+        if not isinstance(redis_url, str) or not redis_url.strip():
+            raise ValueError("redis.url must be a non-empty string")
+    except (KeyError, TypeError, ValueError) as exc:
         parser.error(str(exc))
 
     from pyflink.common import Types
     from pyflink.datastream import StreamExecutionEnvironment
     from pyflink.table import StreamTableEnvironment
 
+    from detector.baseline_stream import enrich_features
     from detector.input_stream import prepare_trades
     from detector.windows import assign_trade_watermarks, window_trades
 
@@ -108,8 +121,9 @@ def main(argv: list[str] | None = None) -> None:
     features = windows.flat_map(
         lambda window: features_for_window(window, computed_at_ts_us=now_us())
     )
+    scored = enrich_features(features, redis_url, baseline)
     accepted.union(
-        rejected, snapshots, features.map(_feature_preview, output_type=Types.STRING())
+        rejected, snapshots, scored.map(_feature_preview, output_type=Types.STRING())
     ).print()
     env.execute(f"cg-detector-{args.mode}-input")
 
