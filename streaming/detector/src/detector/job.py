@@ -73,6 +73,9 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument(
         "--preview", action="store_true", help="Print pipeline output without writing to Kafka"
     )
+    parser.add_argument(
+        "--replay-run-id", default=os.getenv("CG_REPLAY_RUN_ID"), help="Process one replay run"
+    )
     args = parser.parse_args(argv)
     config = load_config()
     try:
@@ -85,6 +88,12 @@ def main(argv: list[str] | None = None) -> None:
             if type(checkpoint_interval) is not int or checkpoint_interval <= 0:
                 raise ValueError("flink.checkpoint_interval_seconds must be a positive integer")
         detector = config["detector"]
+        replay_run_id = args.replay_run_id
+        if replay_run_id is not None:
+            if args.mode != "replay":
+                raise ValueError("--replay-run-id requires --mode replay")
+            if not replay_run_id.strip() or len(replay_run_id) > 64:
+                raise ValueError("--replay-run-id must contain 1 to 64 characters")
         ttl_seconds = detector.get("dedup_ttl_seconds", DEFAULT_DEDUP_TTL_SECONDS)
         if type(ttl_seconds) is not int or ttl_seconds <= 0:
             raise ValueError("detector.dedup_ttl_seconds must be a positive integer")
@@ -147,7 +156,7 @@ def main(argv: list[str] | None = None) -> None:
 
     table_env = StreamTableEnvironment.create(env)
     records = kafka_trade_source(table_env, options)
-    trades, dlq = prepare_trades(records, args.mode, ttl_seconds)
+    trades, dlq = prepare_trades(records, args.mode, ttl_seconds, replay_run_id=replay_run_id)
     timestamped = assign_trade_watermarks(trades, watermark_seconds, idle_timeout_seconds)
     windows, late_dlq = window_trades(timestamped, allowed_lateness_seconds)
     errors = dlq.union(late_dlq)

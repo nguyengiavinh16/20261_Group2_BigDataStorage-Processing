@@ -287,3 +287,123 @@ timeout errors. A late correction produced two feature revisions and
 left the window and alert totals at 18 and 16. One expired source
 trade added one late count and one live DLQ record at partition 0,
 offset 571.
+
+## M11 · Deploy and recover on kind
+
+Use the local kind cluster with the Flink 1.10 operator, Kafka topics from
+the registry, Redis and the MinIO bucket `cg-lake` ready. R1 supplies the
+`flink` service account and MinIO credentials for the detector's prefixes.
+The detector image pins Flink and PyFlink 1.20.5, Java 17, Python 3.11 and
+Kafka SQL connector 3.3.0-1.20. Its Hadoop S3 and Prometheus plugins are
+installed in the Flink image. Build from the repository root.
+
+```bash
+docker build -t cg-detector:dev -f streaming/detector/Dockerfile .
+docker run --rm --entrypoint sh cg-detector:dev -c \
+  'java -version && python -c "import importlib.metadata as m; print(m.version(\"apache-flink\"))"'
+kind load docker-image cg-detector:dev --name cryptoguard
+
+detector_kube() { kubectl --context kind-cryptoguard -n cg-stream "$@"; }
+detector_kube get serviceaccount flink
+# Provision once with the credential file supplied by R1.
+detector_kube create secret generic cg-detector-checkpoints \
+  --from-env-file "$DETECTOR_S3_ENV_FILE"
+detector_kube apply -f streaming/k8s/detector.flinkdeployment.yaml
+detector_kube apply -f streaming/k8s/detector-replay.flinkdeployment.yaml
+detector_kube get flinkdeployment
+```
+
+The credential file contains `AWS_ACCESS_KEY_ID` and
+`AWS_SECRET_ACCESS_KEY`. Keep the file outside the repository. Allow
+read, write, delete and list access needed by Flink in
+`cg-lake/flink/detector/`. Both jobs use a 30-second checkpoint interval
+and Kubernetes HA.
+
+| Mode | Deployment | Kafka group | MinIO prefix under `cg-lake/flink/detector/` |
+|---|---|---|---|
+| Live | `cg-detector` | `cg-detector-live` | `live/` |
+| Replay | `cg-detector-replay` | `cg-detector-replay` | `replay/` |
+
+Each prefix has separate `checkpoints/`, `savepoints/` and `ha/`
+paths. The live job starts running. The replay manifest starts suspended
+to allow fixture production and run selection first. The outputs still
+follow the M09 topic table.
+
+### Run one bounded replay
+
+Produce the canonical fixture or the R2 replay into
+`replay.canonical.trades.v1` with a unique `replay_run_id` on every
+record. Finish publishing and record the earliest and latest Kafka
+offsets per partition from a Kafka client. The source starts at the
+retained earliest offsets and captures exclusive end offsets at startup.
+Keep the relevant input within Kafka retention for the duration of the
+run and record the offset range with the run ID. Limit the fixture to
+the local data budget.
+
+```bash
+detector_kube create configmap cg-detector-replay-run \
+  --from-literal="run-id=$REPLAY_RUN_ID" --dry-run=client -o yaml | detector_kube apply -f -
+detector_kube patch flinkdeployment cg-detector-replay --type merge \
+  -p '{"spec":{"job":{"state":"running"}}}'
+detector_kube get flinkdeployment cg-detector-replay -w
+```
+
+`CG_REPLAY_RUN_ID` selects the validated run before dedup and
+watermark assignment. Valid trades from other runs increment
+`cg_detector_replay_filtered_total`. Keep the same run ID when resuming
+from a snapshot. To start an independent run, remove the previous
+replay deployment after collecting its output and any snapshots you
+need. Reapply the suspended replay manifest, select a new run ID, then
+start it. Reuse the existing Kafka topic and leave the live deployment
+running during the replay.
+
+For an isolation check on a disposable kind cluster, send the same
+canonical event IDs twice to the replay topic with different run IDs.
+Select one run per deployment and read new records from the offsets
+recorded on all four feature and alert topics. Each replay should produce
+only its selected run. With simultaneous live input, live features and
+alerts should have null run IDs. The fixture and baseline values from
+`tests/test_outputs.py` provide a reference for two pump and two dump
+alerts per replay.
+
+### Verify recovery after a TaskManager replacement
+
+Use the live job in the test cluster for this check. Send the pump
+portion of a synthetic case before taking the checkpoint. Advance event
+time with later trades so the pump window closes. Compare new Kafka
+records by querying from the output offsets recorded before the run.
+
+1. Run `detector_kube port-forward svc/cg-detector-rest 8081:8081`
+   and open the Flink UI.
+   Record the job ID, the completed checkpoint ID and its
+   `s3a://cg-lake/flink/detector/live/checkpoints/` location. The
+   checkpoint details are available at `/jobs/<job-id>/checkpoints`.
+   Record the committed input offsets for `cg-detector-live`.
+2. List the target pods with
+   `detector_kube get pods -l app=cg-detector,component=taskmanager`.
+   Delete the named live TaskManager pod with
+   `detector_kube delete pod "$LIVE_TASKMANAGER_POD"` and observe the
+   replacement pod, job logs and restored checkpoint.
+3. Send the dump and advance event time again once the job is running.
+   Compare Kafka records with a control run using the M09 business keys.
+   Confirm that the restored dump carries the original pump case ID.
+   Record missing and repeated output counts, including any new UUIDs
+   for repeated alerts under at-least-once delivery.
+
+For a deliberate redeploy from a retained snapshot, set
+`spec.job.initialSavepointPath` to the completed snapshot location and
+increment `spec.job.savepointRedeployNonce`. Use the same job mode and
+replay selection as the snapshot, then verify the restored offsets and
+case state before continuing.
+
+### Local verification
+
+Both manifests passed validation against the Flink Operator 1.10 CRD.
+A local Flink PythonDriver run with Kafka, Redis and an S3 emulator
+stored checkpoint 2 after the two pump alerts at source offset 25.
+A separate JVM restored that checkpoint. The two subsequent dump
+alerts matched the original Binance and ALL case IDs.
+
+Kind acceptance requires building the detector image, applying both
+deployments with the R1 MinIO credentials and running the TaskManager
+replacement check above.

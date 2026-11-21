@@ -1,0 +1,62 @@
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkDeployment
+metadata:
+  name: cg-detector-replay
+  namespace: cg-stream
+  labels:
+    app.kubernetes.io/part-of: cryptoguard
+spec:
+  image: cg-detector:dev
+  imagePullPolicy: Never
+  flinkVersion: v1_20
+  serviceAccount: flink
+  flinkConfiguration:
+    python.executable: /opt/cg-detector/bin/python
+    taskmanager.numberOfTaskSlots: "1"
+    execution.checkpointing.interval: 30s
+    execution.checkpointing.externalized-checkpoint-retention: RETAIN_ON_CANCELLATION
+    state.checkpoints.dir: s3a://cg-lake/flink/detector/replay/checkpoints
+    state.savepoints.dir: s3a://cg-lake/flink/detector/replay/savepoints
+    high-availability.type: kubernetes
+    high-availability.storageDir: s3a://cg-lake/flink/detector/replay/ha
+    s3.endpoint: http://cg-minio.cg-storage:9000
+    s3.path.style.access: "true"
+    restart-strategy.type: fixed-delay
+    restart-strategy.fixed-delay.attempts: "3"
+    restart-strategy.fixed-delay.delay: 5s
+    metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
+    metrics.reporter.prom.port: "9249"
+    metrics.reporter.prom.filterLabelValueCharacters: "false"
+  podTemplate:
+    metadata:
+      labels:
+        app.kubernetes.io/part-of: cryptoguard
+    spec:
+      containers:
+        - name: flink-main-container
+          envFrom:
+            - secretRef:
+                name: cg-detector-checkpoints
+          env:
+            - {name: CG_PROFILE, value: local}
+            - {name: CG_KAFKA__BOOTSTRAP_SERVERS, value: "cg-kafka-kafka-bootstrap.cg-kafka:9092"}
+            - {name: CG_REDIS__URL, value: "redis://cg-redis.cg-serving:6379/0"}
+            - {name: AWS_REGION, value: us-east-1}
+            - name: CG_REPLAY_RUN_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: cg-detector-replay-run
+                  key: run-id
+          ports:
+            - {name: metrics, containerPort: 9249}
+  jobManager:
+    resource: {memory: "1024m", cpu: 0.5}
+  taskManager:
+    resource: {memory: "1536m", cpu: 0.5}
+  job:
+    jarURI: local:///opt/flink/opt/flink-python-1.20.5.jar
+    entryClass: org.apache.flink.client.python.PythonDriver
+    args: ["-pym", "detector.job", "--mode", "replay"]
+    parallelism: 1
+    upgradeMode: last-state
+    state: suspended

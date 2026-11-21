@@ -19,13 +19,15 @@ INPUT_DLQ = OutputTag("detector-input-dlq")
 
 
 class ValidateTrades(ProcessFunction):
-    def __init__(self, mode: str):
+    def __init__(self, mode: str, replay_run_id: str | None = None):
         self.mode = mode
+        self.replay_run_id = replay_run_id
 
     def open(self, runtime_context):
         metrics = runtime_context.get_metrics_group()
         self.received = metrics.counter("cg_detector_input_records_total")
         self.invalid = metrics.counter("cg_detector_invalid_records_total")
+        self.filtered = metrics.counter("cg_detector_replay_filtered_total")
         self.logger = get_logger(__name__)
 
     def process_element(self, row, ctx):
@@ -45,7 +47,13 @@ class ValidateTrades(ProcessFunction):
             log_rejection(self.logger, dlq)
             yield INPUT_DLQ, dlq
         else:
-            yield trade
+            if (
+                self.replay_run_id is not None
+                and trade.trade.get("replay_run_id") != self.replay_run_id
+            ):
+                self.filtered.inc()
+            else:
+                yield trade
 
 
 class DeduplicateTrades(KeyedProcessFunction):
@@ -82,9 +90,9 @@ class DeduplicateTrades(KeyedProcessFunction):
             yield record
 
 
-def prepare_trades(records, mode: str, ttl_seconds: int):
+def prepare_trades(records, mode: str, ttl_seconds: int, *, replay_run_id: str | None = None):
     """Return unique canonical trades and an input DLQ stream, before event time."""
-    validated = records.process(ValidateTrades(mode))
+    validated = records.process(ValidateTrades(mode, replay_run_id))
     malformed = validated.get_side_output(INPUT_DLQ)
     unique = validated.key_by(
         trade_dedup_key, key_type=Types.TUPLE([Types.STRING(), Types.STRING()])

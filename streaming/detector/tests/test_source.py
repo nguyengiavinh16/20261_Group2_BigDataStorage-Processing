@@ -45,6 +45,17 @@ def test_invalid_mode_rejected_at_cli(capsys):
     assert "invalid choice" in capsys.readouterr().err
 
 
+@pytest.mark.parametrize(
+    ("mode", "run_id"),
+    [("live", "another-run"), ("replay", " "), ("replay", "x" * 65)],
+)
+def test_invalid_replay_selection_rejected_before_flink(mode, run_id, monkeypatch, capsys):
+    monkeypatch.setenv("CG_REPLAY_RUN_ID", run_id)
+    with pytest.raises(SystemExit, match="2"):
+        main(["--mode", mode])
+    assert "--replay-run-id" in capsys.readouterr().err
+
+
 @pytest.mark.integration
 def test_replay_source_preserves_raw_bytes_and_kafka_coordinates():
     bootstrap = os.getenv("CG_DETECTOR_TEST_KAFKA")

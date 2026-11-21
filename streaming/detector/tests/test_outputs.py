@@ -56,7 +56,8 @@ def test_publish_requires_checkpoint_interval(monkeypatch, capsys):
 
 
 @pytest.mark.integration
-def test_replay_job_publishes_features_and_ordered_case_alerts(monkeypatch):
+@pytest.mark.parametrize("run_label", ["first", "second"])
+def test_replay_job_publishes_features_and_ordered_case_alerts(monkeypatch, run_label):
     bootstrap = os.getenv("CG_DETECTOR_TEST_KAFKA")
     redis_url = os.getenv("CG_DETECTOR_TEST_REDIS_URL")
     if not (bootstrap and redis_url and os.getenv("CG_FLINK_JARS")):
@@ -66,7 +67,8 @@ def test_replay_job_publishes_features_and_ordered_case_alerts(monkeypatch):
     pytest.importorskip("pyflink")
     monkeypatch.setenv("CG_KAFKA__BOOTSTRAP_SERVERS", bootstrap)
     monkeypatch.setenv("CG_REDIS__URL", redis_url)
-    run_id = f"m09-test-{uuid4().hex}"
+    run_id = f"{{run: {run_label}-{uuid4().hex}}}"
+    monkeypatch.setenv("CG_REPLAY_RUN_ID", run_id)
     feature_topic, alert_topic = "replay.features.symbol_1m.v1", "replay.alerts.v1"
     input_topic = "replay.canonical.trades.v1"
     producer = kafka.Producer({"bootstrap.servers": bootstrap})
@@ -94,8 +96,20 @@ def test_replay_job_publishes_features_and_ordered_case_alerts(monkeypatch):
         consumer.assign(starts)
 
         producer.produce(input_topic, key=b"BTC-USDT", value=b"invalid-json")
-        for line in (FIXTURES / "pump_dump_trades.jsonl").read_bytes().splitlines():
-            trade = json.loads(line) | {"replay_run_id": run_id}
+        trades = [
+            json.loads(line)
+            for line in (FIXTURES / "pump_dump_trades.jsonl").read_bytes().splitlines()
+        ]
+        # Another run reuses an event ID and has a far-future timestamp. It must not reach
+        # the watermark or appear in the output of this run.
+        other = trades[0] | {
+            "replay_run_id": f"ignored-{uuid4().hex}",
+            "event_ts_us": trades[-1]["event_ts_us"] + 86_400_000_000,
+        }
+        validate(other, "canonical_trade.v1")
+        producer.produce(input_topic, key=other["symbol"].encode(), value=json.dumps(other))
+        for original in trades:
+            trade = original | {"replay_run_id": run_id}
             validate(trade, "canonical_trade.v1")
             producer.produce(input_topic, key=trade["symbol"].encode(), value=json.dumps(trade))
         assert producer.flush(10) == 0
@@ -114,8 +128,7 @@ def test_replay_job_publishes_features_and_ordered_case_alerts(monkeypatch):
             assert not message.error(), message.error()
             remaining -= 1
             record = json.loads(message.value())
-            if record.get("replay_run_id") != run_id:
-                continue
+            assert record.get("replay_run_id") == run_id
             topic = message.topic()
             counts[topic] += 1
             if topic == feature_topic:
