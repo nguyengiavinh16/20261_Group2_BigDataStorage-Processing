@@ -1,0 +1,2 @@
+{"source":"binance","ingest_ts":"2026-11-22T14:20:35.123456+00:00","raw_message":{"stream":"btcusdt@trade","data":{"e":"trade","E":1763821235123,"s":"BTCUSDT","t":512334901,"p":"95000.10","q":"0.005","T":1763821235118,"m":false}}}
+{"source":"binance","ingest_ts":"2026-11-22T14:20:35.125456+00:00","raw_message":{"stream":"ethusdt@trade","data":{"e":"trade","E":1763821235125,"s":"ETHUSDT","t":712341,"p":"3100.25","q":"0.020","T":1763821235120,"m":true}}}
