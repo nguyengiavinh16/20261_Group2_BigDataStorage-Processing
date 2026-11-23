@@ -76,8 +76,11 @@ Bronze trên MinIO (local) hoặc GCS (cloud), luôn truy cập qua S3 API (`cg_
   - *Kết quả (2026-11-23, branch `thai`):* 314/318 vụ Binance có dữ liệu ngày pump và đủ 7 ngày baseline; shortlist local gồm 8 vụ (< 1 MB) đã thêm vào `symbol_map.csv`, **chờ R3/R5 xác nhận**. File 2020 dùng ms, file 2026 dùng µs. OFAC có 127 địa chỉ EVM. **Rủi ro cần cả nhóm quyết:** mọi vụ pump đều trên cặp BTC nên `volume_z` hiện luôn là `None` khi replay (xem `docs/source-notes.md` §6).
 
 ### P1: Lakehouse cơ bản
-- [ ] **BAT-02** Spark + Iceberg (JDBC catalog) chạy được local mode trên host và bằng SparkApplication; job `apply_ddl` tạo toàn bộ bảng trong `batch/ddl/iceberg_tables.sql`. Kiểm chứng version jar (`spark_session.PACKAGES`).
-- [ ] **BAT-03** DAG `binance_vision_daily`: plan theo watchlist và ngày, tải lên Bronze, kiểm checksum, incremental.
+- [x] **BAT-02** Spark + Iceberg (JDBC catalog) chạy được local mode trên host và bằng SparkApplication; job `apply_ddl` tạo toàn bộ bảng trong `batch/ddl/iceberg_tables.sql`. Kiểm chứng version jar (`spark_session.PACKAGES`).
+  - *Kết quả (2026-11-23, branch `thai`):* `apply_ddl --smoke` tạo đủ 11 bảng và ghi, đọc, xóa một bảng tạm, chạy được cả trên host (Spark local mode, 53 s) lẫn bằng `batch/k8s/apply-ddl.sparkapplication.yaml` (30 s). Chạy lại không đổi gì. Bộ jar đã kiểm chứng: Spark 3.5.3, Iceberg 1.6.1, hadoop-aws 3.3.4 + aws-java-sdk-bundle 1.12.262, postgresql 42.7.3. Các jar này được đưa sẵn vào image và có test để giữ khớp với `PACKAGES`. Trên Windows không có winutils thì dùng `CG_SPARK__DRIVER_EXTRA_CLASSPATH` (xem `batch/README.md`).
+- [x] **BAT-03** DAG `binance_vision_daily`: plan theo watchlist và ngày, tải lên Bronze, kiểm checksum, incremental.
+  - *Kết quả (2026-11-23, branch `thai`):* chạy thật trên Airflow 2.10.5 (chart 1.16.0). Lượt theo lịch tải ETHUSDT ngày 2026-11-22 (14,7 MB). Shortlist 8 vụ pump gồm 64 file (0,94 MB) được upload ở lần 1; chạy lại lần 2 thì cả 64 đều `skipped`, không tải lại byte nào. Vượt `data_budget` mà không có `allow_over_budget` thì DAG từ chối chạy. Logic nằm trong `cg_batch.bronze` và có unit test. Bước Silver thuộc BAT-04.
+  - *Cần R1 xử lý (INF-05/INF-10):* (1) image `minio/minio:RELEASE.2025-04-22…` đã bị gỡ khỏi Docker Hub và quay.io; local tạm dùng `cgr.dev/chainguard/minio:latest` (chỉ đổi image). (2) `up-local.sh` đang cài chart Airflow mới nhất (1.22.0, tức Airflow 3.2.2), không khớp với image 2.10.5, nên cần `--version 1.16.0`. (3) Nếu helm chạy với `--wait` thì phải đặt `migrateDatabaseJob/createUserJob.useHelmHooks=false`, nếu không sẽ kẹt mãi.
 
 ### P2: Silver, Gold, nhãn
 - [ ] **BAT-04** Job `bronze_to_silver_trades` (binance.vision + Bronze Kafka canonical), MERGE theo `event_id`, đếm chất lượng.
