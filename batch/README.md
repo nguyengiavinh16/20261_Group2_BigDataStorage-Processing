@@ -7,6 +7,8 @@ batch/
 ├── src/cg_batch/
 │   ├── spark_session.py           # Iceberg JDBC catalog + S3 config from config/*.yaml   ✅
 │   ├── jobs/                      # one module per Spark job (see jobs/__init__.py table)  ⏳
+│   ├── sources/                   # pure parsers: binance.vision, OFAC, darklist, pump dataset, EVM ✅
+│   ├── tools/                     # host CLI tools (BAT-01 spike, pump candidates)          ✅
 │   └── graph/taint.py             # reference taint/hops implementation = spec for Spark   ✅
 ├── k8s/sparkapplication.template.yaml
 ├── Dockerfile                     # cg-batch (Spark 3.5)
@@ -25,6 +27,19 @@ batch/
 label_score = max(confidence of direct bad labels valid at as_of)            (0 if none)
 risk_score  = max(label_score, taint_score)                                  # v1
 is_exchange_wallet → risk_score capped at 0.3 (they receive everything)
+```
+
+## Sources and spike tools (BAT-01)
+
+What every source really contains (schemas, sizes, pitfalls) is in [docs/source-notes.md](../docs/source-notes.md).
+The tools run on the host, from the repo root, with the dev venv:
+
+```bash
+export PYTHONPATH=batch/src
+# measure local copies in data/raw/bat01/ (+ AWS token_transfers footer, no full download)
+python -m cg_batch.tools.source_spike --dir data/raw/bat01 --eth-date 2026-11-20 --out data/raw/bat01/summary.json
+# HEAD-check binance.vision for every Binance pump event → contracts/reference/pump_events_candidates.csv
+python -m cg_batch.tools.pump_candidates --pump-csv data/raw/bat01/pump_telegram.csv
 ```
 
 ## Local run
