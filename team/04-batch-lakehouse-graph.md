@@ -66,13 +66,14 @@ Bronze trên MinIO (local) hoặc GCS (cloud), luôn truy cập qua S3 API (`cg_
 ## 6. Task board
 
 ### P0: Khởi động
-- [ ] **BAT-01** Spike dữ liệu:
+- [x] **BAT-01** Spike dữ liệu:
   - Tải 1 ngày trades của 1 symbol (kiểm tra ms/µs).
   - In schema `token_transfers` của 1 ngày từ AWS.
   - Parse OFAC lấy địa chỉ ETH.
   - Đọc pump dataset; cùng R3 và R5 lập danh sách vụ pump có dữ liệu Binance, lưu `contracts/reference/pump_events_candidates.csv` (nhỏ).
   - Viết `docs/source-notes.md`.
   - *Done khi:* có danh sách ≥ 5 vụ hoặc báo rủi ro cho cả nhóm.
+  - *Kết quả (2026-11-23, branch `thai`):* 314/318 vụ Binance có dữ liệu ngày pump và đủ 7 ngày baseline; shortlist local gồm 8 vụ (< 1 MB) đã thêm vào `symbol_map.csv`, **chờ R3/R5 xác nhận**. File 2020 dùng ms, file 2026 dùng µs. OFAC có 127 địa chỉ EVM. **Rủi ro cần cả nhóm quyết:** mọi vụ pump đều trên cặp BTC nên `volume_z` hiện luôn là `None` khi replay (xem `docs/source-notes.md` §6).
 
 ### P1: Lakehouse cơ bản
 - [ ] **BAT-02** Spark + Iceberg (JDBC catalog) chạy được local mode trên host và bằng SparkApplication; job `apply_ddl` tạo toàn bộ bảng trong `batch/ddl/iceberg_tables.sql`. Kiểm chứng version jar (`spark_session.PACKAGES`).

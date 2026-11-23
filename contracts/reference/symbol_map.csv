@@ -7,3 +7,11 @@ coinbase,BTC-USD,BTC-USD,BTC,USD,true
 coinbase,ETH-USD,ETH-USD,ETH,USD,true
 kraken,BTC/USD,BTC-USD,BTC,USD,true
 kraken,ETH/USD,ETH-USD,ETH,USD,true
+binance,OAXBTC,OAX-BTC,OAX,BTC,true
+binance,ICNBTC,ICN-BTC,ICN,BTC,true
+binance,EDOBTC,EDO-BTC,EDO,BTC,true
+binance,BNTBTC,BNT-BTC,BNT,BTC,true
+binance,GTOBTC,GTO-BTC,GTO,BTC,true
+binance,DNTBTC,DNT-BTC,DNT,BTC,true
+binance,SNGLSBTC,SNGLS-BTC,SNGLS,BTC,true
+binance,SNMBTC,SNM-BTC,SNM,BTC,true
