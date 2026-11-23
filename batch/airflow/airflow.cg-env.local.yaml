@@ -1,0 +1,17 @@
+# Runtime environment for the CryptoGuard DAG code (owner R4), layered on top of R1's chart values:
+#   helm upgrade --install airflow apache-airflow/airflow --version 1.16.0 -n cg-batch \
+#     -f infra/helm-values/airflow.local.yaml -f batch/airflow/airflow.cg-env.local.yaml --timeout 15m --wait
+# Chart 1.16.0 = Airflow 2.10.5, the version of the cg-airflow image (charts ≥ 1.17 default to Airflow 3).
+# Credentials come from the cg-batch-env secret (CG_STORAGE__ACCESS_KEY/SECRET_KEY, CG_POSTGRES__PASSWORD).
+# With --wait, migration/user jobs must not be post-install hooks: helm would wait for pods that wait for
+# the migrations forever (seen in BAT-03).
+migrateDatabaseJob: {useHelmHooks: false}
+createUserJob: {useHelmHooks: false}
+env:
+  - {name: CG_PROFILE, value: local}
+  - {name: CG_STORAGE__ENDPOINT, value: "http://cg-minio.cg-storage:9000"}
+  - {name: CG_POSTGRES__HOST, value: cg-postgres.cg-storage}
+  - {name: CG_POSTGRES__PORT, value: "5432"}
+extraEnvFrom: |
+  - secretRef:
+      name: cg-batch-env

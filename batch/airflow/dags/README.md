@@ -2,7 +2,7 @@
 
 | DAG | Schedule | Task IDs | Produces |
 |---|---|---|---|
-| `binance_vision_daily` | daily | BAT-03, BAT-04 | bronze/binance_vision → silver.trades |
+| `binance_vision_daily` | daily | BAT-03 ✅ (Bronze), BAT-04 (Silver) | bronze/binance_vision → silver.trades |
 | `features_daily` (todo) | daily after trades | BAT-05 | silver.minute_price, gold.symbol_features_1m, gold.symbol_baseline, Redis baselines |
 | `labels_refresh` (todo) | daily | BAT-06 | bronze/ofac, bronze/darklist, bronze/pump_dataset → silver.labels, gold.pump_cases |
 | `aws_eth_transfers_daily` (todo) | daily | BAT-07 | bronze/aws_eth → silver.onchain_transfers |

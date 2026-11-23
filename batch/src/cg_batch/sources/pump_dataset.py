@@ -9,12 +9,33 @@ with announce times a few minutes apart, so rows of the same coin and exchange w
 import csv
 import io
 from dataclasses import dataclass
+from datetime import date, datetime, timedelta, timezone
 
 from cryptoguard_common.timeutil import US_PER_SECOND, iso_to_us
 
 PUMP_CSV_URL = "https://raw.githubusercontent.com/SystemsLab-Sapienza/pump-and-dump-dataset/master/pump_telegram.csv"
 QUOTE = "BTC"
 COLUMNS = ("symbol", "group", "date", "hour", "exchange")
+LATE_ANNOUNCE_HOUR = 23  # pump may run past midnight → the next day's trades are needed too
+
+
+def announce_day(announce_ts_us: int) -> date:
+    return datetime.fromtimestamp(announce_ts_us / US_PER_SECOND, tz=timezone.utc).date()
+
+
+def replay_days(
+    announce_ts_us: int, baseline_days: int, *, with_late_next_day: bool = False
+) -> list[date]:
+    """Pump day first, then the `baseline_days` days before it (most recent first).
+
+    with_late_next_day: also the day after, when announced at LATE_ANNOUNCE_HOUR UTC or later.
+    """
+    day = announce_day(announce_ts_us)
+    days = [day - timedelta(days=i) for i in range(baseline_days + 1)]
+    hour = datetime.fromtimestamp(announce_ts_us / US_PER_SECOND, tz=timezone.utc).hour
+    if with_late_next_day and hour >= LATE_ANNOUNCE_HOUR:
+        days.append(day + timedelta(days=1))
+    return days
 
 
 @dataclass(frozen=True)

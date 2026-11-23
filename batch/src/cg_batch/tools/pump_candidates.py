@@ -14,11 +14,17 @@ import logging
 import urllib.error
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
-from datetime import UTC, date, datetime, timedelta
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 from cg_batch.sources.binance_files import daily_trades_url
-from cg_batch.sources.pump_dataset import PumpEvent, parse_pump_csv
+from cg_batch.sources.pump_dataset import (
+    LATE_ANNOUNCE_HOUR,
+    PumpEvent,
+    announce_day,
+    parse_pump_csv,
+    replay_days,
+)
 from cryptoguard_common.config import load_config
 from cryptoguard_common.log import get_logger, log_kv
 from cryptoguard_common.paths import contracts_dir
@@ -42,19 +48,16 @@ FIELDS = [
     "checked_on",
     "notes",
 ]
-LATE_ANNOUNCE_HOUR = 23  # pump may run past midnight → next day's file is needed too
-
 log = get_logger("cg_batch.tools.pump_candidates")
 
 
 def event_day(event: PumpEvent) -> date:
-    return datetime.fromtimestamp(event.announce_ts_us / 1_000_000, tz=UTC).date()
+    return announce_day(event.announce_ts_us)
 
 
 def days_to_check(event: PumpEvent, baseline_days: int) -> list[date]:
     """Pump day first, then the baseline days before it (most recent first)."""
-    day = event_day(event)
-    return [day - timedelta(days=i) for i in range(baseline_days + 1)]
+    return replay_days(event.announce_ts_us, baseline_days)
 
 
 def candidate_row(
