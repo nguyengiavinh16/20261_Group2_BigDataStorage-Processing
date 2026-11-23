@@ -19,10 +19,27 @@ def spark_conf(cfg: dict) -> dict[str, str]:
     cat = f"spark.sql.catalog.{ice['catalog_name']}"
     warehouse = f"s3://{st['bucket']}/{st['warehouse_prefix']}"
     access, secret = st.get("access_key", ""), st.get("secret_key", "")
-    return {
-        "spark.jars.packages": ",".join(PACKAGES),
+    sp = cfg.get("spark", {})
+    conf = {}
+    # The cg-batch image bakes the jars into /opt/spark/jars and sets CG_SPARK__JARS_PACKAGES=false,
+    # so pods do not download ~356 MB from Maven Central on every run. Host runs resolve them via Ivy.
+    if sp.get("jars_packages", True):
+        conf["spark.jars.packages"] = ",".join(PACKAGES)
+    # Windows host without winutils.exe: packages go through SparkContext.addFile → chmod → winutils and
+    # fail. In local mode the driver JVM runs the tasks, so putting the (already resolved) jars on its
+    # classpath is enough, e.g. CG_SPARK__DRIVER_EXTRA_CLASSPATH=C:/Users/<you>/.ivy2/jars/*
+    if sp.get("driver_extra_classpath"):
+        conf["spark.driver.extraClassPath"] = str(sp["driver_extra_classpath"])
+    # Only effective for host runs (local mode); SparkApplication sets driver memory in its spec.
+    if sp.get("driver_memory"):
+        conf["spark.driver.memory"] = str(sp["driver_memory"])
+    return conf | {
         "spark.sql.extensions": "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions",
         "spark.sql.session.timeZone": "UTC",
+        # JVM default zone leaks into the Postgres JDBC handshake; Windows maps Vietnam to the legacy
+        # "Asia/Saigon", which postgres:16 rejects (seen in BAT-02). Everything is UTC anyway (ADR-0004).
+        "spark.driver.extraJavaOptions": "-Duser.timezone=UTC",
+        "spark.executor.extraJavaOptions": "-Duser.timezone=UTC",
         cat: "org.apache.iceberg.spark.SparkCatalog",
         f"{cat}.catalog-impl": "org.apache.iceberg.jdbc.JdbcCatalog",
         f"{cat}.uri": f"jdbc:postgresql://{pg['host']}:{pg['port']}/{ice['jdbc_db']}",

@@ -1,0 +1,39 @@
+# BAT-02: create all Iceberg namespaces/tables of batch/ddl/iceberg_tables.sql (idempotent), then prove the
+# write path with a scratch table (--smoke). Needs: make up-batch, make image-batch, secret cg-batch-env.
+#   kubectl -n cg-batch delete sparkapplication cg-apply-ddl --ignore-not-found
+#   kubectl apply -f batch/k8s/apply-ddl.sparkapplication.yaml
+#   kubectl -n cg-batch get sparkapplication cg-apply-ddl -w
+#   kubectl -n cg-batch logs cg-apply-ddl-driver | grep '"ddl applied"'
+apiVersion: sparkoperator.k8s.io/v1beta2
+kind: SparkApplication
+metadata:
+  name: cg-apply-ddl
+  namespace: cg-batch
+  labels: {app.kubernetes.io/part-of: cryptoguard, cg/task: BAT-02}
+spec:
+  type: Python
+  pythonVersion: "3"
+  mode: cluster
+  image: cg-batch:dev
+  imagePullPolicy: IfNotPresent
+  mainApplicationFile: local:///app/batch/src/cg_batch/jobs/apply_ddl.py
+  arguments: ["--smoke"]
+  sparkVersion: "3.5.3"
+  restartPolicy: {type: Never}
+  driver:
+    cores: 1
+    memory: 1g
+    serviceAccount: spark-operator-spark   # created by the spark-operator chart 2.6.0 for spark.jobNamespaces
+    env: &cg-env
+      - {name: CG_PROFILE, value: local}
+      - {name: CG_POSTGRES__HOST, value: cg-postgres.cg-storage}
+      - {name: CG_POSTGRES__PORT, value: "5432"}
+      - {name: CG_STORAGE__ENDPOINT, value: "http://cg-minio.cg-storage:9000"}
+    envFrom: &cg-secret
+      - secretRef: {name: cg-batch-env}     # CG_STORAGE__ACCESS_KEY / CG_STORAGE__SECRET_KEY / CG_POSTGRES__PASSWORD
+  executor:
+    instances: 1
+    cores: 1
+    memory: 1g
+    env: *cg-env
+    envFrom: *cg-secret
