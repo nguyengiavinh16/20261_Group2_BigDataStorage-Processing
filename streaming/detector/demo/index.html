@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CryptoGuard · Replay lịch sử</title>
+<style>
+  :root{color-scheme:dark;--bg:#0b1118;--card:#121c27;--line:#253546;--fg:#edf5fc;--muted:#a6b9cc;--cyan:#58e2c6;--gold:#ffcb75;--red:#ff9ca3}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(ellipse at 42% 0%,#14263a 0,transparent 48%),var(--bg);color:var(--fg);font:15px/1.55 "Segoe UI",system-ui,sans-serif}
+  button,select,input{font:inherit} button,select{cursor:pointer}
+  button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+  [hidden]{display:none!important}
+  .shell{max-width:1420px;margin:auto;padding:0 36px 48px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 0;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:760;letter-spacing:-.02em;font-size:18px}
+  .mark{width:32px;height:32px;display:grid;place-items:center;border:1px solid #387581;border-radius:10px;color:var(--cyan);background:#142b36;font-size:19px}
+  .muted{color:var(--muted)} .accent{color:var(--cyan)} .mono{font-family:Consolas,ui-monospace,monospace;font-variant-numeric:tabular-nums}
+  .hero{display:flex;justify-content:space-between;align-items:end;padding:31px 0 24px;gap:20px}
+  h1,h2,h3,p{margin:0}
+  h1{font-size:clamp(36px,6vw,66px);line-height:1.07;letter-spacing:-.055em}
+  .subtitle{margin-top:8px}.event{padding-left:16px;border-left:2px solid var(--gold);flex-shrink:0}
+  .event strong{color:var(--gold);display:block;font-size:19px}
+  .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+  .stream-title{font-size:14px;font-weight:700;margin-bottom:8px}
+  .stat{background:#111d2a;border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+  .stat span{display:block;color:var(--muted);font-size:13px}
+  .stat strong{display:block;font-size:29px;letter-spacing:-.04em;line-height:1.3}
+  .stat small{display:block;color:var(--muted);font-size:11px;margin-top:4px;overflow-wrap:anywhere}
+  .main-grid{display:grid;grid-template-columns:minmax(0,2.3fr) minmax(295px,1fr);gap:16px;margin-bottom:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:18px;min-width:0}
+  .card h2{font-size:18px;font-weight:700;letter-spacing:-.02em}
+  .row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  .seg{display:flex;gap:4px;background:#0e1722;padding:3px;border:1px solid var(--line);border-radius:8px}
+  button,select{border:1px solid var(--line);color:var(--fg);background:#182735;border-radius:8px;padding:7px 12px}
+  button:disabled{opacity:.5;cursor:default}
+  button:hover:enabled,select:hover{border-color:#4c6f83}
+  .seg button{border-color:transparent;background:transparent;color:var(--muted);padding:4px 9px}
+  .seg button[aria-pressed=true]{color:var(--fg);background:#203746}
+  .primary{background:#53d9bf;color:#071918;border:1px solid #53d9bf;font-weight:720}
+  .plot{width:100%;height:345px;display:block;margin-top:8px}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:7px 0 14px}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:var(--cyan)}
+  .dot.gold{background:var(--gold)}.dot.blue{background:#5596cb}
+  .player{display:flex;align-items:center;gap:11px;border-top:1px solid var(--line);padding-top:12px}
+  .player button{white-space:nowrap;flex-shrink:0}
+  .player input{width:100%;min-width:65px;accent-color:var(--cyan)}
+  .cursor{color:var(--muted);font-size:12px;margin-top:8px;min-height:20px}
+  .alerts{margin-top:12px;display:grid;gap:9px;max-height:438px;overflow:auto}
+  details.alert{background:#162330;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  summary{cursor:pointer;font-weight:650} summary::-webkit-details-marker{color:var(--muted)}
+  .alert .meta,.alert ul{font-size:12px;color:var(--muted);margin-top:5px;overflow-wrap:anywhere}
+  .alert ul{padding-left:17px;margin-bottom:7px}
+  .pill{display:inline-block;border-radius:5px;background:#302c26;color:var(--gold);font:700 11px/1.25 system-ui;padding:4px 6px;margin-right:6px}
+  .pill.dump{background:#3d292f;color:var(--red)}
+  .lower{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px}
+  .lower h2{margin-bottom:8px}
+  table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:13px}
+  th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600} td:first-child{overflow-wrap:anywhere}
+  .result-note{margin-top:10px;font-size:13px}
+  .source{margin-top:16px;padding:12px 16px;color:var(--muted);font-size:13px;border:1px solid var(--line);border-radius:10px;overflow-wrap:anywhere}
+  .source ul{padding-left:17px}
+  a{color:var(--cyan);text-underline-offset:3px}
+  .status{font-size:13px;color:var(--muted);margin-top:12px}
+  .empty{margin:24px 0;max-width:650px}
+  @media(max-width:830px){.shell{padding:0 16px 32px}.main-grid,.lower{grid-template-columns:1fr}.hero{align-items:start}.summary{grid-template-columns:repeat(2,1fr)}.event strong{font-size:15px}}
+  @media(max-width:475px){.shell{padding-inline:12px}.hero{display:block;padding-top:21px}.event{margin-top:13px}.card{padding:13px}.plot{height:300px}.row{gap:8px}.stat{padding:10px 12px}.stat strong{font-size:24px}.player{gap:6px}.player button,.player select{padding:6px}.subtitle{font-size:13px}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div class="brand"><span class="mark" aria-hidden="true">↗</span>CryptoGuard <span class="muted">/ Replay</span></div>
+    <button class="primary" id="run" hidden>Chạy detector</button>
+  </header>
+  <p id="status" class="status" aria-live="polite" hidden></p>
+  <main id="main" hidden>
+    <section class="hero" aria-label="Sự kiện được đối chiếu">
+      <div><h1 id="market">GVT / BTC</h1><p id="subtitle" class="subtitle muted"></p></div>
+      <div class="event"><strong id="label"></strong><span class="muted">Mốc nhãn nghiên cứu</span></div>
+    </section>
+    <section aria-labelledby="stream-title">
+      <h2 class="stream-title muted" id="stream-title">Luồng streaming</h2>
+      <div class="summary" id="summary"></div>
+    </section>
+    <div class="main-grid">
+      <section class="card" aria-labelledby="chart-title">
+        <div class="row">
+          <h2 id="chart-title">Giá và khối lượng</h2>
+          <div class="seg" aria-label="Chọn ngày" role="group">
+            <button type="button" data-day="event" aria-pressed="true">Ngày pump</button>
+            <button type="button" data-day="control" aria-pressed="false">Ngày đối chứng</button>
+          </div>
+        </div>
+        <canvas class="plot" id="plot" role="img" aria-label="Giá đóng cửa tính bằng BTC và khối lượng quy đổi USD theo phút UTC"></canvas>
+        <div class="legend">
+          <span><i class="dot"></i>Giá đóng cửa (BTC)</span>
+          <span><i class="dot blue"></i>Khối lượng (USD)</span>
+          <span><i class="dot gold"></i>Mốc nhãn / cảnh báo</span>
+        </div>
+        <div class="player">
+          <button type="button" id="play">Phát lại</button>
+          <input type="range" id="cursor" min="0" max="60" value="60" aria-label="Phút trong khung replay">
+          <select id="speed" aria-label="Tốc độ phát biểu đồ"><option value="1">1×</option><option value="2" selected>2×</option><option value="5">5×</option></select>
+        </div>
+        <p id="cursor-info" class="cursor mono" aria-live="off"></p>
+      </section>
+      <section class="card" aria-labelledby="alerts-title">
+        <div class="row"><h2 id="alerts-title">Cảnh báo trên Kafka</h2><select id="venue" aria-label="Nhóm cảnh báo"><option value="binance">Binance</option><option value="ALL">ALL</option></select></div>
+        <div class="alerts" id="alerts"></div>
+      </section>
+    </div>
+    <div class="lower">
+      <section class="card" aria-labelledby="runs-title"><h2 id="runs-title">Đối chiếu hai lần chạy</h2><div id="runs"></div></section>
+      <section class="card" aria-labelledby="metrics-title"><h2 id="metrics-title">Kết quả theo nhãn</h2><div id="metrics"></div></section>
+    </div>
+    <details class="source">
+      <summary>Nguồn dữ liệu và offset Kafka</summary>
+      <div id="sources"></div>
+    </details>
+  </main>
+  <div class="card empty" id="empty" hidden>Chưa có kết quả replay. Chạy detector từ trang demo local hoặc theo lệnh trong README M12.</div>
+</div>
+<script id="replay-data" type="application/json"><!--REPLAY_DATA-->null</script>
+<script>
+"use strict";
+const byId = id => document.getElementById(id);
+const report = JSON.parse(byId("replay-data").textContent.replace("<!--REPLAY_DATA-->", ""));
+const number = new Intl.NumberFormat("vi-VN", {maximumFractionDigits: 2});
+const utc = new Intl.DateTimeFormat("vi-VN", {timeZone:"UTC",hour:"2-digit",minute:"2-digit",hourCycle:"h23"});
+const timeOf = t => utc.format(new Date(t / 1000));
+const node = (tag, cls, value) => {
+  const elem = document.createElement(tag);
+  if (cls) elem.className = cls;
+  if (value !== undefined) elem.textContent = value;
+  return elem;
+};
+const fa = value => number.format(value);
+const pct = value => fa(value * 100) + "%";
+const minute = 60000000;
+let selectedDay = "event", timer = null;
+
+function table(headers, rows) {
+  const result = node("table"), head = result.createTHead().insertRow();
+  for (const label of headers) head.append(node("th", "", label));
+  const body = result.createTBody();
+  for (const line of rows) {
+    const row = body.insertRow();
+    for (const value of line) row.append(node("td", "", value));
+  }
+  return result;
+}
+
+function renderReport() {
+  byId("main").hidden = false;
+  byId("market").textContent = report.symbol.replace("-", " / ");
+  byId("subtitle").textContent = "Replay giao dịch lịch sử · Binance Spot · " + report.event_day;
+  byId("label").textContent = timeOf(report.label_ts_us) + " UTC";
+  const latest = report.runs.at(-1), evaluation = report.evaluation;
+  const cases = new Set(report.alerts.map(a=>a.record.case_id)).size;
+  const topic = suffix => latest.offsets.find(item=>item.topic.endsWith(suffix))?.topic ?? "";
+  for (const [label,value,note] of [
+    ["Kafka · Đầu vào", fa(latest.trades)+" trade", topic("canonical.trades.v1")],
+    ["Flink · Tính feature", fa(latest.features)+" feature", "Cửa sổ 1 phút · baseline Redis"],
+    ["Kafka · Cảnh báo", fa(latest.alerts)+" alert", topic("alerts.v1")+" · "+fa(cases)+" case"],
+    ["Độ trễ theo nhãn", evaluation.median_delay_s === null ? "—" : fa(evaluation.median_delay_s)+" s", "Mốc nhãn → cuối cửa sổ phát hiện"]
+  ]) {
+    const item = node("div","stat");
+    item.append(node("span","",label),node("strong","",value),node("small","",note));
+    byId("summary").append(item);
+  }
+  const rows=report.runs.map(r=>[r.speed ? fa(r.speed)+"×" : "Không chờ", fa(r.send_seconds)+" s",fa(r.flink_seconds)+" s",fa(r.features),fa(r.alerts)]);
+  byId("runs").append(table(["Tốc độ nạp","Nạp","Flink","Feature","Alert"],rows));
+  const same = report.parity.alerts && report.parity.features;
+  byId("runs").append(node("p","result-note "+(same?"accent":"muted"),same ? "Hai run khớp nội dung feature và alert." : "Hai run có chênh lệch nội dung."));
+  byId("runs").append(node("p","result-note muted","Run đang hiển thị "+latest.run_id));
+  byId("metrics").append(table(["Chỉ số","Binance"],[
+    ["Recall",pct(evaluation.recall)+" ("+evaluation.detected_events+"/"+evaluation.events+")"],
+    ["Precision@5",pct(evaluation.precision_at_5)+" · "+evaluation.ranked_alerts+" alert"],
+    ["Alert pump ngày đối chứng",fa(evaluation.control_pump_alerts)],
+    ["Alert pump ngoài khung nhãn / ngày",fa(evaluation.false_alerts_per_day)]
+  ]));
+  byId("metrics").append(node("p","result-note muted","Một vụ được chọn để chạy smoke. Đối chiếu R5 sử dụng 10 phút trước và 30 phút sau mốc nhãn."));
+  const src = byId("sources"), files = node("ul");
+  src.append(node("p","result-note","Baseline từ "+report.baseline_day+" UTC. Các ngày kiểm tra là "+report.control_day+" và "+report.event_day+". Khối lượng USD dùng BTCUSDT đóng nến phút trước."));
+  src.append(node("p","result-note","Baseline giờ 17 UTC có "+(report.baseline?.n_windows ?? 0)+" cửa sổ. Rule "+report.rules.pump_rule.version+" / "+report.rules.dump_rule.version+"."));
+  for (const file of report.source_files) {
+    const item=node("li"), link=node("a","",file.url.split("/").at(-1));
+    link.href=file.url;link.rel="noopener noreferrer";link.target="_blank";
+    item.append(link,node("span","mono"," · SHA-256 "+file.sha256));
+    files.append(item);
+  }
+  src.append(files);
+  for (const run of report.runs) {
+    src.append(node("h3","mono",run.run_id));
+    src.append(table(["Topic","Partition","Offset đầu","Offset cuối (loại trừ)"],
+      run.offsets.filter(r=>r.end_exclusive>r.start).map(r=>[r.topic,r.partition,r.start,r.end_exclusive])));
+  }
+}
+
+function draw() {
+  if (!report) return;
+  const center = selectedDay === "event" ? report.label_ts_us : report.control_ts_us;
+  const start = center - 30 * minute, end = center + 30 * minute;
+  const cursor = start + Number(byId("cursor").value) * minute, exchange = byId("venue").value;
+  const points = report.features.filter(f=>f.exchange===exchange && f.window_start_ts_us>=start && f.window_start_ts_us<=end);
+  const alerts = report.alerts.filter(a=>a.record.exchange===exchange && a.record.window_start_ts_us>=start && a.record.window_start_ts_us<=end);
+  const visible = points.filter(f=>f.window_start_ts_us<=cursor);
+  const canvas=byId("plot"), width=canvas.clientWidth, height=canvas.clientHeight, ratio=window.devicePixelRatio || 1;
+  if (!width) return;
+  canvas.width=width*ratio;canvas.height=height*ratio;
+  const ctx=canvas.getContext("2d");ctx.scale(ratio,ratio);ctx.font="11px Consolas, monospace";
+  const left=12,right=width-82,top=22,bottom=height-101,volTop=bottom+13,volBottom=height-23;
+  const values=points.map(p=>p.close);
+  const minimum=values.length ? Math.min(...values) : 0;
+  const span=values.length ? (Math.max(...values)-minimum)||minimum*.01||1 : 1;
+  const price = v => bottom-(v-minimum+span*.07)/(span*1.14)*(bottom-top);
+  const x = t => left+(t-start)/(end-start)*(right-left);
+  for (let i=0;i<5;i++) {
+    const value=minimum+span*i/4,y=price(value);
+    ctx.strokeStyle="#263747";ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(right,y);ctx.stroke();
+    if (points.length) {ctx.fillStyle="#a6b9cc";ctx.fillText(value.toFixed(7),right+8,y+4);}
+    const t=start+(end-start)*i/4;
+    ctx.fillStyle="#a6b9cc";ctx.fillText(timeOf(t),Math.min(right-24,x(t)-6),height-6);
+  }
+  const vmax=Math.max(1,...points.map(f=>f.volume_usd ?? 0));
+  const bar=Math.max(2,(right-left)/76);
+  for (const f of visible) {
+    const h=(f.volume_usd??0)/vmax*(volBottom-volTop);
+    ctx.fillStyle="#4d88b8";ctx.fillRect(x(f.window_start_ts_us)-bar/2,volBottom-h,bar,h);
+  }
+  if (visible.length) {
+    const gradient=ctx.createLinearGradient(0,top,0,bottom);
+    gradient.addColorStop(0,"#58e2c64c");gradient.addColorStop(1,"#58e2c600");
+    ctx.beginPath();ctx.moveTo(x(visible[0].window_start_ts_us),bottom);
+    for (const f of visible) ctx.lineTo(x(f.window_start_ts_us),price(f.close));
+    ctx.lineTo(x(visible.at(-1).window_start_ts_us),bottom);ctx.closePath();
+    ctx.fillStyle=gradient;ctx.fill();
+    ctx.beginPath();ctx.lineWidth=2;ctx.strokeStyle="#58e2c6";
+    visible.forEach((f,i)=>ctx[i?"lineTo":"moveTo"](x(f.window_start_ts_us),price(f.close)));
+    ctx.stroke();ctx.lineWidth=1;
+  }
+  if (selectedDay==="event") {
+    ctx.strokeStyle="#ffcb75";ctx.setLineDash([4,5]);ctx.beginPath();
+    ctx.moveTo(x(center),top);ctx.lineTo(x(center),volBottom);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle="#ffcb75";ctx.fillText("Nhãn "+timeOf(center),Math.min(x(center)+5,right-80),top-5);
+  }
+  for (const alert of alerts.filter(a=>a.record.window_end_ts_us<=cursor+minute)) {
+    const f=points.find(p=>p.window_start_ts_us===alert.record.window_start_ts_us);
+    if (!f) continue;
+    ctx.fillStyle=alert.record.alert_type==="DUMP_PHASE"?"#ff9ca3":"#ffcb75";ctx.beginPath();
+    ctx.arc(x(f.window_start_ts_us),price(f.close),5,0,Math.PI*2);ctx.fill();
+  }
+  const snapshot=visible.at(-1);
+  byId("cursor-info").textContent=timeOf(cursor)+" UTC"+(snapshot
+    ? "  ·  "+snapshot.close.toFixed(8)+" BTC  ·  "+fa(snapshot.volume_usd??0)+" USD  ·  "+snapshot.trade_count+" trade"
+    : "  ·  chưa có giao dịch");
+  renderAlerts(alerts.filter(a=>a.record.window_end_ts_us<=cursor+minute));
+}
+
+function renderAlerts(alerts) {
+  const root=byId("alerts"), signature=alerts.map(a=>a.record.alert_id).join(",");
+  if (root.dataset.items===signature) return;
+  root.dataset.items=signature;root.replaceChildren();
+  if (!alerts.length) root.append(node("p","muted","Không có cảnh báo ở khung đang xem."));
+  for (const [index,evidence] of alerts.entries()) {
+    const alert=evidence.record, dump=alert.alert_type==="DUMP_PHASE";
+    const item=node("details","alert"), title=node("summary","","");
+    item.open=index===0;
+    title.append(node("span","pill"+(dump?" dump":""),dump?"DUMP":"PUMP"),document.createTextNode(timeOf(alert.window_start_ts_us)+" UTC · "+pct(alert.risk_score)));
+    const list=node("ul");
+    for (const reason of alert.reasons) list.append(node("li","",reason.code+" · "+reason.value+(reason.threshold===null?"":" / "+reason.threshold)));
+    item.append(title,node("p","meta","Cửa sổ "+timeOf(alert.window_start_ts_us)+"–"+timeOf(alert.window_end_ts_us)+" UTC"),
+      node("p","meta mono",alert.case_id),list,
+      node("p","meta mono",evidence.topic+" / p"+evidence.partition+" / offset "+evidence.offset));
+    root.append(item);
+  }
+}
+
+function pause() {
+  clearInterval(timer);timer=null;byId("play").textContent="Phát lại";
+}
+byId("play").addEventListener("click",()=>{
+  if(timer){pause();return;}
+  if(Number(byId("cursor").value)>=60) byId("cursor").value=0;
+  byId("play").textContent="Tạm dừng";
+  draw();
+  timer=setInterval(()=>{
+    byId("cursor").valueAsNumber+=1;draw();
+    if(byId("cursor").valueAsNumber>=60) pause();
+  },500/Number(byId("speed").value));
+});
+byId("speed").addEventListener("change",()=>{if(timer){pause();byId("play").click();}});
+byId("cursor").addEventListener("input",()=>{pause();draw();});
+byId("venue").addEventListener("change",draw);
+for (const button of document.querySelectorAll("[data-day]")) button.addEventListener("click",()=>{
+  selectedDay=button.dataset.day;pause();byId("cursor").value=60;
+  for (const option of document.querySelectorAll("[data-day]")) option.setAttribute("aria-pressed",String(option===button));
+  const day=selectedDay==="event"?report.event_day:report.control_day;
+  byId("subtitle").textContent="Replay giao dịch lịch sử · Binance Spot · "+day;
+  draw();
+});
+
+if(report){renderReport();draw();window.addEventListener("resize",draw);}
+else byId("empty").hidden=false;
+
+if(location.protocol==="http:" && location.hostname==="127.0.0.1"){
+  const button=byId("run"), status=byId("status");
+  button.hidden=false;
+  const watch=async(waiting=false)=>{
+    try{
+      const response=await fetch("/api/status",{cache:"no-store"});
+      const body=await response.json();
+      if(body.state==="running"){
+        button.disabled=true;status.hidden=false;
+        status.textContent="Đang nạp dữ liệu và chạy hai lượt Kafka–Flink–Redis…";
+        setTimeout(()=>watch(true),1000);
+      }else if(body.state==="done" && waiting) location.reload();
+      else {
+        button.disabled=false;
+        if (body.state==="error"){status.hidden=false;status.textContent="Replay gặp lỗi. Xem log trong terminal.";}
+      }
+    }catch{button.hidden=true;}
+  };
+  button.addEventListener("click",async()=>{
+    button.disabled=true;
+    try {const response=await fetch("/api/replay",{method:"POST"});if(!response.ok && response.status!==409) throw Error();await watch(true);}
+    catch{button.disabled=false;status.hidden=false;status.textContent="Không thể bắt đầu replay.";}
+  });
+  watch();
+}
+</script>
+</body>
+</html>

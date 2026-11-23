@@ -1,35 +1,53 @@
-"""Case grouping and Alert v1 construction (DET-06).
-
-CaseTracker models the per-(symbol, exchange) keyed state the Flink job keeps: alerts whose windows start within
-`case_merge_minutes` of the previous alert's window end belong to the same case. In Flink this is a
-KeyedProcessFunction with ValueState(case_id, last_window_end_ts_us) and a TTL.
-"""
+"""Case grouping, window transitions and Alert v1 construction (DET-06)."""
 
 import uuid
 from dataclasses import dataclass
 
 from cryptoguard_common.features import severity
-from cryptoguard_common.timeutil import now_us
-from detector.rules import RuleHit
+from cryptoguard_common.timeutil import US_PER_SECOND, now_us
+from detector.baseline import ScoredFeature
+from detector.rules import RuleHit, evaluate_scored_feature
 
 
-@dataclass
+@dataclass(frozen=True)
 class CaseState:
     case_id: str
     last_window_end_ts_us: int
     has_pump: bool
 
 
+def _active_case(state: CaseState | None, window_start_ts_us: int, gap_us: int) -> CaseState | None:
+    if state and window_start_ts_us - state.last_window_end_ts_us <= gap_us:
+        return state
+    return None
+
+
+def _assign_case(
+    state: CaseState | None,
+    symbol: str,
+    exchange: str,
+    window_start_ts_us: int,
+    window_end_ts_us: int,
+    alert_type: str,
+) -> CaseState:
+    has_pump = alert_type == "PUMP_SUSPECTED"
+    if state is None:
+        return CaseState(f"{symbol}:{exchange}:{window_start_ts_us}", window_end_ts_us, has_pump)
+    return CaseState(
+        state.case_id,
+        max(state.last_window_end_ts_us, window_end_ts_us),
+        state.has_pump or has_pump,
+    )
+
+
 class CaseTracker:
     def __init__(self, case_merge_minutes: int):
-        self.gap_us = case_merge_minutes * 60 * 1_000_000
+        self.gap_us = case_merge_minutes * 60 * US_PER_SECOND
         self.state: dict[tuple[str, str], CaseState] = {}
 
     def open_pump_case(self, symbol: str, exchange: str, window_start_ts_us: int) -> bool:
-        st = self.state.get((symbol, exchange))
-        return bool(
-            st and st.has_pump and window_start_ts_us - st.last_window_end_ts_us <= self.gap_us
-        )
+        state = _active_case(self.state.get((symbol, exchange)), window_start_ts_us, self.gap_us)
+        return bool(state and state.has_pump)
 
     def assign(
         self,
@@ -40,13 +58,52 @@ class CaseTracker:
         alert_type: str,
     ) -> str:
         key = (symbol, exchange)
-        st = self.state.get(key)
-        if st is None or window_start_ts_us - st.last_window_end_ts_us > self.gap_us:
-            st = CaseState(f"{symbol}:{exchange}:{window_start_ts_us}", window_end_ts_us, False)
-            self.state[key] = st
-        st.last_window_end_ts_us = max(st.last_window_end_ts_us, window_end_ts_us)
-        st.has_pump = st.has_pump or alert_type == "PUMP_SUSPECTED"
-        return st.case_id
+        state = _active_case(self.state.get(key), window_start_ts_us, self.gap_us)
+        state = _assign_case(
+            state, symbol, exchange, window_start_ts_us, window_end_ts_us, alert_type
+        )
+        self.state[key] = state
+        return state.case_id
+
+
+@dataclass(frozen=True)
+class CaseProgress:
+    case: CaseState | None
+    window_start_ts_us: int
+    alerted: bool
+
+
+def advance_case(
+    previous: CaseProgress | None,
+    scored: ScoredFeature,
+    pump_rule: dict,
+    dump_rule: dict,
+    *,
+    gap_us: int,
+) -> tuple[CaseProgress, RuleHit | None]:
+    """Advance one key, retaining the first alert for each observed window."""
+    feature = scored.feature
+    start_us = feature["window_start_ts_us"]
+    if previous is not None:
+        if start_us < previous.window_start_ts_us:
+            return previous, None
+        if start_us == previous.window_start_ts_us and previous.alerted:
+            return previous, None
+
+    case = _active_case(previous.case if previous else None, start_us, gap_us)
+    hit = evaluate_scored_feature(
+        scored, pump_rule, dump_rule, pump_case_open=bool(case and case.has_pump)
+    )
+    if hit is not None:
+        case = _assign_case(
+            case,
+            feature["symbol"],
+            feature["exchange"],
+            start_us,
+            feature["window_end_ts_us"],
+            hit.alert_type,
+        )
+    return CaseProgress(case, start_us, hit is not None), hit
 
 
 def build_alert(
@@ -57,6 +114,23 @@ def build_alert(
     detected_at_ts_us: int | None = None,
 ) -> dict:
     """RuleHit + features → Alert v1 dict (validated by the caller's tests)."""
+    evidence = {
+        k: features.get(k)
+        for k in (
+            "trade_count",
+            "volume_usd",
+            "baseline_volume_usd",
+            "volume_z",
+            "open",
+            "close",
+            "price_change_pct",
+            "taker_buy_ratio",
+            "is_complete",
+        )
+    }
+    if hit.baseline_source is not None:
+        evidence["baseline_source"] = hit.baseline_source
+
     return {
         "schema_version": "1.0",
         "alert_id": str(uuid.uuid4()),
@@ -70,20 +144,7 @@ def build_alert(
         "risk_score": hit.risk_score,
         "severity": severity(hit.risk_score),
         "reasons": hit.reasons,
-        "evidence": {
-            k: features.get(k)
-            for k in (
-                "trade_count",
-                "volume_usd",
-                "baseline_volume_usd",
-                "volume_z",
-                "open",
-                "close",
-                "price_change_pct",
-                "taker_buy_ratio",
-                "is_complete",
-            )
-        },
+        "evidence": evidence,
         "rule_version": hit.rule_version,
         "model_version": model_version,
         "replay_run_id": features.get("replay_run_id"),
