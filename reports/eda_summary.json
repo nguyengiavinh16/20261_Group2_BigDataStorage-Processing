@@ -1,0 +1,255 @@
+{
+  "source": {
+    "file": "PS_20174392719_1491204439457_log.csv",
+    "bytes": 493534783,
+    "sha256": "16910f90577b0d981bf8ff289714510bb89bc71bff7d3f220f024e287e4eea6b",
+    "rows": 6362620,
+    "columns": 11
+  },
+  "quality": {
+    "nulls_total": 0,
+    "duplicate_rows": 0
+  },
+  "isFlaggedFraud": {
+    "flagged_rows": 16,
+    "flagged_and_fraud": 16,
+    "flag_types": {
+      "TRANSFER": 16
+    },
+    "rows_matching_documented_rule_TRANSFER_gt_200k": 409110,
+    "documented_rule_rows_flagged": 16,
+    "flag_precision": 1.0,
+    "flag_recall": 0.0019481310118105442
+  },
+  "zero_amount_rows": {
+    "rows": 16,
+    "fraud": 16,
+    "types": {
+      "CASH_OUT": 16
+    },
+    "all_follow_flagged_transfer": true
+  },
+  "class_balance": {
+    "rows": 6362620,
+    "fraud": 8213,
+    "legit": 6354407,
+    "fraud_rate": 0.001290820448180152,
+    "legit_per_fraud": 773.7010836478753,
+    "accuracy_if_predict_all_legit": 0.9987091795518198
+  },
+  "by_type": [
+    {
+      "type": "CASH_OUT",
+      "rows": 2237500,
+      "fraud": 4116,
+      "fraud_rate": 0.0018395530726256983,
+      "amount_median": 147072.185,
+      "share_rows": 0.35166330851127364,
+      "share_fraud": 0.5011567027882625
+    },
+    {
+      "type": "PAYMENT",
+      "rows": 2151495,
+      "fraud": 0,
+      "fraud_rate": 0.0,
+      "amount_median": 9482.19,
+      "share_rows": 0.3381460781879163,
+      "share_fraud": 0.0
+    },
+    {
+      "type": "CASH_IN",
+      "rows": 1399284,
+      "fraud": 0,
+      "fraud_rate": 0.0,
+      "amount_median": 143427.71000000002,
+      "share_rows": 0.21992261049693365,
+      "share_fraud": 0.0
+    },
+    {
+      "type": "TRANSFER",
+      "rows": 532909,
+      "fraud": 4097,
+      "fraud_rate": 0.007687991758442811,
+      "amount_median": 486308.39,
+      "share_rows": 0.08375621992198183,
+      "share_fraud": 0.4988432972117375
+    },
+    {
+      "type": "DEBIT",
+      "rows": 41432,
+      "fraud": 0,
+      "fraud_rate": 0.0,
+      "amount_median": 3048.99,
+      "share_rows": 0.006511782881894566,
+      "share_fraud": 0.0
+    }
+  ],
+  "amount": {
+    "fraud_amount_max": 10000000.0,
+    "fraud_rows_at_10M_cap": 287,
+    "legit_amount_max": 92445516.64,
+    "median_fraud": 441423.44,
+    "median_legit": 74684.72
+  },
+  "time": {
+    "step_min": 1,
+    "step_max": 743,
+    "distinct_steps": 743,
+    "days": 31,
+    "fraud_per_step_mean": 11.053835800807537,
+    "fraud_per_step_std": 4.9986314256340725,
+    "steps_with_only_fraud": 320,
+    "rows_sorted_by_step": true,
+    "step_at_70pct_rows": 323,
+    "step_at_85pct_rows": 378,
+    "step_at_95pct_rows": 490
+  },
+  "by_hour_fraud_rate": {
+    "0": 0.013204972151525211,
+    "1": 0.04125083166999335,
+    "2": 0.16243148978574987,
+    "3": 0.22078968573730862,
+    "4": 0.2230347349177331,
+    "5": 0.10467836257309941,
+    "6": 0.03649310191366266,
+    "7": 0.013672673230540592,
+    "8": 0.0012027455046945872,
+    "9": 0.0008808420380100957,
+    "10": 0.0007264704299628692,
+    "11": 0.0007012564695563673,
+    "12": 0.0007385682022908422,
+    "13": 0.0008029059280841937,
+    "14": 0.0008183620280019007,
+    "15": 0.0007812287709573109,
+    "16": 0.0008023803191791627,
+    "17": 0.0005908607790749153,
+    "18": 0.0005279293130435587,
+    "19": 0.0006140198797965788,
+    "20": 0.0014002889356997006,
+    "21": 0.001804117087712986,
+    "22": 0.002286612344874944,
+    "23": 0.004190705016273904
+  },
+  "accounts": {
+    "nameOrig_distinct": 6353307,
+    "nameOrig_repeated_accounts": 9298,
+    "nameDest_distinct": 2722362,
+    "nameDest_median_txn": 1.0,
+    "nameDest_max_txn": 113,
+    "orig_prefix": {
+      "C": 6362620
+    },
+    "dest_prefix": {
+      "C": 4211125,
+      "M": 2151495
+    },
+    "merchant_dest_only_in_PAYMENT": true,
+    "merchant_dest_balance_always_0": true,
+    "fraud_TRANSFER_dest_is_fraud_CASHOUT_orig": 0,
+    "fraud_TRANSFER_with_CASHOUT_same_step_amount": 4078
+  },
+  "leakage_signals_TRANSFER_CASHOUT": {
+    "drain_orig": {
+      "legit_share": 0.0,
+      "fraud_share": 0.976257153293559
+    },
+    "dest_zero_both": {
+      "legit_share": 0.0006176245277308345,
+      "fraud_share": 0.4955558261293072
+    },
+    "orig_balance_consistent": {
+      "legit_share": 0.09492085282869138,
+      "fraud_share": 0.9945208815292829
+    },
+    "dest_balance_consistent": {
+      "legit_share": 0.7742386854517203,
+      "fraud_share": 0.4350420065749422
+    }
+  },
+  "naive_baselines": {
+    "Dự đoán tất cả hợp lệ": {
+      "accuracy": 0.9987091795518198,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "pr_auc": 0.001290820448180152,
+      "alerts": 0.0,
+      "TP": 0.0,
+      "FP": 0.0,
+      "FN": 8213.0,
+      "TN": 6354407.0,
+      "fraud_amount_recall": 0.0
+    },
+    "isFlaggedFraud (rule có sẵn)": {
+      "accuracy": 0.9987116942391656,
+      "precision": 1.0,
+      "recall": 0.0019481310118105442,
+      "f1": 0.0038886863531413293,
+      "pr_auc": 0.0032364367726449173,
+      "alerts": 16.0,
+      "TP": 16.0,
+      "FP": 0.0,
+      "FN": 8197.0,
+      "TN": 6354407.0,
+      "fraud_amount_recall": 0.006451798559494053
+    },
+    "type ∈ {TRANSFER, CASH_OUT}": {
+      "accuracy": 0.5658712920149247,
+      "precision": 0.002964544224336551,
+      "recall": 1.0,
+      "f1": 0.005911563357664339,
+      "pr_auc": 0.002964544224336551,
+      "alerts": 2770409.0,
+      "TP": 8213.0,
+      "FP": 2762196.0,
+      "FN": 0.0,
+      "TN": 3592211.0,
+      "fraud_amount_recall": 1.0
+    },
+    "amount = oldbalanceOrg (artifact)": {
+      "accuracy": 0.9999693522479733,
+      "precision": 1.0,
+      "recall": 0.976257153293559,
+      "f1": 0.9879859528063581,
+      "pr_auc": 0.9762878010455857,
+      "alerts": 8018.0,
+      "TP": 8018.0,
+      "FP": 0.0,
+      "FN": 195.0,
+      "TN": 6354407.0,
+      "fraud_amount_recall": 0.8773655572272456
+    }
+  },
+  "time_split_proposal": [
+    {
+      "step": "train",
+      "step_from": 1,
+      "step_to": 323,
+      "rows": 4463587,
+      "fraud": 3643,
+      "fraud_rate": 0.0008161597387930379,
+      "share_rows": 0.7015328591052113,
+      "share_fraud": 0.4435650797516133
+    },
+    {
+      "step": "val",
+      "step_from": 324,
+      "step_to": 378,
+      "rows": 980416,
+      "fraud": 564,
+      "fraud_rate": 0.0005752660095306482,
+      "share_rows": 0.15408998179995034,
+      "share_fraud": 0.06867161816632168
+    },
+    {
+      "step": "test",
+      "step_from": 379,
+      "step_to": 743,
+      "rows": 918617,
+      "fraud": 4006,
+      "fraud_rate": 0.004360903401526425,
+      "share_rows": 0.14437715909483828,
+      "share_fraud": 0.48776330208206503
+    }
+  ]
+}
